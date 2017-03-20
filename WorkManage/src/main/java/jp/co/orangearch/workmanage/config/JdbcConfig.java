@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import jp.co.orangearch.workmanage.common.WorkManagJdbcLogger;
 
 //@EnableTransactionManagement
-//@Configuration
-//public class AppConfig {
-
 @Configuration
 public class JdbcConfig implements Config {
 
