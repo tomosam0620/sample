@@ -82,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	 * @return パスワードエンコーダー
 	 */
 	@Bean
-	ShaPasswordEncoder passwordEncoder(){
+	public ShaPasswordEncoder passwordEncoder(){
 		return new ShaPasswordEncoder(256);
 	}
 
