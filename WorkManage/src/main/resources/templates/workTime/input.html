@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<!--
+		<meta charset="UTF-8" />
+ -->
+		<title>Hello Thymeleaf</title>
+		<div th:replace="common/common::header"></div>
+	</head>
+	<body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<h1>WORK TIME</h1>
+			<form class="form-horizontal" th:action="@{/workTime/handle.html}" th:object="${workTimeForm}" method="post">
+				<!-- admin権限のみ表示 -->
+				<div sec:authorize="hasRole('A01')">
+					<div class="form-group">
+						<label for="userId" class="col-sm-2 control-label">ユーザーID</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control" id="userId" placeholder="ユーザーID" th:field="*{userId}"></input>
+							<span th:if="${#fields.hasErrors('userId')}" class="text-danger" th:errors="*{userId}">Error</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="workDate" class="col-sm-2 control-label">日付</label>
+					<div class="col-sm-2">
+						<input type="text" readonly class="form-control datepicker" id="workDate" placeholder="yyyy-MM-dd" th:field="*{workDate}"></input>
+						<span th:if="${#fields.hasErrors('workDate')}" class="text-danger" th:errors="*{workDate}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="workTimeType" class="col-sm-2 control-label">勤務帯</label>
+					<div class="col-sm-2">
+					<select class="form-control col-sm-2 " id="workTimeType" th:field="*{workTimeType}">
+						<option th:each="t : ${T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).values()}"
+								th:value="${t.getValue()}"
+								th:text="${t.getText()}"
+								th:selected="${t.getValue()} == 3"></option>
+					</select>
+					</div>
+						<span th:if="${#fields.hasErrors('workTimeType')}" class="text-danger" th:errors="*{workTimeType}">Error</span>
+				</div>
+				<div class="form-group">
+					<label for="attendanceCode" class="col-sm-2 control-label">出勤コード</label>
+					<div class="col-sm-2">
+					
+						<select class="form-control col-sm-2 " id="attendanceCode" th:field="*{attendanceCode}">
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.common.constant.AttendanceCode).values()}"
+									th:value="${t.getValue()}"
+									th:text="${t.getText()}"
+									th:selected="${t.getValue()} == *{attendanceCode}"></option>
+						</select>
+						<span th:if="${#fields.hasErrors('attendanceCode')}" class="text-danger" th:errors="*{attendanceCode}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="startTime" class="col-sm-2 control-label">出社時刻</label>
+					<div class="col-sm-2 bootstrap-timepicker">
+						<input type="text" class="form-control timepicker input-small" id="startTime" placeholder="hh:mm" th:field="*{startTime}"></input>
+						<span th:if="${#fields.hasErrors('startTime')}" class="text-danger" th:errors="*{startTime}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="endTime" class="col-sm-2 control-label">退社時刻</label>
+					<div class="col-sm-2 bootstrap-timepicker">
+						<input type="text" class="form-control timepicker" id="endTime" placeholder="hh:mm" th:field="*{endTime}"></input>
+						<span th:if="${#fields.hasErrors('endTime')}" class="text-danger" th:errors="*{endTime}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="note" class="col-sm-2 control-label">備考</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="note" th:field="*{note}"></input>
+						<span th:if="${#fields.hasErrors('note')}" class="text-danger" th:errors="*{note}">Error</span>
+					</div>
+				</div>
+				<input type="hidden" th:name="version" th:value="${version}"></input>
+				<input type="hidden" th:name="token" th:value="${token}"></input>
+				<button type="submit" class="btn btn-warning">更新</button>
+			</form>
+		</div>
+	</body>
+</html>

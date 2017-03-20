@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+   <head>
+    <div style="background:darkseagreen" th:fragment="header">
+	    <meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<!-- BootstrapのCSS読み込み -->
+		<link rel="stylesheet" href="../../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
+		<link rel="stylesheet" type="text/css" href="../../static/css/bootstrap-datepicker.min.css" th:href="@{/css/bootstrap-datepicker.min.css}"/>
+		<link rel="stylesheet" type="text/css" href="../../static/css/bootstrap-timepicker.min.css" th:href="@{/css/bootstrap-timepicker.min.css}"/>
+		<!-- jQuery読み込み -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<!-- BootstrapのJS読み込み -->
+		<script src="../../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/bootstrap-datepicker.min.js" th:src="@{/js/bootstrap-datepicker.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/bootstrap-datepicker.ja.min.js" th:src="@{/js/bootstrap-datepicker.ja.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/bootstrap-timepicker.min.js" th:src="@{/js/bootstrap-timepicker.min.js}"></script>
+		<script type="text/javascript" src="../../static/js/common.js" th:src="@{/js/common.js}"></script>
+    </div>
+  </head>
+  <body>
+  
+	<div class="col-sm-12" th:fragment="menu">
+		<div class="row">
+			<nav class="navbar navbar-inverse navbar-fixed-top">
+			    <div class="container">
+			        <div class="navbar-header">
+			            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+			                <span class="sr-only">Toggle navigation</span>
+			                <span class="icon-bar"></span>
+			                <span class="icon-bar"></span>
+			                <span class="icon-bar"></span>
+			            </button>
+			            <a class="navbar-brand" href="#">TEST</a>
+			        </div>
+			        <div id="navbar" class="collapse navbar-collapse">
+			            <ul class="nav navbar-nav">
+			                <li><a href="../">Top</a></li>
+			                <li><a href="#contact">Contact</a></li>
+			            </ul>
+			
+			        <div class="collapse navbar-collapse navbar-right" >
+						<form th:action="@{/logout}">
+							<button type="submit" class="btn btn-default navbar-btn">ログアウト</button>
+						</form>
+			        </div>
+			
+			        </div><!--/.nav-collapse -->
+			    </div>
+			</nav>
+			<br><br><br>
+	    </div>
+    </div>
+  </body>
+</html>

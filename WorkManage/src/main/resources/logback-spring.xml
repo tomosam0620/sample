@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE logback>
+<configuration>
+<!--
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+ -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date %level [%X{SESSION_ID}] [%X{USER_ID}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="OPERATION_LOG" class="ch.qos.logback.core.FileAppender">
+		<file>log/operation.log</file>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%date %level [%X{SESSION_ID}] [%X{USER_ID}] [%X{URL}] [%X{METHOD}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="APPLICATION_LOG" class="ch.qos.logback.core.FileAppender">
+		<file>log/administrator.log</file>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%date %level [%X{SESSION_ID}] [%X{USER_ID}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="DB_LOG" class="ch.qos.logback.core.FileAppender">
+		<file>log/db.log</file>
+		<encoder>
+			<charset>UTF-8</charset>
+			<pattern>%date %level [%X{SESSION_ID}] [%X{USER_ID}] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+
+	<logger name="jp.co.orangearch.workmanage.interceptor.LoggingInterceptor">
+		<level value="info" />
+ 		<appender-ref ref="OPERATION_LOG" />
+	</logger>
+
+	<!-- TODO：operation.logの内容も出ちゃってるからパス要検討 -->
+	<logger name="jp.co.orangearch.workmanage">
+		<level value="info" />
+ 		<appender-ref ref="APPLICATION_LOG" />
+	</logger>
+
+	<logger name="jp.co.orangearch.workmanage.common.WorkManagJdbcLogger">
+		<level value="info" />
+		<appender-ref ref="DB_LOG" />
+	</logger>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

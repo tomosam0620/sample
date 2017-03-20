@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<!--
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org" 
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head>
+ -->
+<!--
+		<meta charset="UTF-8" />
+ -->
+		<title>Hello Thymeleaf</title>
+		<div th:replace="common/common::header"></div>
+	</head>
+	<body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<h1>WORK TIME</h1>
+			<span sec:authentication="username"/>
+			<div class="container-fluid">
+<!-- 
+				<div class="row">
+-->
+					<div class="col-sm-12" style="background-color:orange;">
+						<form class="form-horizonta" th:action="@{/workTime/}" method="get">
+							<div class="form-group col-sm-2">
+								<select class="form-control" id="month" name="month">
+									<option th:each="item : ${months}"
+											th:value="${item.value}"
+											th:text="${item.key}"
+											th:selected="${item.value} == ${currentMonth}">month</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<button type="submit" class="btn btn-primary">選択</button>
+							</div>
+						</form>
+					</div>
+<!-- 
+				</div>
+-->
+			</div>
+		</div>
+
+		<div class="container">
+			<label th:text="${result}"></label>
+		</div>
+
+		<div class="container">
+			<h3>稼働</h3>
+		</div>
+		<div class="container">
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>日付</th>
+						<th>勤務帯</th>
+						<th>出勤コード</th>
+						<th>出社時刻</th>
+						<th>退社時刻</th>
+						<th>備考</th>
+					</tr>
+				</thead>
+				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
+					<tr>
+						<td class="col-sm-1">
+							<form action="#" th:action="@{/workTime/input.html}" th:object="${workTime}" method="get">
+								<button type="submit" name="date" th:value="*{workDate}">更新</button>
+							</form>
+						</td>
+						<td th:if="${workTime.businessDayFlag == 1}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.businessDayFlag == 2}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.businessDayFlag == 3}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
+						<td class="col-sm-1" th:text="${workTime.workTimeType}">1</td>
+						<td class="col-sm-1" th:text="${workTime.attendanceCode}">1</td>
+<!-- 
+						<td class="col-sm-1" th:text="${#T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).getTextByValue（workTime.attendanceCode）}">1</td>
+ -->
+						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>
+						<td class="col-sm-1" th:text="${workTime.endTime}">1</td>
+						<td th:text="${workTime.notes}">1</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

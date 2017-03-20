@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=" utf-8" />
+		<title>ログイン</title>
+		<div th:replace="common/common::header"></div>
+</head>
+<body onload="document.login.username.focus();">
+	<h1>XXXX</h1>
+	<!-- ログインが失敗した時のメッセージ -->
+	<div class="alert alert-danger" role="alert" th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
+		<strong>ログインに失敗しました: </strong>ユーザが存在しないか、パスワードが間違っています。
+	</div>
+
+	<div class="container">
+		<!-- ログインのフォーム -->
+		<form class="form-signin" action="" th:action="@{/login}" method="post" name="login">
+			<h2 class="form-signin-heading">ログイン画面</h2>
+			<div class="form-group">
+				<div class="col-sm-4">
+					<input type="text" class="form-control" placeholder="ユーザID" name="username" />
+					<input type="password" class="form-control" placeholder="パスワード" name="password" />
+					<button class="btn btn-lg btn btn-warning" type="submit">ログイン</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

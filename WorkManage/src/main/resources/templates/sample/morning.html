@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello Thymeleaf</title>
+	<div th:replace="common/common::header"></div>
+  </head>
+  <body>
+		<div th:replace="common/common::menu"></div>
+    <h1>Hello Thymeleaf222</h1>
+    <label th:text="${key}"></label>
+    <label th:text="${sample_day}"></label>
+
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>ユーザID</th>
+            <th>ロールID</th>
+            <th>所属</th>
+            <th>役職</th>
+            <th>プロジェクトID</th>
+        </tr>
+    </thead>
+    <tbody th:remove="all-but-first" th:each="user : ${users}">
+        <tr>
+            <td th:text="${user.userId}">1</td>
+            <td th:text="${user.roleId}">1</td>
+            <td th:text="${user.affiliation}">1</td>
+            <td th:text="${user.position}">1</td>
+            <td th:text="${user.projectId}">1</td>
+        </tr>
+    </tbody>
+</table>
+  </body>
+</html>
