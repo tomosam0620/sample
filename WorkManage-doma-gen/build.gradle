@@ -21,9 +21,9 @@ dependencies {
 def javaDestDir='src/main/java'
 def sqlDestDir= 'src/main/resources'
 def dialectName= 'mysql'
-def url= 'jdbc:mysql://192.168.56.101/work_manage'
-def user= 'tom'
-def password= 'otsuka9771'
+def url= 'jdbc:mysql://localhost/workmanage'
+def user= 'oaiuser'
+def password= 'oai1115'
 def entityPackageName= 'jp.co.orangearch.workManage.entity'
 def superclassName="jp.co.orangearch.workManage.entity.TableSuffix"
 def listenerSuperclassName="jp.co.orangearch.workManage.entity.TableSuffixListener"
@@ -54,7 +54,7 @@ task gen << {
 task genTestCases << {
     ant.taskdef(resource: 'domagentask.properties',
         classpath: configurations.domaGenRuntime.asPath)
-    ant.gen(url: 'jdbc:mysql://192.168.56.101/work_manage', user: 'tom', password: 'otsuka9771') {
+    ant.gen(url: '${url}', user: '${user}', password: '${password}') {
         sqlTestCaseConfig {
             fileset(dir: 'src/main/resources') {
                 include(name: 'META-INF/**/*.sql')
