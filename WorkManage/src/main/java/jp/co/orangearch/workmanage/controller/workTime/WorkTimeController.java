@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jp.co.orangearch.workmanage.common.constant.MessageId;
-import jp.co.orangearch.workmanage.common.exception.SystemException;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
@@ -134,7 +132,6 @@ public class WorkTimeController extends AbstractWorkManageController{
 		String userId = getLoginUserId();
 		if(!StringUtils.isEmpty(form.getUserId())){
 			userId = form.getUserId();
-			throw new SystemException(MessageId.S001, new String[]{"更新処理"});
 		}
 
 		WorkTime entity = new WorkTime();
