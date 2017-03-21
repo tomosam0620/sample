@@ -1,5 +1,7 @@
 package jp.co.orangearch.workmanage.entity.listener;
 
+import java.time.LocalDateTime;
+
 import org.seasar.doma.jdbc.entity.EntityListener;
 import org.seasar.doma.jdbc.entity.PreInsertContext;
 import org.seasar.doma.jdbc.entity.PreUpdateContext;
@@ -17,6 +19,7 @@ public class TableSuffixListener <T extends TableSuffix> implements EntityListen
 	@Override
 	public void preUpdate(T entity, PreUpdateContext<T> context) {
 		entity.setUpdateUser("common2");
+		entity.setUpdateDate(LocalDateTime.now());
 		EntityListener.super.preUpdate(entity, context);
 	}
 

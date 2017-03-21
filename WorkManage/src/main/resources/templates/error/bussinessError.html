@@ -7,7 +7,11 @@
   </head>
   <body>
 	<div th:replace="common/common::menu"></div>
-    <h1>エラー</h1>
-    <label th:text="${message}">業務エラー詳細</label>
+	<div class="container">
+	    <h1>エラー</h1>
+	</div>
+	<div class="container">
+		<label th:text="${message}">業務エラー詳細</label>
+	</div>
   </body>
 </html>

@@ -2,11 +2,11 @@
 <html>
 <!--
 <html lang="en"
-xmlns:th="http://www.thymeleaf.org" 
+xmlns:th="http://www.thymeleaf.org"
 xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
 xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
-	<head>
  -->
+	<head>
 <!--
 		<meta charset="UTF-8" />
  -->
@@ -19,7 +19,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			<h1>WORK TIME</h1>
 			<span sec:authentication="username"/>
 			<div class="container-fluid">
-<!-- 
+<!--
 				<div class="row">
 -->
 					<div class="col-sm-12" style="background-color:orange;">
@@ -37,14 +37,14 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 							</div>
 						</form>
 					</div>
-<!-- 
+<!--
 				</div>
 -->
 			</div>
 		</div>
 
 		<div class="container">
-			<label th:text="${result}"></label>
+			<strong class="text-danger" th:text="${result}"></strong>
 		</div>
 
 		<div class="container">
@@ -75,7 +75,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<td th:if="${workTime.businessDayFlag == 3}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
 						<td class="col-sm-1" th:text="${workTime.workTimeType}">1</td>
 						<td class="col-sm-1" th:text="${workTime.attendanceCode}">1</td>
-<!-- 
+<!--
 						<td class="col-sm-1" th:text="${#T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).getTextByValue（workTime.attendanceCode）}">1</td>
  -->
 						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>

@@ -13,7 +13,7 @@ import jp.co.orangearch.workmanage.common.constant.MessageId;
 public class SystemException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private MessageId messageId;
@@ -28,6 +28,11 @@ public class SystemException extends RuntimeException {
 		super(message);
 	}
 
+	public SystemException(MessageId messageId){
+		super();
+		this.messageId = messageId;
+	}
+
 	public SystemException(MessageId messageId, String[] fillchars){
 		super();
 		this.messageId = messageId;
@@ -38,6 +43,11 @@ public class SystemException extends RuntimeException {
 		super(message);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
+	}
+
+	public SystemException(MessageId messageId, Throwable exception){
+		super(exception);
+		this.messageId = messageId;
 	}
 
 	public SystemException(MessageId messageId, String[] fillchars, Throwable exception){

@@ -54,7 +54,8 @@ public interface WorkTimeDao {
 	@Insert(excludeNull=true)
 	int insert(WorkTime entity);
 
-	@Update(excludeNull=true)
+	@Update
+//	@Update(excludeNull=true)
 	int update(WorkTime entity);
 
 }

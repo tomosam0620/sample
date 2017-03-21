@@ -11,12 +11,14 @@ public enum MessageId implements Values{
 	V001("V001"),
 	/** [ERROR] {0}で2重POSTです。 */
 	M001("M001"),
-	/** [INFO] あいうえお。 */
+	/** [WORN] 既に更新されています。 */
 	M002("M002"),
 	/** [ERROR] {0}が失敗しました。 */
 	S001("S001"),
 	/** [ERROR] {0}を{1}に変換できませんでした。 */
-	S002("S002");
+	S002("S002"),
+	/** [ERROR] 予期せぬエラーが発生しました。 */
+	S003("S003");
 
 	/** 値 */
 	private String value;

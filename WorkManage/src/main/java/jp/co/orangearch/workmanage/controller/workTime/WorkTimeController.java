@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.orangearch.workmanage.common.constant.MessageId;
+import jp.co.orangearch.workmanage.common.exception.SystemException;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
@@ -95,22 +97,20 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public String show(String date, Model model){
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
-		Integer version = 0;
 		if(workTime.isPresent()){
 			form.setAttendanceCode(workTime.get().getAttendanceCode());
 			form.setEndTime(workTime.get().getEndTime());
 			form.setNote(workTime.get().getNotes());
 			form.setStartTime(workTime.get().getStartTime());
 			form.setUserId(workTime.get().getUserId());
-			form.setWorkTimeType(workTime.get().getWorkTimeType());
-			version = workTime.get().getVersion();
+			form.setWorkTimeTypeAsInt(workTime.get().getWorkTimeType());
+			form.setVersion(workTime.get().getVersion());
 		}
 		form.setWorkDate(date);
-		model.addAttribute("version", version); 
-		model.addAttribute("workTimeForm", form); 
+		model.addAttribute("workTimeForm", form);
 		return INPUT_HTML;
 	}
-	
+
 	/**
 	 * 勤務時間の登録を行います。
 	 *
@@ -126,18 +126,20 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 		//入力チェック。
 		if(bindingResult.hasErrors()){
-			model.addAttribute("workTimeForm", form); 
+			model.addAttribute("workTimeForm", form);
 			return INPUT_HTML;
 		}
 
+		//更新用entity作成。
 		String userId = getLoginUserId();
 		if(!StringUtils.isEmpty(form.getUserId())){
 			userId = form.getUserId();
+			throw new SystemException(MessageId.S001, new String[]{"更新処理"});
 		}
 
 		WorkTime entity = new WorkTime();
 		entity.setUserId(userId);
-		entity.setWorkTimeType(Integer.valueOf(form.getWorkTimeType()));
+		entity.setWorkTimeType(form.getWorkTimeTypeAsInt());
 		entity.setWorkDate(form.getWorkDateAsLocalDate());
 		entity.setStartTime(form.getStartTimeAsLocalTime());
 		entity.setEndTime(form.getEndTimeAsLocalTime());
@@ -146,6 +148,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		entity.setBusinessDayFlag(DateUtils.getBusinessDayFlag(form.getWorkDateAsLocalDate()));
 		entity.setVersion(form.getVersion());
 
+		//更新
 		workTimeService.update(entity);
 
 		attributes.addFlashAttribute("result", "登録しました。");

@@ -48,7 +48,7 @@ public class TokenCheckInterceptor extends HandlerInterceptorAdapter {
     		String token = request.getParameter(TOKEN_NAME);
 
     		if(!tokenHandler.isValid(token, request)){
-    			throw new BussinessException(MessageId.M001.getValue(), new String[]{request.getRequestURI()});
+    			throw new BussinessException(MessageId.M001, new String[]{request.getRequestURI()});
     		}
 
     		if(annotation.remove()){

@@ -10,10 +10,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@EnableWebMvcSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Autowired
@@ -26,7 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         web.ignoring().antMatchers(
                             "/images/**",
                             "/css/**",
-                            "/js/**");
+                            "/js/**",
+                            "/img/**");
     }
 
 	@Override
@@ -58,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	 * 認証処理を拡張するためにAuthenticationManagerBuilderに認証プロバイダーを登録します。<br>
 	 * DB認証用の認証プロバイダーに、認証時のユーザー情報取得サービスを拡張した独自サービスを登録し、<br>
 	 * パスワード暗号化方法を設定します。
-	 * 
+	 *
 	 */
 	@Override
 	protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception{

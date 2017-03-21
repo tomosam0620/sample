@@ -1,5 +1,7 @@
 package jp.co.orangearch.workmanage.common.exception;
 
+import jp.co.orangearch.workmanage.common.constant.MessageId;
+
 /**
  * 業務例外クラスです。
  * <br>
@@ -11,10 +13,10 @@ package jp.co.orangearch.workmanage.common.exception;
 public class BussinessException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private String messageId;
+	private MessageId messageId;
 	private String[] fillChars;
 
 	@Deprecated
@@ -26,31 +28,31 @@ public class BussinessException extends RuntimeException {
 		super(message);
 	}
 
-	public BussinessException(String messageId, String[] fillchars){
+	public BussinessException(MessageId messageId, String[] fillchars){
 		super();
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
 
-	public BussinessException(String messageId, String[] fillchars, String message){
+	public BussinessException(MessageId messageId, String[] fillchars, String message){
 		super(message);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
 
-	public BussinessException(String messageId, String[] fillchars, Throwable exception){
+	public BussinessException(MessageId messageId, String[] fillchars, Throwable exception){
 		super(exception);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
 
-	public BussinessException(String messageId, String[] fillchars, String message, Throwable exception){
+	public BussinessException(MessageId messageId, String[] fillchars, String message, Throwable exception){
 		super(message, exception);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
 
-	public String getMessageId(){
+	public MessageId getMessageId(){
 		return messageId;
 	}
 

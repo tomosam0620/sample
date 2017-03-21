@@ -49,7 +49,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			WorkTime newItem = new WorkTime();
 			newItem.setWorkDate(LocalDate.of(date.getYear(), date.getMonth(), i));
 			newItem.setBusinessDayFlag(DateUtils.getBusinessDayFlag(newItem.getWorkDate()));
-			
+
 			for(WorkTime item : registedList){
 				if(item.getWorkDate().getDayOfMonth() == i){
 					newItem =item;
@@ -58,7 +58,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			}
 			showList.add(newItem);
 		}
-		
+
 		return showList;
 	}
 
@@ -75,6 +75,8 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		String procName;
 		if(entity.isPresent()){
 			//update
+			workTime.setRegistUser(entity.get().getRegistUser());
+			workTime.setRegistDate(entity.get().getRegistDate());
 			result = workTimeDao.update(workTime);
 			procName = "更新処理";
 		}else{

@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-
-import jp.co.orangearch.workmanage.common.validator.impl.DateValidValidator;
+import jp.co.orangearch.workmanage.common.constant.Values;
+import jp.co.orangearch.workmanage.common.validator.impl.EnumValidValidator;
 
 
 /**
@@ -25,7 +25,7 @@ import jp.co.orangearch.workmanage.common.validator.impl.DateValidValidator;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = DateValidValidator.class)
+@Constraint(validatedBy = EnumValidValidator.class)
 public @interface EnumValue {
 	/** エラーメッセージ。 */
 	String message() default "{V001}";
@@ -36,6 +36,8 @@ public @interface EnumValue {
 	/** ペイロード。 */
 	Class<? extends Payload>[] payload() default {};
 
-	/** 書式。 */
+	/** enumの型。 */
+	Class<? extends Values> type();
+	/** 除外要素。 */
 	String[] exclude() default {};
 }

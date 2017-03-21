@@ -11,9 +11,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.StringUtils;
 
+import jp.co.orangearch.workmanage.common.constant.WorkTimeType;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.DateValid;
+import jp.co.orangearch.workmanage.common.validator.EnumValue;
 
 /**
  * 勤務時間のフォームクラスです。
@@ -35,14 +37,14 @@ public class WorkTimeForm implements Serializable{
 	private String workDate;
 
 	/** 勤務帯。 */
-	@NotNull
-	@Range(min = 1, max=5)
-	private Integer workTimeType;
+//	@NotNull
+	@EnumValue(type=WorkTimeType.class, exclude={"1","5"})
+	private String workTimeType;
 
 	@NotNull
 	@Range(min = 1, max=4)
 	private Integer attendanceCode;
-	
+
 	/** 出社時刻。 */
 	@DateValid(pattern="HH:mm", message="HH:mm")
 	private String startTime;
@@ -56,23 +58,23 @@ public class WorkTimeForm implements Serializable{
 
 	/** バージョン(楽観排他用)。 */
 	private Integer version;
-	
+
 	public String getUserId(){
 		return userId;
 	}
-	
+
 	public void setUserId(String value){
 		userId = value;
 	}
-	
+
 	public String getWorkDate(){
 		return workDate;
 	}
-	
+
 	public LocalDate getWorkDateAsLocalDate(){
 		return DateUtils.convertToLocalDate(workDate);
 	}
-	
+
 	public void setWorkDate(String value){
 		workDate = value;
 	}
@@ -80,11 +82,11 @@ public class WorkTimeForm implements Serializable{
 	public Integer getAttendanceCode(){
 		return attendanceCode;
 	}
-	
+
 	public void setAttendanceCode(Integer value){
 		attendanceCode = value;
 	}
-	
+
 	public String getStartTime(){
 		return startTime;
 	}
@@ -93,7 +95,7 @@ public class WorkTimeForm implements Serializable{
 		return StringUtils.isEmpty(startTime) ? null: DateUtils.convertToLocalTime(startTime +":00");
 	}
 
-	
+
 	public void setStartTime(String value){
 		startTime = value;
 	}
@@ -110,7 +112,7 @@ public class WorkTimeForm implements Serializable{
 		return StringUtils.isEmpty(endTime) ? null: DateUtils.convertToLocalTime(endTime +":00");
 	}
 
-	
+
 	public void setEndTime(String value){
 		endTime = value;
 	}
@@ -119,12 +121,20 @@ public class WorkTimeForm implements Serializable{
 		endTime = DateUtils.convert(value, DateTimeFormat.HH_MM);
 	}
 
-	public Integer getWorkTimeType(){
+	public String getWorkTimeType(){
 		return workTimeType;
 	}
 
-	public void setWorkTimeType(Integer value){
+	public Integer getWorkTimeTypeAsInt(){
+			return StringUtils.isEmpty(workTimeType) ? null : Integer.parseInt(workTimeType);
+	}
+
+	public void setWorkTimeType(String value){
 		workTimeType = value;
+	}
+
+	public void setWorkTimeTypeAsInt(Integer value){
+		workTimeType = value == null ? null : String.valueOf(value);
 	}
 
 	public String getNote(){
