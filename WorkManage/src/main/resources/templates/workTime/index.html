@@ -19,27 +19,23 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			<h1>WORK TIME</h1>
 			<span sec:authentication="username"/>
 			<div class="container-fluid">
-<!--
-				<div class="row">
--->
-					<div class="col-sm-12" style="background-color:orange;">
-						<form class="form-horizonta" th:action="@{/workTime/}" method="get">
-							<div class="form-group col-sm-2">
-								<select class="form-control" id="month" name="month">
-									<option th:each="item : ${months}"
-											th:value="${item.value}"
-											th:text="${item.key}"
-											th:selected="${item.value} == ${currentMonth}">month</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<button type="submit" class="btn btn-primary">選択</button>
-							</div>
-						</form>
-					</div>
-<!--
+				<div class="col-sm-12" style="background-color:orange;">
+					<!-- TODO selected value on path parameter -->
+					<form class="form-horizonta" th:action="@{/workTime/{month}(month=${currentMonth})}" method="get">
+						<div class="form-group col-sm-2">
+							<select class="form-control" id="month" name="month" th:field="${month}">
+								<option th:each="item : ${months}"
+										th:value="${item.value}"
+										th:text="${item.key}"
+										th:selected="${item.value} == ${currentMonth}"
+										>month</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary">選択</button>
+						</div>
+					</form>
 				</div>
--->
 			</div>
 		</div>
 
@@ -66,9 +62,12 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
 					<tr>
 						<td class="col-sm-1">
+						<!-- 
 							<form action="#" th:action="@{/workTime/input.html}" th:object="${workTime}" method="get">
 								<button type="submit" name="date" th:value="*{workDate}">更新</button>
 							</form>
+						 -->
+							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${workTime.workDate})}">更新</a>
 						</td>
 						<td th:if="${workTime.businessDayFlag == 1}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
 						<td th:if="${workTime.businessDayFlag == 2}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>

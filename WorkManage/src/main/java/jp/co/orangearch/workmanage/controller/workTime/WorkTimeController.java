@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
+import jp.co.orangearch.workmanage.common.validator.DateValid;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.entity.WorkTime;
@@ -31,6 +33,7 @@ import jp.co.orangearch.workmanage.service.WorkTimeService;
  *
  */
 @Controller
+@Validated
 @RequestMapping(WorkTimeController.FUNCTION_URI)
 public class WorkTimeController extends AbstractWorkManageController{
 
@@ -43,27 +46,27 @@ public class WorkTimeController extends AbstractWorkManageController{
 	/** 一覧表示画面のURI */
 	private static final String ROOT_URI = "/";
 	/** 入力画面のURI */
-	private static final String INPUT_URI = "/input.html";
+	private static final String INPUT_URI = "/{date}/input";
 	/** 更新処理のURI */
 	private static final String UPDATE_URI = "/handle.html";
 
 	@Autowired
 	private WorkTimeService workTimeService;
 
-//	/**
-//	 * 初期表示を行います。
-//	 *
-//	 * @param month 年月(yyyy-MM形式)
-//	 * @param model モデル
-//	 * @return 遷移先
-//	 */
-//	@GenerateToken
-//	@RequestMapping(value=SHOW_URI, method=RequestMethod.GET)
-//	public String show(Model model) {
-//		LocalDate date = DateUtils.getCurrentDate();
-//		return show(DateUtils.convert(date, DateTimeFormat.UUUU_MM), model);
-//	}
-//
+	/**
+	 * 初期表示を行います。
+	 *
+	 * @param month 年月(yyyy-MM形式)
+	 * @param model モデル
+	 * @return 遷移先
+	 */
+	@GenerateToken
+	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
+	public String showAll(Model model) {
+		LocalDate date = DateUtils.getCurrentDate();
+		return showAll(DateUtils.convert(date, DateTimeFormat.UUUU_MM), model);
+	}
+
 	/**
 	 * 指定年月の勤務時間を表示します。
 	 *
@@ -71,8 +74,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 * @param model モデル
 	 * @return 遷移先
 	 */
-	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
-	public String showAll( String month, Model model) {
+	@RequestMapping(value=ROOT_URI + "{month}", method=RequestMethod.GET)
+	public String showAll(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
 
 		String userId = getLoginUserId();
 		LocalDate showMonthDate = DateUtils.getCurrentDate();
@@ -92,7 +95,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 	@GenerateToken
 	@RequestMapping(value=INPUT_URI, method=RequestMethod.GET)
-	public String show(String date, Model model){
+	public String show(@DateValid(pattern="uuuu-MM-dd") @PathVariable String date, Model model){
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
@@ -121,6 +124,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 	@CheckToken
 	@GenerateToken
 	@RequestMapping(value=UPDATE_URI, method=RequestMethod.POST)
+//	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 		//入力チェック。
 		if(bindingResult.hasErrors()){
@@ -150,7 +154,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		attributes.addFlashAttribute("result", "登録しました。");
 		String param = DateUtils.convert(DateUtils.convertToLocalDate(form.getWorkDate()), DateTimeFormat.UUUU_MM);
-		attributes.addAttribute("month", param);
-		return "redirect:" + FUNCTION_URI + ROOT_URI;
+//		attributes.addAttribute("month", param);
+//		return "redirect:" + FUNCTION_URI + ROOT_URI;
+		return "redirect:" + FUNCTION_URI + ROOT_URI + param;
 	}
 }
