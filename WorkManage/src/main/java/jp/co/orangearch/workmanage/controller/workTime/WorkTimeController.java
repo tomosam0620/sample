@@ -124,7 +124,6 @@ public class WorkTimeController extends AbstractWorkManageController{
 	@CheckToken
 	@GenerateToken
 	@RequestMapping(value=UPDATE_URI, method=RequestMethod.POST)
-//	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 		//入力チェック。
 		if(bindingResult.hasErrors()){
@@ -154,8 +153,6 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		attributes.addFlashAttribute("result", "登録しました。");
 		String param = DateUtils.convert(DateUtils.convertToLocalDate(form.getWorkDate()), DateTimeFormat.UUUU_MM);
-//		attributes.addAttribute("month", param);
-//		return "redirect:" + FUNCTION_URI + ROOT_URI;
 		return "redirect:" + FUNCTION_URI + ROOT_URI + param;
 	}
 }
