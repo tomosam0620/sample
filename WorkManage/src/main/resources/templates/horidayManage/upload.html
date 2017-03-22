@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello Thymeleaf</title>
+	<div th:replace="common/common::header"></div>
+  </head>
+  <body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<ul>
+				<li th:each="error : ${messages}">
+					<span th:text="${error}">Error message</span>
+				</li>
+			</ul>
+			<form method="post" enctype="multipart/form-data" th:action="@{/admin/horidayManage/handle}">
+				<div class="form-group">
+					<label for="fileData" class="col-sm-2 control-label">ファイル</label>
+					<input name="fileData" type="file" />
+					<input type="hidden" th:name="token" th:value="${token}"></input>
+					<input type="submit" />
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

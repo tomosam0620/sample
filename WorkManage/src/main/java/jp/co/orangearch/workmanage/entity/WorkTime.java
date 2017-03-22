@@ -15,41 +15,41 @@ import jp.co.orangearch.workmanage.entity.listener.WorkTimeListener;
  */
 @Entity(listener = WorkTimeListener.class)
 @Table(name = "WORK_TIME")
-public class WorkTime extends TableSuffix{
+public class WorkTime extends TableSuffix {
 
     /** ユーザーID */
     @Id
     @Column(name = "USER_ID")
     String userId;
 
-    /**  */
+    /** 日付 */
     @Id
     @Column(name = "WORK_DATE")
     LocalDate workDate;
 
-    /**  */
+    /** 勤務帯 */
     @Column(name = "WORK_TIME_TYPE")
     Integer workTimeType;
 
-    /**  */
+    /** 出社時刻 */
     @Column(name = "START_TIME")
     LocalTime startTime;
 
-    /**  */
+    /** 退社時刻 */
     @Column(name = "END_TIME")
     LocalTime endTime;
 
-    /**  */
+    /** 出勤コード */
     @Column(name = "ATTENDANCE_CODE")
     Integer attendanceCode;
 
-    /**  */
+    /** 備考 */
     @Column(name = "NOTES")
     String notes;
 
-    /**  */
-    @Column(name = "BUSINESS_DAY_FLAG")
-    Integer businessDayFlag;
+    /** 休日タイプ */
+    @Column(name = "HORIDAY_TYPE")
+    Integer horidayType;
 
     /** 
      * Returns the userId.
@@ -178,21 +178,21 @@ public class WorkTime extends TableSuffix{
     }
 
     /** 
-     * Returns the businessDayFlag.
+     * Returns the horidayType.
      * 
-     * @return the businessDayFlag
+     * @return the horidayType
      */
-    public Integer getBusinessDayFlag() {
-        return businessDayFlag;
+    public Integer getHoridayType() {
+        return horidayType;
     }
 
     /** 
-     * Sets the businessDayFlag.
+     * Sets the horidayType.
      * 
-     * @param businessDayFlag the businessDayFlag
+     * @param horidayType the horidayType
      */
-    public void setBusinessDayFlag(Integer businessDayFlag) {
-        this.businessDayFlag = businessDayFlag;
+    public void setHoridayType(Integer horidayType) {
+        this.horidayType = horidayType;
     }
 
 }

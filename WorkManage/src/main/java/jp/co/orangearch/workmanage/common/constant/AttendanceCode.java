@@ -1,11 +1,14 @@
 package jp.co.orangearch.workmanage.common.constant;
 
+import org.seasar.doma.Domain;
+
 /**
  * 出勤コードを定義するENUMクラスです。
  *
  * @author t-otsuka
  *
  */
+@Domain(valueType = Integer.class, factoryMethod = "of")
 public enum AttendanceCode implements Values{
 	/** 有給。 */
 	PAID_VACATION(1,"有給"),
@@ -31,19 +34,34 @@ public enum AttendanceCode implements Values{
 	}
 
 	/** 値取得。 */
-	@Override
-	public String getValue(){
-		return String.valueOf(value);
+	public Integer getValue(){
+		return value;
 	}
 	
 	/** 値取得。 */
-	public Integer getKey(){
-		return value;
+	@Override
+	public String getKey(){
+		return String.valueOf(value);
 	}
 	
 	/** テキスト取得。 */
 	@Override
 	public String getText(){
 		return text;
+	}
+	
+	/**
+	 * domain用ファクトリメソッド。
+	 * valueからインスタンスを返します。
+	 * @param value 値
+	 * @return AttendanceCode
+	 */
+	public static AttendanceCode of(Integer value){
+		 for(AttendanceCode item : values()) {
+			if (item.getValue().equals(value)) {
+				return item;
+			}
+		 }
+		 return null;
 	}
 }

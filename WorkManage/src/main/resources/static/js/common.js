@@ -6,22 +6,6 @@ $(function() {
 	});
 });
 
-//$(function() {
-//	$('.timepicker').timepicker({
-////	    format: 'HH:mm',
-//	    template: 'modal',
-////	    minuteStep: 1,
-////	    stepping: 1,
-//	    showMeridian: false,
-//		autoclose: true,
-//		
-//		minuteStep: 1,
-//		showInputs: false,
-////        disableFocus: true
-//    });
-//});
-
-
 $(function(){
 	$('.timepicker').timepicker({
 		minuteStep: 1,
@@ -30,3 +14,10 @@ $(function(){
 		showMeridian: false
 	});
 });
+
+$(function(){
+	$('.selectMonth').change(function(){
+		window.location.href = $(this).val();
+	});
+});
+

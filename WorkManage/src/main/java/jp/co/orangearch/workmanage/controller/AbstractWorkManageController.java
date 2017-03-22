@@ -36,10 +36,19 @@ import jp.co.orangearch.workmanage.service.LoginUserInfo;
 @ControllerAdvice
 abstract public class AbstractWorkManageController {
 
+	/** アプリケーションロガー */
+	private static final Logger logger = LoggerFactory.getLogger(LogFileMarker.APP);
+	
+	
+	/** forward */
+	protected static final String FORWARD_ACTION = "forward:";
+	
+	/** redirect */
+	protected static final String REDIRECT_ACTION = "redirect:";
+	
 	@Autowired
 	private MessageSource messages;
 
-	private static final Logger logger = LoggerFactory.getLogger(LogFileMarker.APP);
 
 
 	/**
@@ -83,11 +92,11 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(BussinessException.class)
-    public ModelAndView handleBussinessException(Exception e) {
-        // 例外ハンドリングを行う
+	public ModelAndView handleBussinessException(Exception e) {
+		// 例外ハンドリングを行う
 		BussinessException exception = (BussinessException)e;
 		return handleBusinessException(exception.getMessageId(), exception.getFillChars(), exception.getMessage(), e);
-    }
+	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -106,10 +115,10 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(OptimisticLockingFailureException.class)
-    public ModelAndView handleOptimisticLockingFailureException(Exception e) {
-        // 例外ハンドリングを行う
+	public ModelAndView handleOptimisticLockingFailureException(Exception e) {
+		// 例外ハンドリングを行う
 		return handleBusinessException(MessageId.M002, null, null, e);
-    }
+	}
 
 	/**
 	 * システム例外の共通ハンドリングを行います。
@@ -124,10 +133,10 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(SystemException.class)
-    public ModelAndView handleSystemException(Exception e) {
+	public ModelAndView handleSystemException(Exception e) {
 		SystemException exception = (SystemException)e;
-        return handleException(exception.getMessageId(), exception.getFillChars(), e);
-    }
+		return handleException(exception.getMessageId(), exception.getFillChars(), e);
+	}
 
 	/**
 	 * その他例外の共通ハンドリングを行います。
@@ -143,9 +152,9 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(Exception.class)
-    public ModelAndView handleOtherException(Exception e) {
-        return handleException(MessageId.S003, null, e);
-    }
+	public ModelAndView handleOtherException(Exception e) {
+		return handleException(MessageId.S003, null, e);
+	}
 
 	/**
 	 * 業務系エラーハンドリング処理を行います。
@@ -163,8 +172,8 @@ abstract public class AbstractWorkManageController {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("message", msg);
 		mav.setViewName("error/bussinessError");
-        logger.error("[" + (ObjectUtils.isEmpty(messageId) ? "-":messageId.getValue()) + "] [" + msg + "]", e);
-        return mav;
+		logger.error("[" + (ObjectUtils.isEmpty(messageId) ? "-":messageId.getValue()) + "] [" + msg + "]", e);
+		return mav;
 	}
 
 	/**

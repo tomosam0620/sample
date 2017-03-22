@@ -33,14 +33,14 @@ public enum WorkTimeType implements Values {
 	}
 
 	/** 値取得。 */
-	@Override
-	public String getValue(){
-		return String.valueOf(value);
+	public Integer getValue(){
+		return value;
 	}
 	
 	/** 値取得。 */
-	public Integer getKey(){
-		return value;
+	@Override
+	public String getKey(){
+		return String.valueOf(value);
 	}
 	
 	/** テキスト取得。 */

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jp.co.orangearch.workmanage.common.component.CalendarComponent;
 import jp.co.orangearch.workmanage.common.constant.MessageId;
 import jp.co.orangearch.workmanage.common.exception.SystemException;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
@@ -32,6 +33,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	@Autowired
 	private WorkTimeDao workTimeDao;
 
+	@Autowired
+	private CalendarComponent calendarComponent;
+
 	@Override
 	public Optional<WorkTime> select(String userId, LocalDate date) {
 		return workTimeDao.selectByIdAndDate(userId, date, SelectOptions.get());
@@ -48,7 +52,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		for(int i= 1; i <lastDate +1; i++){
 			WorkTime newItem = new WorkTime();
 			newItem.setWorkDate(LocalDate.of(date.getYear(), date.getMonth(), i));
-			newItem.setBusinessDayFlag(DateUtils.getBusinessDayFlag(newItem.getWorkDate()));
+			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()).getValue());
 
 			for(WorkTime item : registedList){
 				if(item.getWorkDate().getDayOfMonth() == i){

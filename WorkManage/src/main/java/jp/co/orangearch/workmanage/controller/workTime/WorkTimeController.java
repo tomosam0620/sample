@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.orangearch.workmanage.common.component.CalendarComponent;
+import jp.co.orangearch.workmanage.common.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
@@ -22,7 +24,7 @@ import jp.co.orangearch.workmanage.common.validator.DateValid;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.entity.WorkTime;
-import jp.co.orangearch.workmanage.form.WorkTimeForm;
+import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
 
@@ -52,6 +54,9 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 	@Autowired
 	private WorkTimeService workTimeService;
+
+	@Autowired
+	private CalendarComponent calendarComponent;
 
 	/**
 	 * 初期表示を行います。
@@ -99,7 +104,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
-			form.setAttendanceCode(workTime.get().getAttendanceCode());
+//			form.setAttendanceCodeAsEnum(workTime.get().getAttendanceCode());
+			form.setAttendanceCodeAsEnum(AttendanceCode.of(workTime.get().getAttendanceCode()));
 			form.setEndTime(workTime.get().getEndTime());
 			form.setNote(workTime.get().getNotes());
 			form.setStartTime(workTime.get().getStartTime());
@@ -143,9 +149,10 @@ public class WorkTimeController extends AbstractWorkManageController{
 		entity.setWorkDate(form.getWorkDateAsLocalDate());
 		entity.setStartTime(form.getStartTimeAsLocalTime());
 		entity.setEndTime(form.getEndTimeAsLocalTime());
-		entity.setAttendanceCode(form.getAttendanceCode());
+//		entity.setAttendanceCode(form.getAttendanceCodeAsEnum());
+		entity.setAttendanceCode(form.getAttendanceCodeAsEnum().getValue());
 		entity.setNotes(form.getNote());
-		entity.setBusinessDayFlag(DateUtils.getBusinessDayFlag(form.getWorkDateAsLocalDate()));
+		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()).getValue());
 		entity.setVersion(form.getVersion());
 
 		//更新

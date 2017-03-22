@@ -1,7 +1,6 @@
 package jp.co.orangearch.workmanage.common.util;
 
 import java.sql.Date;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -280,55 +279,6 @@ public class DateUtils {
 		int lastDayOfMonth = LocalDate.of(targetDay.getYear(), targetDay.getMonth(), 1).lengthOfMonth();
 		return LocalDate.of(targetDay.getYear(), targetDay.getMonth(), lastDayOfMonth);
 	}
-
-
-	/**
-	 * 営業日フラグ取得
-	 *
-	 * @return 営業日フラグ(1：営業日／2：土曜日／3：休日(日曜日、祝日)）
-	 */
-	public static int getBusinessDayFlag(LocalDate date){
-		int businessDayFlag = 1;
-		if(DayOfWeek.SUNDAY.equals(date.getDayOfWeek())){
-			businessDayFlag = 3;
-		} else if(DayOfWeek.SATURDAY.equals(date.getDayOfWeek())){
-			businessDayFlag = 2;
-		}
-		//TODO:祝日カレンダー対応
-		return businessDayFlag;
-	}
-	
-	/**
-	 * 休日判定。
-	 *
-	 * @param date 評価日(yyyy-MM-dd)
-	 * @return true(休日)／false(営業日)
-	 */
-	public static boolean isHoliday(String date){
-		LocalDate targetDate = convertToLocalDate(date);
-		return isHoliday(targetDate);
-	}
-
-	/**
-	 * 休日判定。
-	 *
-	 * @param date 評価日
-	 * @return true(休日)／false(営業日)
-	 */
-	public static boolean isHoliday(LocalDate date){
-		DayOfWeek dayOfWeek = date.getDayOfWeek();
-		return !(DayOfWeek.SATURDAY.equals(dayOfWeek) || DayOfWeek.SUNDAY.equals(dayOfWeek));
-
-	}
-
-//	/**
-//	 * 現在日付取得
-//	 *
-//	 * @return 現在日付
-//	 */
-//	public static Date getCurrentDate(){
-//		return Date.valueOf(LocalDate.now());
-//	}
 
 	/**
 	 * 現在日付取得
