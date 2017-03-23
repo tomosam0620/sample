@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import jp.co.orangearch.workmanage.common.constant.LogFileMarker;
+import jp.co.orangearch.workmanage.domain.constant.LogFileMarker;
 
 /**
  * ログ出力を行うinterceptorです。

@@ -25,7 +25,7 @@
 				<div class="form-group">
 					<label for="workDate" class="col-sm-2 control-label">日付</label>
 					<div class="col-sm-2">
-						<input type="text" readonly="true" class="form-control datepicker" id="workDate" placeholder="yyyy-MM-dd" th:field="*{workDate}"></input>
+						<input type="text" readonly="true" class="form-control" id="workDate" placeholder="yyyy-MM-dd" th:field="*{workDate}"></input>
 						<span th:if="${#fields.hasErrors('workDate')}" class="text-danger" th:errors="*{workDate}">Error</span>
 					</div>
 				</div>
@@ -33,7 +33,7 @@
 					<label for="workTimeType" class="col-sm-2 control-label">勤務帯</label>
 					<div class="col-sm-2">
 					<select class="form-control col-sm-2 " id="workTimeType" th:field="*{workTimeType}">
-						<option th:each="t : ${T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).values()}"
+						<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.WorkTimeType).values()}"
 								th:value="${t.getValue()}"
 								th:text="${t.getText()}"
 								th:selected="${t.getValue()} == 3"></option>
@@ -46,7 +46,7 @@
 					<div class="col-sm-2">
 
 						<select class="form-control col-sm-2 " id="attendanceCode" th:field="*{attendanceCode}">
-							<option th:each="t : ${T(jp.co.orangearch.workmanage.common.constant.AttendanceCode).values()}"
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.AttendanceCode).values()}"
 									th:value="${t.getValue()}"
 									th:text="${t.getText()}"
 									th:selected="${t.getValue()} == *{attendanceCode}"></option>

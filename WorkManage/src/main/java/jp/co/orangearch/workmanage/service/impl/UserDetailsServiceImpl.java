@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import jp.co.orangearch.workmanage.dao.UserDao;
-import jp.co.orangearch.workmanage.entity.User;
+import jp.co.orangearch.workmanage.domain.dao.UserDao;
+import jp.co.orangearch.workmanage.domain.entity.User;
 import jp.co.orangearch.workmanage.service.LoginUserInfo;
 
 /**

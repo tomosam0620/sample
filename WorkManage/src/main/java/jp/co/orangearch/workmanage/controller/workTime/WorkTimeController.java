@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jp.co.orangearch.workmanage.common.component.CalendarComponent;
-import jp.co.orangearch.workmanage.common.constant.AttendanceCode;
-import jp.co.orangearch.workmanage.common.util.DateUtils;
-import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.DateValid;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
+import jp.co.orangearch.workmanage.component.CalendarComponent;
+import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
-import jp.co.orangearch.workmanage.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
