@@ -1,4 +1,4 @@
-package jp.co.orangearch.workmanage.form;
+package jp.co.orangearch.workmanage.form.workTime;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.util.StringUtils;
 
+import jp.co.orangearch.workmanage.common.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.common.constant.WorkTimeType;
 import jp.co.orangearch.workmanage.common.util.DateUtils;
 import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
@@ -33,24 +33,25 @@ public class WorkTimeForm implements Serializable{
 
 	/** 勤務日付。 */
 	@NotEmpty
-	@DateValid(pattern="uuuu-MM-dd", message="yyyy-MM-dd")
+	@DateValid(pattern="uuuu-MM-dd", message="{V001}")
 	private String workDate;
 
 	/** 勤務帯。 */
-//	@NotNull
-	@EnumValue(type=WorkTimeType.class, exclude={"1","5"})
+	@NotNull
+	@EnumValue(type=WorkTimeType.class)
 	private String workTimeType;
 
+	/** 出勤コード */
 	@NotNull
-	@Range(min = 1, max=4)
-	private Integer attendanceCode;
+	@EnumValue(type=AttendanceCode.class)
+	private String attendanceCode;
 
 	/** 出社時刻。 */
-	@DateValid(pattern="HH:mm", message="HH:mm")
+	@DateValid(pattern="H:m", message="{V002}")
 	private String startTime;
 
 	/** 退社時刻。 */
-	@DateValid(pattern="HH:mm", message="HH:mm")
+	@DateValid(pattern="H:m", message="{V002}")
 	private String endTime;
 
 	/** 備考。 */
@@ -79,12 +80,20 @@ public class WorkTimeForm implements Serializable{
 		workDate = value;
 	}
 
-	public Integer getAttendanceCode(){
+	public String getAttendanceCode(){
 		return attendanceCode;
 	}
 
-	public void setAttendanceCode(Integer value){
+	public AttendanceCode getAttendanceCodeAsEnum(){
+		return AttendanceCode.of(Integer.parseInt(attendanceCode));
+	}
+
+	public void setAttendanceCode(String value){
 		attendanceCode = value;
+	}
+
+	public void setAttendanceCodeAsEnum(AttendanceCode value){
+		attendanceCode = value.getKey();
 	}
 
 	public String getStartTime(){

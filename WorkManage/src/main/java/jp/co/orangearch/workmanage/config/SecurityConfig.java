@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.formLogin()
 //            .loginProcessingUrl("/login")   // 認証処理のパス
             .loginPage("/login")            // ログインフォームのパス
-            .defaultSuccessUrl("/workTime/")     // 認証成功時の遷移先
+            .defaultSuccessUrl("/workTime/", true)     // 認証成功時の遷移先
             .usernameParameter("username")
             .passwordParameter("password")  // ユーザー名、パスワードのパラメータ名
             .permitAll();

@@ -29,12 +29,12 @@ public enum MessageId implements Values{
 	}
 
 	/** 値取得。 */
-	@Override
 	public String getValue(){
 		return value;
 	}
 
 	/** 値取得。 */
+	@Override
 	public String getKey(){
 		return value;
 	}

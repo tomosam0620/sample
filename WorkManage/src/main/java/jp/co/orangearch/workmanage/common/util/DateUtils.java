@@ -1,7 +1,6 @@
 package jp.co.orangearch.workmanage.common.util;
 
 import java.sql.Date;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,20 +18,36 @@ public class DateUtils {
 	public enum DateTimeFormat{
 		/** yyyy/MM/dd */
 		YYYY_MM_DD("uuuu/MM/dd"),
+		/** yyyy/M/d */
+		YYYY_M_D("uuuu/M/d"),
 		/** uuuu-MM-dd HH:mm:ss.SSS */
 		UUUU_MM_DD_HH_MM_SS_SSS("uuuu-MM-dd HH:mm:ss.SSS"),
+		/** uuuu-M-d H:m:s.S */
+		UUUU_M_D_H_M_S_S("uuuu-M-d H:m:s.S"),
 		/** uuuu-MM-dd HH:mm:ss */
 		UUUU_MM_DD_HH_MM_SS("uuuu-MM-dd HH:mm:ss"),
+		/** uuuu-M-d H:mm:s */
+		UUUU_M_D_H_M_S("uuuu-M-d H:m:s"),
 		/** uuuu-MM-dd */
 		UUUU_MM_DD("uuuu-MM-dd"),
+		/** uuuu-M-d */
+		UUUU_M_D("uuuu-M-d"),
 		/** uuuu-MM */
 		UUUU_MM("uuuu-MM"),
+		/** uuuu-M */
+		UUUU_M("uuuu-M"),
 		/** uuuu */
 		UUUU("uuuu"),
 		/** HH:mm:ss.SSS */
 		HH_MM_SS_SSS("HH:mm:ss.SSS"),
 		/** HH:mm:ss */
 		HH_MM_SS("HH:mm:ss"),
+		/** H:m:s */
+		H_M_S_S("H:m:s"),
+		/** H:m:s */
+		H_M_S("H:m:s"),
+		/** H:m */
+		H_M("H:m"),
 		/** HH:mm */
 		HH_MM("HH:mm");
 
@@ -177,7 +192,7 @@ public class DateUtils {
 	 * @return 時刻
 	 */
 	public static LocalTime convertToLocalTime(String time){
-		return convertToLocalTime(time, DateTimeFormat.HH_MM_SS);
+		return convertToLocalTime(time, DateTimeFormat.H_M_S);
 	}
 
 	/**
@@ -185,7 +200,7 @@ public class DateUtils {
 	 * <br>
 	 * 文字列を{@link LocalTime}型に変換します。
 	 *
-	 * @param time 時刻文字列(HH:mm:ss)
+	 * @param time 時刻文字列
 	 * @param pattern 書式
 	 * @return 時刻
 	 */
@@ -281,55 +296,6 @@ public class DateUtils {
 		return LocalDate.of(targetDay.getYear(), targetDay.getMonth(), lastDayOfMonth);
 	}
 
-
-	/**
-	 * 営業日フラグ取得
-	 *
-	 * @return 営業日フラグ(1：営業日／2：土曜日／3：休日(日曜日、祝日)）
-	 */
-	public static int getBusinessDayFlag(LocalDate date){
-		int businessDayFlag = 1;
-		if(DayOfWeek.SUNDAY.equals(date.getDayOfWeek())){
-			businessDayFlag = 3;
-		} else if(DayOfWeek.SATURDAY.equals(date.getDayOfWeek())){
-			businessDayFlag = 2;
-		}
-		//TODO:祝日カレンダー対応
-		return businessDayFlag;
-	}
-	
-	/**
-	 * 休日判定。
-	 *
-	 * @param date 評価日(yyyy-MM-dd)
-	 * @return true(休日)／false(営業日)
-	 */
-	public static boolean isHoliday(String date){
-		LocalDate targetDate = convertToLocalDate(date);
-		return isHoliday(targetDate);
-	}
-
-	/**
-	 * 休日判定。
-	 *
-	 * @param date 評価日
-	 * @return true(休日)／false(営業日)
-	 */
-	public static boolean isHoliday(LocalDate date){
-		DayOfWeek dayOfWeek = date.getDayOfWeek();
-		return !(DayOfWeek.SATURDAY.equals(dayOfWeek) || DayOfWeek.SUNDAY.equals(dayOfWeek));
-
-	}
-
-//	/**
-//	 * 現在日付取得
-//	 *
-//	 * @return 現在日付
-//	 */
-//	public static Date getCurrentDate(){
-//		return Date.valueOf(LocalDate.now());
-//	}
-
 	/**
 	 * 現在日付取得
 	 *
@@ -368,7 +334,9 @@ public class DateUtils {
 		try{
 			switch(pattern){
 			case YYYY_MM_DD:
+			case YYYY_M_D:
 			case UUUU_MM_DD:
+			case UUUU_M_D:
 				LocalDate.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			case UUUU_MM:
@@ -385,11 +353,15 @@ public class DateUtils {
 			}
 			case UUUU_MM_DD_HH_MM_SS_SSS:
 			case UUUU_MM_DD_HH_MM_SS:
+			case UUUU_M_D_H_M_S_S:
 				LocalDate.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			case HH_MM:
+			case H_M:
 			case HH_MM_SS:
+			case H_M_S:
 			case HH_MM_SS_SSS:
+			case H_M_S_S:
 				LocalTime.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			default:

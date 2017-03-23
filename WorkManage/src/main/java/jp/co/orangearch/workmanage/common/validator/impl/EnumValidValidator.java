@@ -46,7 +46,7 @@ public class EnumValidValidator implements ConstraintValidator<EnumValue, String
 		}
 
 
-		return Arrays.asList(pattern.getEnumConstants()).stream().anyMatch(v -> v.getValue().equals(value));
+		return Arrays.asList(pattern.getEnumConstants()).stream().anyMatch(v -> v.getKey().equals(value));
 	}
 
 }

@@ -2,18 +2,21 @@ package jp.co.orangearch.workmanage.controller;
 
 import java.util.Locale;
 
+import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import jp.co.orangearch.workmanage.common.constant.LogFileMarker;
@@ -33,10 +36,19 @@ import jp.co.orangearch.workmanage.service.LoginUserInfo;
 @ControllerAdvice
 abstract public class AbstractWorkManageController {
 
+	/** アプリケーションロガー */
+	private static final Logger logger = LoggerFactory.getLogger(LogFileMarker.APP);
+	
+	
+	/** forward */
+	protected static final String FORWARD_ACTION = "forward:";
+	
+	/** redirect */
+	protected static final String REDIRECT_ACTION = "redirect:";
+	
 	@Autowired
 	private MessageSource messages;
 
-	private static final Logger logger = LoggerFactory.getLogger(LogFileMarker.APP);
 
 
 	/**
@@ -80,12 +92,18 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(BussinessException.class)
-    public ModelAndView handleBussinessException(Exception e) {
-        // 例外ハンドリングを行う
+	public ModelAndView handleBussinessException(Exception e) {
+		// 例外ハンドリングを行う
 		BussinessException exception = (BussinessException)e;
 		return handleBusinessException(exception.getMessageId(), exception.getFillChars(), exception.getMessage(), e);
-    }
+	}
 
+	@ExceptionHandler(ConstraintViolationException.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String handlConstraintViolationException(Exception e){
+		return e.getMessage();
+	}
+	
 	/**
 	 * lock例外の共通ハンドリングを行います。
 	 * <p>
@@ -97,10 +115,10 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(OptimisticLockingFailureException.class)
-    public ModelAndView handleOptimisticLockingFailureException(Exception e) {
-        // 例外ハンドリングを行う
+	public ModelAndView handleOptimisticLockingFailureException(Exception e) {
+		// 例外ハンドリングを行う
 		return handleBusinessException(MessageId.M002, null, null, e);
-    }
+	}
 
 	/**
 	 * システム例外の共通ハンドリングを行います。
@@ -115,10 +133,10 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(SystemException.class)
-    public ModelAndView handleSystemException(Exception e) {
+	public ModelAndView handleSystemException(Exception e) {
 		SystemException exception = (SystemException)e;
-        return handleException(exception.getMessageId(), exception.getFillChars(), e);
-    }
+		return handleException(exception.getMessageId(), exception.getFillChars(), e);
+	}
 
 	/**
 	 * その他例外の共通ハンドリングを行います。
@@ -134,9 +152,9 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	@ExceptionHandler(Exception.class)
-    public ModelAndView handleOtherException(Exception e) {
-        return handleException(MessageId.S003, null, e);
-    }
+	public ModelAndView handleOtherException(Exception e) {
+		return handleException(MessageId.S003, null, e);
+	}
 
 	/**
 	 * 業務系エラーハンドリング処理を行います。
@@ -154,8 +172,8 @@ abstract public class AbstractWorkManageController {
 		ModelAndView mav = new ModelAndView();
 		mav.addObject("message", msg);
 		mav.setViewName("error/bussinessError");
-        logger.error("[" + messageId.getValue() + "] [" + msg + "]", e);
-        return mav;
+		logger.error("[" + (ObjectUtils.isEmpty(messageId) ? "-":messageId.getValue()) + "] [" + msg + "]", e);
+		return mav;
 	}
 
 	/**
@@ -191,18 +209,24 @@ abstract public class AbstractWorkManageController {
 	 * @return メッセージ
 	 */
 	private String getMessage(MessageId messageId, String[] fillchar, String defaultMessage, Exception e){
-		String msg = messages.getMessage(messageId.getValue(), fillchar, defaultMessage, Locale.getDefault());
-		if(StringUtils.isEmpty(msg)){
-			throw new SystemException(MessageId.S003, e);
+		String msg = defaultMessage;
+		String level = "ERROR";
+		if(StringUtils.isEmpty(defaultMessage)){
+			msg = messages.getMessage(messageId.getValue(), fillchar, defaultMessage, Locale.getDefault());
+			if(StringUtils.isEmpty(msg)){
+				throw new SystemException(MessageId.S003, e);
+			}
+	
+			String[] messages = msg.split("\\|");
+			if(messages.length < 2){
+				throw new SystemException(MessageId.S003, e);
+			}
+			level = messages[0];
+			msg = messages[1];
 		}
 
-		String[] messages = msg.split("\\|");
-		if(messages.length < 2){
-			throw new SystemException(MessageId.S003, e);
-		}
-
-		MDC.put("LEVEL", messages[0]);
-		return messages[1];
+		MDC.put("LEVEL", level);
+		return msg;
 	}
 
 	/**

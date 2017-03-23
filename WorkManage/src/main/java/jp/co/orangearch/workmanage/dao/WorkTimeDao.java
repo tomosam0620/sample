@@ -35,7 +35,6 @@ public interface WorkTimeDao {
 	 * @return 勤務情報のリスト
 	 */
 	@Select
-//	WorkTime selectByIdAndDate(String userId, Date date, SelectOptions options);
 	Optional<WorkTime> selectByIdAndDate(String userId, LocalDate date, SelectOptions options);
 
 
@@ -55,7 +54,6 @@ public interface WorkTimeDao {
 	int insert(WorkTime entity);
 
 	@Update
-//	@Update(excludeNull=true)
 	int update(WorkTime entity);
 
 }
