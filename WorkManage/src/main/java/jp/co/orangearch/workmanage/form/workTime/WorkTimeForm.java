@@ -33,7 +33,7 @@ public class WorkTimeForm implements Serializable{
 
 	/** 勤務日付。 */
 	@NotEmpty
-	@DateValid(pattern="uuuu-MM-dd", message="yyyy-MM-dd")
+	@DateValid(pattern="uuuu-MM-dd", message="{V001}")
 	private String workDate;
 
 	/** 勤務帯。 */
@@ -47,11 +47,11 @@ public class WorkTimeForm implements Serializable{
 	private String attendanceCode;
 
 	/** 出社時刻。 */
-	@DateValid(pattern="HH:mm", message="HH:mm")
+	@DateValid(pattern="H:m", message="{V002}")
 	private String startTime;
 
 	/** 退社時刻。 */
-	@DateValid(pattern="HH:mm", message="HH:mm")
+	@DateValid(pattern="H:m", message="{V002}")
 	private String endTime;
 
 	/** 備考。 */

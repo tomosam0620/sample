@@ -14,7 +14,7 @@ public class HoridayCsvBean {
     /** 日付 */
 	@CsvColumn(number=1)
 	@NotEmpty
-	@DateValid(pattern="uuuu-MM-dd")
+	@DateValid(pattern="uuuu/M/d", message="{V003}")
 	String date;
 
     /** 祝日名 */
@@ -24,43 +24,43 @@ public class HoridayCsvBean {
 
 	public HoridayCsvBean(){
 	}
-	
-    /** 
+
+    /**
      * Returns the date.
-     * 
+     *
      * @return the date
      */
     public String getDate() {
         return date;
     }
 
-    /** 
+    /**
      * Sets the date.
-     * 
+     *
      * @param date the date
      */
     public void setDate(String date) {
         this.date = date;
     }
 
-    /** 
+    /**
      * Returns the horidayName.
-     * 
+     *
      * @return the horidayName
      */
     public String getHoridayName() {
         return horidayName;
     }
 
-    /** 
+    /**
      * Sets the horidayName.
-     * 
+     *
      * @param horidayName the horidayName
      */
     public void setHoridayName(String horidayName) {
         this.horidayName = horidayName;
     }
-    
+
     public String toString(){
     	return (StringUtils.isEmpty(date)? "" : date.toString()) + ":" + horidayName;
     }

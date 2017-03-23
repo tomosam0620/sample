@@ -2,6 +2,12 @@ package jp.co.orangearch.workmanage.common.component.impl;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +19,9 @@ import jp.co.orangearch.workmanage.dao.HoridayDao;
 import jp.co.orangearch.workmanage.entity.Horiday;
 
 /**
- * カレンダーコンポーネントのIFクラスです。
+ * カレンダーコンポーネントクラスです。
+ * <br>
+ * 起動時に休日テーブルの中身を全てキャッシュします。
  *
  * @author t-otsuka
  *
@@ -23,7 +31,9 @@ public class CalendarComponentImpl implements CalendarComponent{
 
 	@Autowired
 	private HoridayDao horidayDao;
-	
+
+	private static Map<LocalDate, Horiday> cache = new HashMap<LocalDate, Horiday>();
+
 	/**
 	 * 休日種別を取得します。
 	 *
@@ -31,11 +41,11 @@ public class CalendarComponentImpl implements CalendarComponent{
 	 * @return 休日種別{@link HoridayType}
 	 */
 	public HoridayType getHoridayType(LocalDate date){
-		Horiday entity = horidayDao.selectById(date);
-		if(entity != null){
+		Horiday registedHoriday = cache.get(date);
+		if(registedHoriday != null){
 			return HoridayType.HORIDAY;
 		}
-		
+
 		DayOfWeek dayOfWeek = date.getDayOfWeek();
 		if(DayOfWeek.SUNDAY.equals(dayOfWeek)){
 			return HoridayType.HORIDAY;
@@ -67,4 +77,8 @@ public class CalendarComponentImpl implements CalendarComponent{
 		return HoridayType.BISUNESS_DAY.equals(horydayTime);
 	}
 
+	@PostConstruct
+	private void cache(){
+		cache = horidayDao.selectAll().stream().collect(Collectors.toMap(Horiday::getDate, UnaryOperator.identity()));
+	}
 }

@@ -20,20 +20,20 @@ import jp.co.orangearch.workmanage.common.exception.CsvHandleException;
  * CSVコンポーネントクラスです。
  * <br>
  * CSVのread/writeを行います。
- * 
+ *
  * @author t-otsuka
  */
 @Component
 public class CsvComponentImpl implements CsvComponent{
 
 	@Override
-	public <T> List<T> toBean(Class<T> clazz, InputStream stream, boolean isExistHeader) throws IOException, CsvHandleException {
+	public <T> List<T> toBean(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException {
 		List<T> list = new ArrayList<T>();
 		CsvAnnotationBeanReader<T> csvReader = null;
 		try {
 			csvReader = new CsvAnnotationBeanReader<T>(
 					clazz,
-					new InputStreamReader(stream),
+					new InputStreamReader(stream, charset),
 					CsvPreference.STANDARD_PREFERENCE);
 			// ヘッダー行の読み込み
 			csvReader.getHeader(isExistHeader);

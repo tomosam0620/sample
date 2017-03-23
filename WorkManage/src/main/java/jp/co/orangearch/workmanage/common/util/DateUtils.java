@@ -18,20 +18,36 @@ public class DateUtils {
 	public enum DateTimeFormat{
 		/** yyyy/MM/dd */
 		YYYY_MM_DD("uuuu/MM/dd"),
+		/** yyyy/M/d */
+		YYYY_M_D("uuuu/M/d"),
 		/** uuuu-MM-dd HH:mm:ss.SSS */
 		UUUU_MM_DD_HH_MM_SS_SSS("uuuu-MM-dd HH:mm:ss.SSS"),
+		/** uuuu-M-d H:m:s.S */
+		UUUU_M_D_H_M_S_S("uuuu-M-d H:m:s.S"),
 		/** uuuu-MM-dd HH:mm:ss */
 		UUUU_MM_DD_HH_MM_SS("uuuu-MM-dd HH:mm:ss"),
+		/** uuuu-M-d H:mm:s */
+		UUUU_M_D_H_M_S("uuuu-M-d H:m:s"),
 		/** uuuu-MM-dd */
 		UUUU_MM_DD("uuuu-MM-dd"),
+		/** uuuu-M-d */
+		UUUU_M_D("uuuu-M-d"),
 		/** uuuu-MM */
 		UUUU_MM("uuuu-MM"),
+		/** uuuu-M */
+		UUUU_M("uuuu-M"),
 		/** uuuu */
 		UUUU("uuuu"),
 		/** HH:mm:ss.SSS */
 		HH_MM_SS_SSS("HH:mm:ss.SSS"),
 		/** HH:mm:ss */
 		HH_MM_SS("HH:mm:ss"),
+		/** H:m:s */
+		H_M_S_S("H:m:s"),
+		/** H:m:s */
+		H_M_S("H:m:s"),
+		/** H:m */
+		H_M("H:m"),
 		/** HH:mm */
 		HH_MM("HH:mm");
 
@@ -176,7 +192,7 @@ public class DateUtils {
 	 * @return 時刻
 	 */
 	public static LocalTime convertToLocalTime(String time){
-		return convertToLocalTime(time, DateTimeFormat.HH_MM_SS);
+		return convertToLocalTime(time, DateTimeFormat.H_M_S);
 	}
 
 	/**
@@ -184,7 +200,7 @@ public class DateUtils {
 	 * <br>
 	 * 文字列を{@link LocalTime}型に変換します。
 	 *
-	 * @param time 時刻文字列(HH:mm:ss)
+	 * @param time 時刻文字列
 	 * @param pattern 書式
 	 * @return 時刻
 	 */
@@ -318,7 +334,9 @@ public class DateUtils {
 		try{
 			switch(pattern){
 			case YYYY_MM_DD:
+			case YYYY_M_D:
 			case UUUU_MM_DD:
+			case UUUU_M_D:
 				LocalDate.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			case UUUU_MM:
@@ -335,11 +353,15 @@ public class DateUtils {
 			}
 			case UUUU_MM_DD_HH_MM_SS_SSS:
 			case UUUU_MM_DD_HH_MM_SS:
+			case UUUU_M_D_H_M_S_S:
 				LocalDate.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			case HH_MM:
+			case H_M:
 			case HH_MM_SS:
+			case H_M_S:
 			case HH_MM_SS_SSS:
+			case H_M_S_S:
 				LocalTime.parse(date, DateTimeFormatter.ofPattern(pattern.getValue()).withResolverStyle(ResolverStyle.STRICT));
 				break;
 			default:

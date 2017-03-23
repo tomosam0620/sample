@@ -8,5 +8,5 @@ import jp.co.orangearch.workmanage.common.exception.CsvHandleException;
 
 public interface CsvComponent {
 
-	<T> List<T> toBean(Class<T> clazz, InputStream stream, boolean isExistHeader) throws IOException, CsvHandleException;
+	<T> List<T> toBean(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException;
 }

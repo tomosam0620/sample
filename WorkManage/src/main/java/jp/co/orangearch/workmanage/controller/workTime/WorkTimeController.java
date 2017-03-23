@@ -67,9 +67,9 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 */
 	@GenerateToken
 	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
-	public String showAll(Model model) {
+	public String init(Model model) {
 		LocalDate date = DateUtils.getCurrentDate();
-		return showAll(DateUtils.convert(date, DateTimeFormat.UUUU_MM), model);
+		return show(DateUtils.convert(date, DateTimeFormat.UUUU_MM), model);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 * @return 遷移先
 	 */
 	@RequestMapping(value=ROOT_URI + "{month}", method=RequestMethod.GET)
-	public String showAll(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
+	public String show(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
 
 		String userId = getLoginUserId();
 		LocalDate showMonthDate = DateUtils.getCurrentDate();
@@ -100,7 +100,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 	@GenerateToken
 	@RequestMapping(value=INPUT_URI, method=RequestMethod.GET)
-	public String show(@DateValid(pattern="uuuu-MM-dd") @PathVariable String date, Model model){
+	public String input(@DateValid(pattern="uuuu-MM-dd") @PathVariable String date, Model model){
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
@@ -130,7 +130,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 	@CheckToken
 	@GenerateToken
 	@RequestMapping(value=UPDATE_URI, method=RequestMethod.POST)
-	public String update(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+	public String handle(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 		//入力チェック。
 		if(bindingResult.hasErrors()){
 			model.addAttribute("workTimeForm", form);

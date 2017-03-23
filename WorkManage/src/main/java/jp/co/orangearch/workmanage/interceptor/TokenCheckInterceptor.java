@@ -72,7 +72,10 @@ public class TokenCheckInterceptor extends HandlerInterceptorAdapter {
     	GenerateToken annotation = method.getMethodAnnotation(GenerateToken.class);
     	if (annotation != null) {
     		String token = tokenHandler.generate(request.getSession().getId(), request);
-    		modelAndView.addObject(TOKEN_NAME, token);
+    		String viewName = modelAndView.getViewName();
+    		if(!viewName.contains("redirect:")){
+        		modelAndView.addObject(TOKEN_NAME, token);
+    		}
     	}
 
     	super.postHandle(request, response, handler, modelAndView);
