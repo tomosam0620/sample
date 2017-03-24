@@ -2,7 +2,7 @@ package jp.co.orangearch.workmanage.service;
 
 import org.springframework.security.core.authority.AuthorityUtils;
 
-import jp.co.orangearch.workmanage.entity.User;
+import jp.co.orangearch.workmanage.domain.entity.User;
 
 /**
  * ログインユーザ情報を保持するクラスです。

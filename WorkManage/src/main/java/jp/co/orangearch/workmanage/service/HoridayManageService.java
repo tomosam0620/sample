@@ -3,8 +3,8 @@ package jp.co.orangearch.workmanage.service;
 import java.io.InputStream;
 import java.util.List;
 
-import jp.co.orangearch.workmanage.common.exception.CsvHandleException;
-import jp.co.orangearch.workmanage.entity.Horiday;
+import jp.co.orangearch.workmanage.domain.entity.Horiday;
+import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
 
 public interface HoridayManageService {
 

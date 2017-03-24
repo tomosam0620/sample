@@ -3,7 +3,8 @@ package jp.co.orangearch.workmanage.common.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
+import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 
 public class DateUtilsTest {
 

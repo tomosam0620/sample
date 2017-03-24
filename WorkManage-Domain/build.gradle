@@ -1,0 +1,10 @@
+apply plugin: 'org.springframework.boot'
+
+processResources.destinationDir = compileJava.destinationDir
+compileJava.dependsOn processResources
+
+dependencies {
+	compile('org.seasar.doma.boot:doma-spring-boot-starter:1.0.2')
+	runtime('mysql:mysql-connector-java:5.1.41')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+}

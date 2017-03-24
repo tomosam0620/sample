@@ -1,0 +1,52 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+
+    repositories {
+       mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.8.2'
+    }
+
+    version = '1.0'
+
+    jar {
+        manifest.attributes provider: 'WORK MANAGE'
+    }
+    
+	buildscript {
+		ext {
+			springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+		}
+		repositories {
+			mavenCentral()
+			maven { url "https://repo.spring.io/snapshot" }
+			maven { url "https://repo.spring.io/milestone" }
+		}
+		dependencies {
+			classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		}
+	}
+	
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	
+	version = '0.0.1-SNAPSHOT'
+	sourceCompatibility = 1.8
+	
+	repositories {
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+	}
+
+	
+	def defaultEncoding = 'UTF-8'
+	compileJava {
+		options.encoding = defaultEncoding  // src/main/java配下の*.javaに影響
+											// JAVA_OPTS=-Dfile.encoding で代替可能
+	}
+
+}

@@ -8,8 +8,8 @@ import javax.validation.ConstraintValidatorContext;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import jp.co.orangearch.workmanage.common.constant.Values;
 import jp.co.orangearch.workmanage.common.validator.EnumValue;
+import jp.co.orangearch.workmanage.domain.constant.Values;
 
 
 /**

@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import jp.co.orangearch.workmanage.common.constant.Values;
 import jp.co.orangearch.workmanage.common.validator.impl.EnumValidValidator;
+import jp.co.orangearch.workmanage.domain.constant.Values;
 
 
 /**

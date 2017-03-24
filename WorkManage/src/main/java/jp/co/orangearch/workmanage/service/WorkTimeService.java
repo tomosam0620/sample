@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import jp.co.orangearch.workmanage.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 
 /**
  * 勤務時間サービスのIFクラスです。

@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jp.co.orangearch.workmanage.common.component.CalendarComponent;
-import jp.co.orangearch.workmanage.common.constant.MessageId;
-import jp.co.orangearch.workmanage.common.exception.SystemException;
-import jp.co.orangearch.workmanage.common.util.DateUtils;
-import jp.co.orangearch.workmanage.dao.WorkTimeDao;
-import jp.co.orangearch.workmanage.entity.WorkTime;
+import jp.co.orangearch.workmanage.component.CalendarComponent;
+import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
+import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
 

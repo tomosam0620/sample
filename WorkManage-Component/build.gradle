@@ -1,0 +1,4 @@
+dependencies {
+	compile('com.github.mygreen:super-csv-annotation:2.0.3')
+	compile project(':WorkManage-Domain')
+}

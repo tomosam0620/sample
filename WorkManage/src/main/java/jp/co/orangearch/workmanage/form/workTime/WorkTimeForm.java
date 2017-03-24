@@ -10,12 +10,12 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.StringUtils;
 
-import jp.co.orangearch.workmanage.common.constant.AttendanceCode;
-import jp.co.orangearch.workmanage.common.constant.WorkTimeType;
-import jp.co.orangearch.workmanage.common.util.DateUtils;
-import jp.co.orangearch.workmanage.common.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.common.validator.DateValid;
 import jp.co.orangearch.workmanage.common.validator.EnumValue;
+import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
+import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
 
 /**
  * 勤務時間のフォームクラスです。

@@ -1,7 +1,6 @@
 package jp.co.orangearch.workmanage.controller.horidayManage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,15 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jp.co.orangearch.workmanage.common.constant.LogFileMarker;
-import jp.co.orangearch.workmanage.common.constant.MessageId;
-import jp.co.orangearch.workmanage.common.exception.CsvError;
-import jp.co.orangearch.workmanage.common.exception.CsvHandleException;
-import jp.co.orangearch.workmanage.common.exception.SystemException;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
-import jp.co.orangearch.workmanage.entity.Horiday;
+import jp.co.orangearch.workmanage.domain.constant.LogFileMarker;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.entity.Horiday;
+import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
+import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.form.horidayManage.FileUploadForm;
 import jp.co.orangearch.workmanage.service.HoridayCsvBean;
 import jp.co.orangearch.workmanage.service.HoridayManageService;
@@ -68,11 +66,7 @@ public class HoridayManageController extends AbstractWorkManageController{
 			horidayManageService.update(lines);
 			
 		} catch (CsvHandleException e) {
-			List<String> messages = new ArrayList<String>();
-			for(CsvError error : e.getErrors()){
-				messages.add(error.lineNum + ":" + error.message);
-			}
-			attributes.addFlashAttribute("messages", messages);
+			attributes.addFlashAttribute("messages", e.getErrors());
 			return REDIRECT_ACTION + FUNCTION_URI + UPLOAD_URI;
 			
 		} catch (IOException e) {
