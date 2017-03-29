@@ -1,55 +1,55 @@
 package jp.co.orangearch.workmanage.domain.entity;
 
 import java.time.LocalDate;
-
+import java.time.LocalDateTime;
+import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 import org.seasar.doma.Id;
 import org.seasar.doma.Table;
-
-import jp.co.orangearch.workmanage.domain.entity.listener.UserListener;
+import org.seasar.doma.Version;
 
 /**
  * 
  */
 @Entity(listener = UserListener.class)
 @Table(name = "user")
-public class User extends TableSuffix{
+public class User extends TableSuffix {
 
-    /**  */
+    /** ユーザーID */
     @Id
     @Column(name = "USER_ID")
     String userId;
 
-    /**  */
+    /** パスワード */
     @Column(name = "PASSWORD")
     String password;
 
-    /**  */
+    /** ロールID */
     @Column(name = "ROLE_ID")
     String roleId;
 
-    /**  */
+    /** 所属 */
     @Column(name = "AFFILIATION")
     Integer affiliation;
 
-    /**  */
+    /** 役職 */
     @Column(name = "POSITION")
     Integer position;
 
-    /**  */
+    /** パスワード最終更新日 */
     @Column(name = "PASSWORDLAST_CHANGE_DATE")
     LocalDate passwordlastChangeDate;
 
-    /**  */
+    /** パスワード誤入力回数 */
     @Column(name = "PASSWORD_MISS_COUNT")
     Integer passwordMissCount;
 
-    /**  */
+    /** パスワード初期フラグ */
     @Column(name = "PASSWORD_INITIAL_FLAG")
     Integer passwordInitialFlag;
 
-    /**  */
+    /** 削除フラグ */
     @Column(name = "DELETE_FLAG")
     Integer deleteFlag;
 

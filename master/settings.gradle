@@ -1,2 +1,2 @@
 
-includeFlat "WorkManage-Domain", "WorkManage-Component", "WorkManage"
+includeFlat "WorkManage-Domain", "WorkManage-Component", "WorkManage", "WorkManage-doma-gen"

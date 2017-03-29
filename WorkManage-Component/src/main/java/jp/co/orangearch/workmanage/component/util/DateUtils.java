@@ -179,6 +179,9 @@ public class DateUtils {
 	 * @return 日付
 	 */
 	public static LocalDate convertToLocalDate(String date, DateTimeFormat pattern){
+		if(StringUtils.isEmpty(date)){
+			return null;
+		}
 		DateTimeFormatter datePattern = DateTimeFormatter.ofPattern(pattern.getValue());
 		return LocalDate.parse(date, datePattern);
 	}
@@ -205,6 +208,9 @@ public class DateUtils {
 	 * @return 時刻
 	 */
 	public static LocalTime convertToLocalTime(String date, DateTimeFormat pattern){
+		if(StringUtils.isEmpty(date)){
+			return null;
+		}
 		DateTimeFormatter datePattern = DateTimeFormatter.ofPattern(pattern.getValue());
 		return LocalTime.parse(date, datePattern);
 	}

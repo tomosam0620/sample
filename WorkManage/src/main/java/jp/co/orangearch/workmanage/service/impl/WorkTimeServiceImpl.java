@@ -1,5 +1,8 @@
 package jp.co.orangearch.workmanage.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,11 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.orangearch.workmanage.component.CalendarComponent;
+import jp.co.orangearch.workmanage.component.CsvComponent;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
+import jp.co.orangearch.workmanage.service.WorkTimeCsvBean;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
 
@@ -35,6 +40,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
 	@Autowired
 	private CalendarComponent calendarComponent;
+
+	@Autowired
+	private CsvComponent csvComponent;
 
 	@Override
 	public Optional<WorkTime> select(String userId, LocalDate date) {
@@ -101,6 +109,29 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		map.put("2017年02月", "2017-02");
 		map.put("2017年03月", "2017-03");
 		return map;
+	}
+
+	@Override
+	public byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date) {
+		List<WorkTime> workTimes = workTimeDao.selectByIdAndMonth(userId, from_date, to_date);
+		try {
+			List<WorkTimeCsvBean> list = new ArrayList<WorkTimeCsvBean>();
+			for(WorkTime item : workTimes){
+				WorkTimeCsvBean bean = new WorkTimeCsvBean();
+				bean.setUserId(item.getUserId());
+				bean.setWorkDate(item.getWorkDate());
+				bean.setStartTime(item.getStartTime());
+				bean.setEndTime(item.getEndTime());
+				bean.setAttendanceCode(item.getAttendanceCode());
+				bean.setHoridayType(item.getHoridayType());
+				list.add(bean);
+			}
+			ByteArrayOutputStream stream = csvComponent.write(list, WorkTimeCsvBean.class, "MS932");
+			return stream.toByteArray();
+		} catch (IOException e) {
+		}
+		
+		return null;
 	}
 
 }

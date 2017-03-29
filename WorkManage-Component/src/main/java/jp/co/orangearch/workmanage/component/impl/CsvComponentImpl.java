@@ -1,8 +1,10 @@
 package jp.co.orangearch.workmanage.component.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +17,7 @@ import org.supercsv.exception.SuperCsvException;
 import org.supercsv.prefs.CsvPreference;
 
 import com.github.mygreen.supercsv.io.CsvAnnotationBeanReader;
+import com.github.mygreen.supercsv.io.CsvAnnotationBeanWriter;
 
 import jp.co.orangearch.workmanage.component.CsvComponent;
 import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
@@ -61,6 +64,26 @@ public class CsvComponentImpl implements CsvComponent{
 			stream.close();
 		}
 		return list;
+	}
+	
+	
+	public <T> ByteArrayOutputStream write(List<T> beans, Class<T> clazz, String charset) throws IOException{
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(os, charset);
+		CsvAnnotationBeanWriter<T> csvWriter = new CsvAnnotationBeanWriter<>(
+				clazz,
+                writer,
+                CsvPreference.STANDARD_PREFERENCE);
+		
+		csvWriter.writeHeader();
+		for(T item : beans){
+			csvWriter.write(item);
+		}
+		
+		csvWriter.flush();
+		csvWriter.close();
+		writer.close();
+		return os;
 	}
 
 }

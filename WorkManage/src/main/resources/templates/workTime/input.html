@@ -12,7 +12,8 @@
 		<div class="container">
 			<h1>WORK TIME</h1>
 			<form class="form-horizontal" th:action="@{/workTime/handle.html}" th:object="${workTimeForm}" method="post">
-				<!-- admin権限のみ表示 -->
+				<!-- TODO:admin権限のみ表示 -->
+<!-- 
 				<div sec:authorize="hasRole('A01')">
 					<div class="form-group">
 						<label for="userId" class="col-sm-2 control-label">ユーザーID</label>
@@ -22,6 +23,7 @@
 						</div>
 					</div>
 				</div>
+-->
 				<div class="form-group">
 					<label for="workDate" class="col-sm-2 control-label">日付</label>
 					<div class="col-sm-2">
@@ -44,15 +46,13 @@
 				<div class="form-group">
 					<label for="attendanceCode" class="col-sm-2 control-label">出勤コード</label>
 					<div class="col-sm-2">
-
 						<select class="form-control col-sm-2 " id="attendanceCode" th:field="*{attendanceCode}">
 							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.AttendanceCode).values()}"
 									th:value="${t.getValue()}"
-									th:text="${t.getText()}"
-									th:selected="${t.getValue()} == *{attendanceCode}"></option>
+									th:text="${t.getText()}"></option>
 						</select>
-						<span th:if="${#fields.hasErrors('attendanceCode')}" class="text-danger" th:errors="*{attendanceCode}">Error</span>
 					</div>
+						<span th:if="${#fields.hasErrors('attendanceCode')}" class="text-danger" th:errors="*{attendanceCode}">Error</span>
 				</div>
 				<div class="form-group">
 					<label for="startTime" class="col-sm-2 control-label">出社時刻</label>
@@ -66,6 +66,37 @@
 					<div class="col-sm-2 bootstrap-timepicker">
 						<input type="text" class="form-control timepicker" id="endTime" placeholder="hh:mm" th:field="*{endTime}"></input>
 						<span th:if="${#fields.hasErrors('endTime')}" class="text-danger" th:errors="*{endTime}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="startWorkCode" class="col-sm-2 control-label">始業コード</label>
+					<div class="col-sm-2">
+						<select class="form-control col-sm-2 " id="startWorkCode" th:field="*{startWorkCode}">
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.StartWorkCode).values()}"
+									th:value="${t.getValue()}"
+									th:text="${t.getText()}"
+									th:selected="${t.getValue()} == *{startWorkCode}"></option>
+						</select>
+						<span th:if="${#fields.hasErrors('startWorkCode')}" class="text-danger" th:errors="*{startWorkCode}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="endWorkCode" class="col-sm-2 control-label">終業コード</label>
+					<div class="col-sm-2">
+						<select class="form-control col-sm-2 " id="endWorkCode" th:field="*{endWorkCode}">
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.EndWorkCode).values()}"
+									th:value="${t.getValue()}"
+									th:text="${t.getText()}"
+									th:selected="${t.getValue()} == *{endWorkCode}"></option>
+						</select>
+						<span th:if="${#fields.hasErrors('endWorkCode')}" class="text-danger" th:errors="*{endWorkCode}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="compensatoryAttendanceDate" class="col-sm-2 control-label">代休出日</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control datepicker" id="compensatoryAttendanceDate" placeholder="yyyy-MM-dd" th:field="*{compensatoryAttendanceDate}"></input>
+						<span th:if="${#fields.hasErrors('compensatoryAttendanceDate')}" class="text-danger" th:errors="*{compensatoryAttendanceDate}">Error</span>
 					</div>
 				</div>
 				<div class="form-group">

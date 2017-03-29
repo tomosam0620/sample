@@ -28,7 +28,7 @@ import jp.co.orangearch.workmanage.domain.constant.Values;
 @Constraint(validatedBy = EnumValidValidator.class)
 public @interface EnumValue {
 	/** エラーメッセージ。 */
-	String message() default "{V001}";
+	String message() default "{V004}";
 
 	/** グループ。 */
 	Class<?>[] groups() default {};

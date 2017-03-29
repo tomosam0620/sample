@@ -1,4 +1,4 @@
-package jp.co.orangearch.workmanage.domain.entity.listener;
+package jp.co.orangearch.workmanage.domain.entity.common;
 
 import java.time.LocalDateTime;
 
@@ -6,7 +6,6 @@ import org.seasar.doma.jdbc.entity.EntityListener;
 import org.seasar.doma.jdbc.entity.PreInsertContext;
 import org.seasar.doma.jdbc.entity.PreUpdateContext;
 
-import jp.co.orangearch.workmanage.domain.entity.TableSuffix;
 
 public class TableSuffixListener <T extends TableSuffix> implements EntityListener<T> {
 	@Override

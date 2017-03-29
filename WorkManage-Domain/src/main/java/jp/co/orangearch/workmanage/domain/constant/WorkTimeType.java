@@ -1,6 +1,6 @@
 package jp.co.orangearch.workmanage.domain.constant;
 
-import jp.co.orangearch.workmanage.domain.exception.SystemException;
+import org.seasar.doma.Domain;
 
 /**
  * 勤務帯を定義するENUMクラスです。
@@ -8,6 +8,7 @@ import jp.co.orangearch.workmanage.domain.exception.SystemException;
  * @author t-otsuka
  *
  */
+@Domain(valueType = Integer.class, factoryMethod = "of")
 public enum WorkTimeType implements Values {
 	/** 通常1(9：00～17:30(1h))。 */
 	NOMAL1(1,"通常1"),
@@ -27,7 +28,13 @@ public enum WorkTimeType implements Values {
 	private String text;
 
 	/** コンストラクタ。 */
-	WorkTimeType(Integer value, String text){
+	private WorkTimeType(Integer value){
+		this.value = value;
+		this.text = getTextByValue(value);
+	}
+
+	/** コンストラクタ。 */
+	private WorkTimeType(Integer value, String text){
 		this.value = value;
 		this.text = text;
 	}
@@ -55,6 +62,21 @@ public enum WorkTimeType implements Values {
 				return item.text;
 			}
 		}
-		throw new SystemException("ないわ。" + value);
+		throw new IllegalArgumentException("ないわ。" + value);
+	}
+	
+	/**
+	 * domain用ファクトリメソッド。
+	 * valueからインスタンスを返します。
+	 * @param value 値
+	 * @return AttendanceCode
+	 */
+	public static WorkTimeType of(Integer value){
+		 for(WorkTimeType item : values()) {
+			if (item.getValue().equals(value)) {
+				return item;
+			}
+		 }
+			throw new IllegalArgumentException(String.valueOf(value));
 	}
 }

@@ -5,6 +5,7 @@ sourceCompatibility = '1.8'
 
 configurations {
     domaGenRuntime
+    template
 }
 
 repositories {
@@ -16,24 +17,27 @@ dependencies {
 	compile('org.seasar.doma.boot:doma-spring-boot-starter:1.0.2')
     domaGenRuntime 'org.seasar.doma:doma-gen:2.16.0'
     domaGenRuntime 'mysql:mysql-connector-java:5.1.41'
+    domaGenRuntime fileTree(dir: './lib', includes: ['*.jar'])
+    compile fileTree(dir: './lib', includes: ['*.jar'])
 }
 
-def javaDestDir='src/main/java'
-def sqlDestDir= 'src/main/resources'
+def javaDestDir='../WorkManage-Domain/src/main/java'
+def sqlDestDir= '../WorkManage-Domain/src/main/resources'
 def dialectName= 'mysql'
 def url= 'jdbc:mysql://localhost/workmanage'
 def user= 'oaiuser'
 def password= 'oai1115'
-def entityPackageName= 'jp.co.orangearch.workManage.entity'
-def superclassName="jp.co.orangearch.workManage.entity.TableSuffix"
-def listenerSuperclassName="jp.co.orangearch.workManage.entity.TableSuffixListener"
-def daoPackageName='jp.co.orangearch.workManage.dao'
-def sqlTestClassName= 'jp.co.orangearch.workManage.SqlTest'
+def entityPackageName= 'jp.co.orangearch.workmanage.domain.entity'
+def superclassName="jp.co.orangearch.workmanage.domain.entity.common.TableSuffix"
+def listenerSuperclassName="jp.co.orangearch.workmanage.domain.entity.common.TableSuffixListener"
+def daoPackageName='jp.co.orangearch.workmanage.domain.dao'
+def sqlTestClassName= 'jp.co.orangearch.workmanage.domain.SqlTest'
 def sqlFilePattern= 'META-INF/**/*.sql'
 
 task gen << {
     ant.taskdef(resource: 'domagentask.properties',
-        classpath: configurations.domaGenRuntime.asPath)
+//        classpath: configurations.domaGenRuntime.asPath)
+		classpath: configurations.domaGenRuntime.asPath, configurations.template.asPath)
     ant.gen(
 			dialectName:"${dialectName}",
 			url:"${url}",
@@ -41,8 +45,8 @@ task gen << {
             password:"${password}") {
                 entityConfig(
                     destdir:"${javaDestDir}",
-//					superclassName:"${superclassName}",
-//					listenerSuperclassName:"${listenerSuperclassName}",
+					superclassName:"${superclassName}",
+					listenerSuperclassName:"${listenerSuperclassName}",
                     packageName:"${entityPackageName}")
                 daoConfig(
                     destdir:"${javaDestDir}",

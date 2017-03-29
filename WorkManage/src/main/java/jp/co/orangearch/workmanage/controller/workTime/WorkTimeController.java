@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -104,14 +108,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
-//			form.setAttendanceCodeAsEnum(workTime.get().getAttendanceCode());
-			form.setAttendanceCodeAsEnum(AttendanceCode.of(workTime.get().getAttendanceCode()));
-			form.setEndTime(workTime.get().getEndTime());
-			form.setNote(workTime.get().getNotes());
-			form.setStartTime(workTime.get().getStartTime());
-			form.setUserId(workTime.get().getUserId());
-			form.setWorkTimeTypeAsInt(workTime.get().getWorkTimeType());
-			form.setVersion(workTime.get().getVersion());
+			form.convert(workTime.get());
 		}
 		form.setWorkDate(date);
 		model.addAttribute("workTimeForm", form);
@@ -143,17 +140,9 @@ public class WorkTimeController extends AbstractWorkManageController{
 			userId = form.getUserId();
 		}
 
-		WorkTime entity = new WorkTime();
+		WorkTime entity = form.toEntity();
 		entity.setUserId(userId);
-		entity.setWorkTimeType(form.getWorkTimeTypeAsInt());
-		entity.setWorkDate(form.getWorkDateAsLocalDate());
-		entity.setStartTime(form.getStartTimeAsLocalTime());
-		entity.setEndTime(form.getEndTimeAsLocalTime());
-//		entity.setAttendanceCode(form.getAttendanceCodeAsEnum());
-		entity.setAttendanceCode(form.getAttendanceCodeAsEnum().getValue());
-		entity.setNotes(form.getNote());
 		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()).getValue());
-		entity.setVersion(form.getVersion());
 
 		//更新
 		workTimeService.update(entity);
@@ -161,5 +150,21 @@ public class WorkTimeController extends AbstractWorkManageController{
 		attributes.addFlashAttribute("result", "登録しました。");
 		String param = DateUtils.convert(DateUtils.convertToLocalDate(form.getWorkDate()), DateTimeFormat.UUUU_MM);
 		return "redirect:" + FUNCTION_URI + ROOT_URI + param;
+	}
+	
+	@RequestMapping("/download")
+	public ResponseEntity<byte[]> download(){
+		HttpHeaders headers = new HttpHeaders();
+        // headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.add("contet-type", MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE
+                + ";utf-8");
+        headers.set("Content-Disposition", "filename=\"test2.csv\"");
+
+        
+        String userId = getLoginUserId();
+        LocalDate from_date = LocalDate.of(2017, 1, 1);
+        LocalDate to_date = LocalDate.now();
+        byte[] bytes = workTimeService.createCsv(userId, from_date, to_date);
+        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
 	}
 }

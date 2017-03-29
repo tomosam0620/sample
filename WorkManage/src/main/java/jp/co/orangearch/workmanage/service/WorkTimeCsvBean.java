@@ -1,65 +1,48 @@
-package jp.co.orangearch.workmanage.domain.entity;
+package jp.co.orangearch.workmanage.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
+
+import org.hibernate.validator.constraints.NotEmpty;
 import org.seasar.doma.Column;
-import org.seasar.doma.Entity;
-import org.seasar.doma.Id;
-import org.seasar.doma.Table;
-import org.seasar.doma.Version;
 
-/**
- * 
- */
-@Entity(listener = WorkTimeListener.class)
-@Table(name = "work_time")
-public class WorkTime extends TableSuffix {
+import com.github.mygreen.supercsv.annotation.CsvBean;
+import com.github.mygreen.supercsv.annotation.CsvColumn;
+import com.github.mygreen.supercsv.validation.beanvalidation.CsvBeanValidator;
 
-    /** ユーザーID */
-    @Id
-    @Column(name = "USER_ID")
+@CsvBean(header=true, validators=CsvBeanValidator.class)
+public class WorkTimeCsvBean {
+    /** 日付 */
+	@CsvColumn(number=1)
+	@NotEmpty
     String userId;
 
     /** 日付 */
-    @Id
-    @Column(name = "WORK_DATE")
+	@CsvColumn(number=2)
     LocalDate workDate;
 
     /** 勤務帯 */
-    @Column(name = "WORK_TIME_TYPE")
+	@CsvColumn(number=3)
     Integer workTimeType;
-
+//    WorkTimeType workTimeType;
+    
     /** 出社時刻 */
-    @Column(name = "START_TIME")
+	@CsvColumn(number=4)
     LocalTime startTime;
 
     /** 退社時刻 */
-    @Column(name = "END_TIME")
+	@CsvColumn(number=5)
     LocalTime endTime;
 
-    /** 始業コード */
-    @Column(name = "START_WORK_CODE")
-    Integer startWorkCode;
-
-    /** 終業コード */
-    @Column(name = "END_WORK_CODE")
-    Integer endWorkCode;
-
-    /** 代休出日 */
-    @Column(name = "COMPENSATORY_ATTENDANCE_DATE")
-    LocalDate compensatoryAttendanceDate;
-
     /** 出勤コード */
-    @Column(name = "ATTENDANCE_CODE")
+	@CsvColumn(number=6)
     Integer attendanceCode;
 
     /** 備考 */
-    @Column(name = "NOTES")
+	@CsvColumn(number=7)
     String notes;
 
-    /** 休日種別 */
+    /** 休日タイプ */
     @Column(name = "HORIDAY_TYPE")
     Integer horidayType;
 
@@ -105,6 +88,7 @@ public class WorkTime extends TableSuffix {
      * @return the workTimeType
      */
     public Integer getWorkTimeType() {
+//    public WorkTimeType getWorkTimeType(){
         return workTimeType;
     }
 
@@ -114,6 +98,7 @@ public class WorkTime extends TableSuffix {
      * @param workTimeType the workTimeType
      */
     public void setWorkTimeType(Integer workTimeType) {
+//    public void setWorkTimeType(WorkTimeType workTimeType) {
         this.workTimeType = workTimeType;
     }
 
@@ -151,60 +136,6 @@ public class WorkTime extends TableSuffix {
      */
     public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
-    }
-
-    /** 
-     * Returns the startWorkCode.
-     * 
-     * @return the startWorkCode
-     */
-    public Integer getStartWorkCode() {
-        return startWorkCode;
-    }
-
-    /** 
-     * Sets the startWorkCode.
-     * 
-     * @param startWorkCode the startWorkCode
-     */
-    public void setStartWorkCode(Integer startWorkCode) {
-        this.startWorkCode = startWorkCode;
-    }
-
-    /** 
-     * Returns the endWorkCode.
-     * 
-     * @return the endWorkCode
-     */
-    public Integer getEndWorkCode() {
-        return endWorkCode;
-    }
-
-    /** 
-     * Sets the endWorkCode.
-     * 
-     * @param endWorkCode the endWorkCode
-     */
-    public void setEndWorkCode(Integer endWorkCode) {
-        this.endWorkCode = endWorkCode;
-    }
-
-    /** 
-     * Returns the compensatoryAttendanceDate.
-     * 
-     * @return the compensatoryAttendanceDate
-     */
-    public LocalDate getCompensatoryAttendanceDate() {
-        return compensatoryAttendanceDate;
-    }
-
-    /** 
-     * Sets the compensatoryAttendanceDate.
-     * 
-     * @param compensatoryAttendanceDate the compensatoryAttendanceDate
-     */
-    public void setCompensatoryAttendanceDate(LocalDate compensatoryAttendanceDate) {
-        this.compensatoryAttendanceDate = compensatoryAttendanceDate;
     }
 
     /** 
