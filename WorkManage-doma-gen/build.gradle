@@ -33,6 +33,7 @@ def listenerSuperclassName="jp.co.orangearch.workmanage.domain.entity.common.Tab
 def daoPackageName='jp.co.orangearch.workmanage.domain.dao'
 def sqlTestClassName= 'jp.co.orangearch.workmanage.domain.SqlTest'
 def sqlFilePattern= 'META-INF/**/*.sql'
+def templateDir= 'src/main/resources/template'
 
 task gen << {
     ant.taskdef(resource: 'domagentask.properties',
@@ -42,7 +43,8 @@ task gen << {
 			dialectName:"${dialectName}",
 			url:"${url}",
             user:"${user}",
-            password:"${password}") {
+            password:"${password}",
+            templatePrimaryDir:"${templateDir}") {
                 entityConfig(
                     destdir:"${javaDestDir}",
 					superclassName:"${superclassName}",

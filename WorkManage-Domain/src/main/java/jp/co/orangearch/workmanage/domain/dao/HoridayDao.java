@@ -1,8 +1,7 @@
 package jp.co.orangearch.workmanage.domain.dao;
 
 import java.time.LocalDate;
-import java.util.List;
-
+import jp.co.orangearch.workmanage.domain.entity.Horiday;
 import org.seasar.doma.Dao;
 import org.seasar.doma.Delete;
 import org.seasar.doma.Insert;
@@ -10,9 +9,12 @@ import org.seasar.doma.Select;
 import org.seasar.doma.Update;
 import org.seasar.doma.boot.ConfigAutowireable;
 
-import jp.co.orangearch.workmanage.domain.entity.Horiday;
+import java.util.List;
+import java.util.Optional;
 
 /**
+ * HoridayのDaoインターフェースクラスです。
+ * 
  */
 @ConfigAutowireable
 @Dao
@@ -23,7 +25,7 @@ public interface HoridayDao {
      * @return the Horiday entity
      */
     @Select
-    Horiday selectById(LocalDate date);
+    Optional<Horiday> selectById(LocalDate date);
 
     /**
      * @param date
@@ -31,13 +33,16 @@ public interface HoridayDao {
      * @return the Horiday entity
      */
     @Select(ensureResult = true)
-    Horiday selectByIdAndVersion(LocalDate date, Integer version);
+    Optional<Horiday> selectByIdAndVersion(LocalDate date, Integer version);
 
+    @Select
+	List<Horiday> selectAll();
+    
     /**
      * @param entity
      * @return affected rows
      */
-	@Insert(excludeNull=true)
+    @Insert(excludeNull=true)
     int insert(Horiday entity);
 
     /**
@@ -53,7 +58,4 @@ public interface HoridayDao {
      */
     @Delete
     int delete(Horiday entity);
-
-    @Select
-	List<Horiday> selectAll();
 }

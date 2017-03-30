@@ -1,10 +1,6 @@
 select
- USER_ID,
- PASSWORD,
- ROLE_ID,
- AFFILIATION,
- POSITION 
-from user
+  /*%expand*/*
+from
+  user
 where
-	USER_ID = /* userId */1111111111
-;
+  USER_ID = /* userId */'a'
