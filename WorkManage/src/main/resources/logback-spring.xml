@@ -11,7 +11,7 @@
 	</appender>
 
 	<appender name="OPERATION_LOG" class="ch.qos.logback.core.FileAppender">
-		<file>log/operation.log</file>
+		<file>${logDir}/operation.log</file>
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>%date [%level] [%X{SESSION_ID}] [%X{USER_ID}] [%X{URL}] [%X{METHOD}] [%X{INOUT}] %msg%n</pattern>
@@ -19,7 +19,7 @@
 	</appender>
 
 	<appender name="APPLICATION_LOG" class="ch.qos.logback.core.FileAppender">
-		<file>log/application.log</file>
+		<file>${logDir}/application.log</file>
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>%date [%X{LEVEL}] [%X{SESSION_ID}] [%X{USER_ID}] [%X{MESSAGE_ID}] %msg%n</pattern>
@@ -27,7 +27,7 @@
 	</appender>
 
 	<appender name="DB_LOG" class="ch.qos.logback.core.FileAppender">
-		<file>log/db.log</file>
+		<file>${logDir}/db.log</file>
 		<encoder>
 			<charset>UTF-8</charset>
 			<pattern>%date [%level] [%X{SESSION_ID}] [%X{USER_ID}] %msg%n</pattern>
