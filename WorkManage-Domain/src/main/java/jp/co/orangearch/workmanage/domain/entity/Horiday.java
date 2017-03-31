@@ -1,19 +1,19 @@
 package jp.co.orangearch.workmanage.domain.entity;
 
 import java.time.LocalDate;
-
+import java.time.LocalDateTime;
+import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 import org.seasar.doma.Id;
 import org.seasar.doma.Table;
-
-import jp.co.orangearch.workmanage.domain.entity.listener.HoridayListener;
+import org.seasar.doma.Version;
 
 /**
  * 
  */
 @Entity(listener = HoridayListener.class)
-@Table(name = "HORIDAY")
+@Table(name = "horiday")
 public class Horiday extends TableSuffix {
 
     /** 日付 */
@@ -21,7 +21,7 @@ public class Horiday extends TableSuffix {
     @Column(name = "DATE")
     LocalDate date;
 
-    /** 祝日名 */
+    /** 休日名 */
     @Column(name = "HORIDAY_NAME")
     String horidayName;
 
@@ -60,5 +60,4 @@ public class Horiday extends TableSuffix {
     public void setHoridayName(String horidayName) {
         this.horidayName = horidayName;
     }
-
 }

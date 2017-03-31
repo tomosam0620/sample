@@ -1,8 +1,8 @@
 select
   /*%expand*/*
 from
-  horiday
+  user
 where
-  DATE = /* date */'2010-01-23'
+  USER_ID = /* userId */'a'
   and
   VERSION = /* version */1

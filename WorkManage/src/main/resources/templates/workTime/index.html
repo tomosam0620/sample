@@ -20,15 +20,20 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			<span sec:authentication="username"/>
 			<div class="container-fluid">
 				<div class="col-sm-12" style="background-color:orange;">
-				<div class="col-sm-4">
-					<select class="form-control selectMonth" id="month" name="month">
-						<option th:each="item : ${months}"
-								th:value="${item.value}"
-								th:text="${item.key}"
-								th:selected="${item.value} == ${currentMonth}"
-								>month</option>
-					</select>
-				</div>
+					<div class="col-sm-4">
+						<select class="form-control selectMonth" id="month" name="month">
+							<option th:each="item : ${months}"
+									th:value="${item.value}"
+									th:text="${item.key}"
+									th:selected="${item.value} == ${currentMonth}"
+									>month</option>
+						</select>
+					</div>
+					<div class="col-sm-3">
+					<form th:action="@{/workTime/download/{month}(month=${month})}" method="get">
+						<button type="submit">ダウンロード</button>
+					</form>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -50,6 +55,9 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>出勤コード</th>
 						<th>出社時刻</th>
 						<th>退社時刻</th>
+						<th>始業コード</th>
+						<th>終業コード</th>
+						<th>代休出日</th>
 						<th>備考</th>
 					</tr>
 				</thead>
@@ -73,6 +81,9 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
  -->
 						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endTime}">1</td>
+						<td class="col-sm-1" th:text="${workTime.startWorkCode}">1</td>
+						<td class="col-sm-1" th:text="${workTime.endWorkCode}">1</td>
+						<td class="col-sm-1" th:text="${workTime.compensatoryAttendanceDate}">1</td>
 						<td th:text="${workTime.notes}">1</td>
 					</tr>
 				</tbody>

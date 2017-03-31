@@ -4,7 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -22,8 +27,10 @@ import jp.co.orangearch.workmanage.component.CalendarComponent;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
-import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
@@ -52,12 +59,18 @@ public class WorkTimeController extends AbstractWorkManageController{
 	/** 更新処理のURI */
 	private static final String UPDATE_URI = "/handle.html";
 
+	/** 勤務時間サービス。 */
 	@Autowired
 	private WorkTimeService workTimeService;
 
+	/** カレンダーコンポーネント。 */
 	@Autowired
 	private CalendarComponent calendarComponent;
 
+	/** メッセージ管理。 */
+	@Autowired
+	private MessageHandler messagehandler;
+	
 	/**
 	 * 初期表示を行います。
 	 *
@@ -104,14 +117,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
-//			form.setAttendanceCodeAsEnum(workTime.get().getAttendanceCode());
-			form.setAttendanceCodeAsEnum(AttendanceCode.of(workTime.get().getAttendanceCode()));
-			form.setEndTime(workTime.get().getEndTime());
-			form.setNote(workTime.get().getNotes());
-			form.setStartTime(workTime.get().getStartTime());
-			form.setUserId(workTime.get().getUserId());
-			form.setWorkTimeTypeAsInt(workTime.get().getWorkTimeType());
-			form.setVersion(workTime.get().getVersion());
+			form.convert(workTime.get());
 		}
 		form.setWorkDate(date);
 		model.addAttribute("workTimeForm", form);
@@ -143,23 +149,35 @@ public class WorkTimeController extends AbstractWorkManageController{
 			userId = form.getUserId();
 		}
 
-		WorkTime entity = new WorkTime();
+		WorkTime entity = form.toEntity();
 		entity.setUserId(userId);
-		entity.setWorkTimeType(form.getWorkTimeTypeAsInt());
-		entity.setWorkDate(form.getWorkDateAsLocalDate());
-		entity.setStartTime(form.getStartTimeAsLocalTime());
-		entity.setEndTime(form.getEndTimeAsLocalTime());
-//		entity.setAttendanceCode(form.getAttendanceCodeAsEnum());
-		entity.setAttendanceCode(form.getAttendanceCodeAsEnum().getValue());
-		entity.setNotes(form.getNote());
 		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()).getValue());
-		entity.setVersion(form.getVersion());
 
 		//更新
 		workTimeService.update(entity);
 
-		attributes.addFlashAttribute("result", "登録しました。");
+		MessageInfo messageInfo = messagehandler.getMessage(MessageId.M004, null, null, null);
+		attributes.addFlashAttribute("result", messageInfo.getMessage());
 		String param = DateUtils.convert(DateUtils.convertToLocalDate(form.getWorkDate()), DateTimeFormat.UUUU_MM);
-		return "redirect:" + FUNCTION_URI + ROOT_URI + param;
+		return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI + param;
+	}
+	
+	/**
+	 * ダウンロード。
+	 * @param month 年月(yyyy-mm)
+	 * @return ダウンロードリソース
+	 */
+	@RequestMapping("/download/{month}")
+	public ResponseEntity<byte[]> download(@DateValid(pattern="uuuu-MM") @NotEmpty @PathVariable String month){
+		String userId = getLoginUserId();
+		LocalDate from_date = DateUtils.getFirstDayOfMonth(month + "-01");
+		LocalDate to_date = DateUtils.getFinalDayOfMonth(month + "-01");
+		byte[] bytes = workTimeService.createCsv(userId, from_date, to_date);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.set("Content-Disposition", "filename=\""+month + ".csv\"");
+
+		return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
 	}
 }

@@ -6,7 +6,9 @@ import java.time.LocalTime;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.StringUtils;
 
@@ -15,7 +17,12 @@ import jp.co.orangearch.workmanage.common.validator.EnumValue;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
 import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
+import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.exception.SystemException;
 
 /**
  * 勤務時間のフォームクラスです。
@@ -54,7 +61,20 @@ public class WorkTimeForm implements Serializable{
 	@DateValid(pattern="H:m", message="{V002}")
 	private String endTime;
 
+	/** 始業コード。 */
+	@EnumValue(type=StartWorkCode.class)
+	private String startWorkCode;
+
+	/** 終業コード。 */
+	@EnumValue(type=EndWorkCode.class)
+	private String endWorkCode;
+
+	/** 代休出日。 */
+	@DateValid(pattern="uuuu-MM-dd", message="{V001}")
+	private String compensatoryAttendanceDate;
+
 	/** 備考。 */
+	@Size(max=25)
 	private String note;
 
 	/** バージョン(楽観排他用)。 */
@@ -160,5 +180,89 @@ public class WorkTimeForm implements Serializable{
 
 	public void setVersion(Integer value) {
 		version = value;
+	}
+	
+	public String getStartWorkCode(){
+		return startWorkCode;
+	}
+
+	public void setStartWorkCode(String value){
+		startWorkCode = value;
+	}
+
+	/** 終業コード。 */
+	public String getEndWorkCode(){
+		return endWorkCode;
+	}
+
+	public void setEndWorkCode(String value){
+		endWorkCode = value;
+	}
+
+	/** 代休出日。 */
+	/** 終業コード。 */
+	public String getCompensatoryAttendanceDate(){
+		return compensatoryAttendanceDate;
+	}
+
+	public LocalDate getCompensatoryAttendanceDateAsLocalDate(){
+		return DateUtils.convertToLocalDate(compensatoryAttendanceDate);
+	}
+
+	public void setCompensatoryAttendanceDate(String value){
+		compensatoryAttendanceDate = value;
+	}
+
+
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	public WorkTimeForm(){
+	}
+	
+	/**
+	 * コンストラクタ
+	 * entityからformを生成します。
+	 * 
+	 * @param entity 勤務時間エンティティ
+	 */
+	public WorkTimeForm(WorkTime entity){
+		try {
+			BeanUtils.copyProperties(entity, this);
+			
+		} catch (Exception e) {
+			//DBに取りうる値の範囲外が入っている場合
+			throw new SystemException(MessageId.S003);
+		}
+	}
+	
+	public WorkTime toEntity(){
+		WorkTime entity = new WorkTime();
+		entity.setUserId(userId);
+		entity.setWorkTimeType(Integer.valueOf(workTimeType));
+		entity.setWorkDate(DateUtils.convertToLocalDate(workDate));
+		entity.setAttendanceCode(Integer.valueOf(attendanceCode));
+		entity.setCompensatoryAttendanceDate(DateUtils.convertToLocalDate(compensatoryAttendanceDate));
+		entity.setStartTime(DateUtils.convertToLocalTime(startTime, DateTimeFormat.H_M));
+		entity.setEndTime(DateUtils.convertToLocalTime(endTime, DateTimeFormat.H_M));
+		entity.setStartWorkCode(Integer.valueOf(startWorkCode));
+		entity.setEndWorkCode(Integer.valueOf(endWorkCode));
+		entity.setNotes(note);
+		entity.setVersion(version);
+		return entity;
+	}
+
+	public void convert(WorkTime workTime) {
+		setUserId(workTime.getUserId());
+		setWorkTimeType(String.valueOf(workTime.getWorkTimeType()));
+		setWorkDate(DateUtils.convert(workTime.getWorkDate()));
+		setAttendanceCode(String.valueOf(workTime.getAttendanceCode()));
+		setCompensatoryAttendanceDate(DateUtils.convert(workTime.getCompensatoryAttendanceDate()));
+		setStartTime(DateUtils.convert(workTime.getStartTime(), DateTimeFormat.H_M));
+		setEndTime(DateUtils.convert(workTime.getEndTime(), DateTimeFormat.H_M));
+		setStartWorkCode(String.valueOf(workTime.getStartWorkCode()));
+		setEndWorkCode(String.valueOf(workTime.getEndWorkCode()));
+		setNote(workTime.getNotes());
+		setVersion(workTime.getVersion());
 	}
 }

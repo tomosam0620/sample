@@ -1,5 +1,7 @@
 package jp.co.orangearch.workmanage.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	     // 認証を行うユーザー情報を格納する
-        User user = null;
+        Optional<User> user = null;
         try {
             // 入力したユーザーIDから認証を行うユーザー情報を取得する
         	user = userDao.selectById(username);
@@ -37,12 +39,12 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         }
 
         // ユーザー情報を取得できなかった場合
-        if(user == null){
+        if(!user.isPresent()){
             throw new UsernameNotFoundException("User not found for login id: " + username);
         }
 
         // ユーザー情報が取得できたらSpring Securityで認証できる形で戻す
-        return new LoginUserInfo(user);
+        return new LoginUserInfo(user.get());
 	}
 
 }

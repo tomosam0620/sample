@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class HoridayManageServiceImpl implements HoridayManageService {
 
 		List<HoridayCsvBean> beans = new ArrayList<HoridayCsvBean>();
 		try{
-			beans = csvComponent.toBean(HoridayCsvBean.class, stream, "MS932", true);
+			beans = csvComponent.read(HoridayCsvBean.class, stream, "MS932", true);
 		}catch(IOException e){
 			throw new SystemException(MessageId.S003, e);
 		}
@@ -53,8 +54,8 @@ public class HoridayManageServiceImpl implements HoridayManageService {
 	public void update(List<HoridayCsvBean> lines) {
 		for(HoridayCsvBean bean : lines){
 			LocalDate targetDate = DateUtils.convertToLocalDate(bean.getDate(), DateTimeFormat.YYYY_M_D);
-			Horiday e = horidayDao.selectById(targetDate);
-			if(e == null){
+			Optional<Horiday> registed = horidayDao.selectById(targetDate);
+			if(!registed.isPresent()){
 				Horiday entity = new Horiday();
 				entity.setDate(DateUtils.convertToLocalDate(bean.getDate(), DateTimeFormat.YYYY_M_D));
 				entity.setHoridayName(bean.getHoridayName());
@@ -64,9 +65,9 @@ public class HoridayManageServiceImpl implements HoridayManageService {
 				Horiday entity = new Horiday();
 				entity.setDate(DateUtils.convertToLocalDate(bean.getDate(), DateTimeFormat.YYYY_M_D));
 				entity.setHoridayName(bean.getHoridayName());
-				entity.setRegistDate(e.getRegistDate());
-				entity.setRegistUser(e.getRegistUser());
-				entity.setVersion(e.getVersion());
+				entity.setRegistDate(registed.get().getRegistDate());
+				entity.setRegistUser(registed.get().getRegistUser());
+				entity.setVersion(registed.get().getVersion());
 				horidayDao.update(entity);
 			}
 		}

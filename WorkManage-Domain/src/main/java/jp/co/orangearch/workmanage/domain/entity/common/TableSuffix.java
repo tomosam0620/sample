@@ -1,4 +1,4 @@
-package jp.co.orangearch.workmanage.domain.entity;
+package jp.co.orangearch.workmanage.domain.entity.common;
 
 import java.time.LocalDateTime;
 
