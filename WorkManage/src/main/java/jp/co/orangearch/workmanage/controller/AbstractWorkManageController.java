@@ -1,34 +1,30 @@
 package jp.co.orangearch.workmanage.controller;
 
-import java.util.Locale;
-
 import javax.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import jp.co.orangearch.workmanage.domain.constant.LogFileMarker;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.exception.BussinessException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
+import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
 import jp.co.orangearch.workmanage.service.LoginUserInfo;
 
 /**
  * コントローラの抽象クラスです。
  * <br>
- * コントローラークラスを実装する場合は本クラスを敬称してください。
+ * コントローラークラスを実装する場合は本クラスを継承してください。
  *
  * @author t-otsuka
  *
@@ -36,20 +32,19 @@ import jp.co.orangearch.workmanage.service.LoginUserInfo;
 @ControllerAdvice
 abstract public class AbstractWorkManageController {
 
-	/** アプリケーションロガー */
-	private static final Logger logger = LoggerFactory.getLogger(LogFileMarker.APP);
-	
-	
 	/** forward */
 	protected static final String FORWARD_ACTION = "forward:";
 	
 	/** redirect */
 	protected static final String REDIRECT_ACTION = "redirect:";
 	
+	/** ロガー。 */
 	@Autowired
-	private MessageSource messages;
-
-
+	private ApplicationLogger applicationLogger;
+	
+	/** メッセージハンドラー。 */
+	@Autowired
+	private MessageHandler messageHandler;
 
 	/**
 	 * ログインユーザ情報取得。
@@ -166,13 +161,13 @@ abstract public class AbstractWorkManageController {
 	 * @return 遷移先情報
 	 */
 	private ModelAndView handleBusinessException(MessageId messageId, String[] fillchar, String message, Exception e){
-        // 例外ハンドリングを行う
-		String msg = getMessage(messageId, fillchar, message, e);
+		// 例外ハンドリングを行う
+		MessageInfo msgInfo = messageHandler.getMessage(messageId, fillchar, message, e);
 
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("message", msg);
+		mav.addObject("message", msgInfo.getMessage());
 		mav.setViewName("error/bussinessError");
-		logger.error("[" + (ObjectUtils.isEmpty(messageId) ? "-":messageId.getValue()) + "] [" + msg + "]", e);
+		applicationLogger.log(messageId, fillchar, message, e);
 		return mav;
 	}
 
@@ -190,43 +185,11 @@ abstract public class AbstractWorkManageController {
 
 		logout();
 
-		String msg = getMessage(messageId, fillchar, null, e);
-        logger.error("[" + messageId.getValue() + "] [" + msg + "]", e);
+		applicationLogger.log(messageId, fillchar, null, e);
 		// エラーページへ遷移
 		ModelAndView mav = new ModelAndView();
 		mav.setViewName("error/systemError");
-        return mav;
-	}
-
-	/**
-	 * メッセージを取得します。
-	 * メッセージプロパティから取得した文字列をメッセージIDとメッセージに分解し、
-	 * メッセージIDをMDCに設定して、メッセージを返却します。
-	 * @param messageId メッセージID
-	 * @param fillchar 埋め時
-	 * @param defaultMessage デフォルトメッセージ
-	 * @param e 例外情報
-	 * @return メッセージ
-	 */
-	private String getMessage(MessageId messageId, String[] fillchar, String defaultMessage, Exception e){
-		String msg = defaultMessage;
-		String level = "ERROR";
-		if(StringUtils.isEmpty(defaultMessage)){
-			msg = messages.getMessage(messageId.getValue(), fillchar, defaultMessage, Locale.getDefault());
-			if(StringUtils.isEmpty(msg)){
-				throw new SystemException(MessageId.S003, e);
-			}
-	
-			String[] messages = msg.split("\\|");
-			if(messages.length < 2){
-				throw new SystemException(MessageId.S003, e);
-			}
-			level = messages[0];
-			msg = messages[1];
-		}
-
-		MDC.put("LEVEL", level);
-		return msg;
+		return mav;
 	}
 
 	/**

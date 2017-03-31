@@ -3,8 +3,6 @@ package jp.co.orangearch.workmanage.controller.horidayManage;
 import java.io.IOException;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,51 +13,88 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
-import jp.co.orangearch.workmanage.domain.constant.LogFileMarker;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.Horiday;
 import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
+import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
 import jp.co.orangearch.workmanage.form.horidayManage.FileUploadForm;
 import jp.co.orangearch.workmanage.service.HoridayCsvBean;
 import jp.co.orangearch.workmanage.service.HoridayManageService;
 
+/**
+ * 休日管理機能のコントローラークラスです。
+ * @author t-otsuka
+ *
+ */
 @Controller
 @RequestMapping(HoridayManageController.FUNCTION_URI)
 public class HoridayManageController extends AbstractWorkManageController{
 	/** 機能のURI */
 	public static final String FUNCTION_URI = "/admin/horidayManage";
 	
-	private static final String ROOT_URI = "/";
-	private static final String HANDLE_URI = "/handle";
+	/** indexページのURI */
+	private static final String INDEX_URI = "/";
+	/** upload画面のURI */
 	private static final String UPLOAD_URI = "/upload";
+	/** 更新処理のURI */
+	private static final String HANDLE_URI = "/handle";
 	
-	private static final String UPLOAD_HTML = "/horidayManage/upload";
+	/** index画面のHTMLファイルパス */
 	private static final String SHOW_HTML = "/horidayManage/index";
+	/** upload画面のHTMLファイルパス */
+	private static final String UPLOAD_HTML = "/horidayManage/upload";
 	
-	private static final Logger log = LoggerFactory.getLogger(LogFileMarker.APP); 
+	/** ロガー。 */
+	@Autowired
+	private ApplicationLogger applicationLogger;
 
+	/** 休日管理サービス。 */
 	@Autowired
 	private HoridayManageService horidayManageService;
+
+	/** メッセージ管理 */
+	@Autowired
+	private MessageHandler messagehandler;
 	
-	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
+	/**
+	 * ｉｎｄｅｘページ表示処理
+	 * <br>
+	 * 登録されている休日情報を取得し、表示します。
+	 * @param model モデル
+	 * @return 遷移先ページのHTMLファイルパス
+	 */
+	@RequestMapping(value=INDEX_URI, method=RequestMethod.GET)
 	public String index(Model model) {
 		List<Horiday> horidays = horidayManageService.selectAll();
 		model.addAttribute("horidays", horidays);
 		return SHOW_HTML;
 	}
 
+	/**
+	 * upload画面表示処理
+	 * <br>
+	 * upload画面を表示します。
+	 * @return 遷移先ページのHTMLファイルパス
+	 */
 	@GenerateToken
 	@RequestMapping(value=UPLOAD_URI, method=RequestMethod.GET)
 	public String upload() {
 		return UPLOAD_HTML;
 	}
 
+	/**
+	 * 更新処理
+	 * @param fileUploadForm フォーム
+	 * @param attributes リダイレクト先に渡すパラメータを格納するクラス
+	 * @return 遷移先
+	 */
 	@CheckToken
 	@RequestMapping(value = HANDLE_URI, method = RequestMethod.POST)
 	public String handle(FileUploadForm fileUploadForm, RedirectAttributes attributes) {
-		log.info(fileUploadForm.getFileData().getName() + ", " + fileUploadForm.getFileData().getSize());
-		
+		applicationLogger.log(MessageId.M003, new String[]{fileUploadForm.getFileData().getName(), String.valueOf(fileUploadForm.getFileData().getSize())});
 		try {
 			List<HoridayCsvBean> lines = horidayManageService.read(fileUploadForm.getFileData().getInputStream());
 			
@@ -73,7 +108,8 @@ public class HoridayManageController extends AbstractWorkManageController{
 			throw new SystemException(MessageId.S003, e);
 		}
 		
-		attributes.addFlashAttribute("result","登録しました。");
-		return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI;
+		MessageInfo messageInfo = messagehandler.getMessage(MessageId.M004, null, null, null);
+		attributes.addFlashAttribute("result", messageInfo.getMessage());
+		return REDIRECT_ACTION + FUNCTION_URI + INDEX_URI;
 	}
 }

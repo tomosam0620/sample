@@ -36,7 +36,7 @@ public class CsvComponentImpl implements CsvComponent{
 	private MessageSource messages;
 
 	@Override
-	public <T> List<T> toBean(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException {
+	public <T> List<T> read(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException {
 		List<T> list = new ArrayList<T>();
 		CsvAnnotationBeanReader<T> csvReader = null;
 		try {

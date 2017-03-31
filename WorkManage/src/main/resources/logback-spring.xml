@@ -14,7 +14,7 @@
 		<file>log/operation.log</file>
 		<encoder>
 			<charset>UTF-8</charset>
-			<pattern>%date [%level] [%X{SESSION_ID}] [%X{USER_ID}] [%X{URL}] [%X{METHOD}] %msg%n</pattern>
+			<pattern>%date [%level] [%X{SESSION_ID}] [%X{USER_ID}] [%X{URL}] [%X{METHOD}] [%X{INOUT}] %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -22,7 +22,7 @@
 		<file>log/application.log</file>
 		<encoder>
 			<charset>UTF-8</charset>
-			<pattern>%date [%X{LEVEL}] [%X{SESSION_ID}] [%X{USER_ID}] %msg%n</pattern>
+			<pattern>%date [%X{LEVEL}] [%X{SESSION_ID}] [%X{USER_ID}] [%X{MESSAGE_ID}] %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -35,26 +35,16 @@
 	</appender>
 
 
-<!--
-	<logger name="jp.co.orangearch.workmanage.interceptor.LoggingInterceptor">
- -->
 	<logger name="operation">
 		<level value="info" />
  		<appender-ref ref="OPERATION_LOG" />
 	</logger>
 
-	<!-- TODO：operation.logの内容も出ちゃってるからパス要検討 -->
-<!--
-	<logger name="jp.co.orangearch.workmanage.controller">
- -->
 	<logger name="application">
 		<level value="info" />
  		<appender-ref ref="APPLICATION_LOG" />
 	</logger>
 
-<!--
-	<logger name="jp.co.orangearch.workmanage.common.WorkManagJdbcLogger">
- -->
 	<logger name="db">
 		<level value="info" />
 		<appender-ref ref="DB_LOG" />

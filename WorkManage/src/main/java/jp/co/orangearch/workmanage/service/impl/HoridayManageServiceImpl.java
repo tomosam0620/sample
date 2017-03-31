@@ -41,7 +41,7 @@ public class HoridayManageServiceImpl implements HoridayManageService {
 
 		List<HoridayCsvBean> beans = new ArrayList<HoridayCsvBean>();
 		try{
-			beans = csvComponent.toBean(HoridayCsvBean.class, stream, "MS932", true);
+			beans = csvComponent.read(HoridayCsvBean.class, stream, "MS932", true);
 		}catch(IOException e){
 			throw new SystemException(MessageId.S003, e);
 		}

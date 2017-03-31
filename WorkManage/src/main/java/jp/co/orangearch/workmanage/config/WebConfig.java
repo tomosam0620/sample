@@ -62,8 +62,8 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.addBasenames(
-				"com.github.mygreen.supercsv.localization.SuperCsvMessages",
-				"i18n/messages");
+				"i18n/messages",
+				"com.github.mygreen.supercsv.localization.SuperCsvMessages");
 		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 	}

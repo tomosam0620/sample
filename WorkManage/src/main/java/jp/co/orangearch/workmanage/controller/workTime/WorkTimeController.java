@@ -4,13 +4,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -26,8 +27,10 @@ import jp.co.orangearch.workmanage.component.CalendarComponent;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
-import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
@@ -56,12 +59,18 @@ public class WorkTimeController extends AbstractWorkManageController{
 	/** 更新処理のURI */
 	private static final String UPDATE_URI = "/handle.html";
 
+	/** 勤務時間サービス。 */
 	@Autowired
 	private WorkTimeService workTimeService;
 
+	/** カレンダーコンポーネント。 */
 	@Autowired
 	private CalendarComponent calendarComponent;
 
+	/** メッセージ管理。 */
+	@Autowired
+	private MessageHandler messagehandler;
+	
 	/**
 	 * 初期表示を行います。
 	 *
@@ -147,24 +156,28 @@ public class WorkTimeController extends AbstractWorkManageController{
 		//更新
 		workTimeService.update(entity);
 
-		attributes.addFlashAttribute("result", "登録しました。");
+		MessageInfo messageInfo = messagehandler.getMessage(MessageId.M004, null, null, null);
+		attributes.addFlashAttribute("result", messageInfo.getMessage());
 		String param = DateUtils.convert(DateUtils.convertToLocalDate(form.getWorkDate()), DateTimeFormat.UUUU_MM);
-		return "redirect:" + FUNCTION_URI + ROOT_URI + param;
+		return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI + param;
 	}
 	
-	@RequestMapping("/download")
-	public ResponseEntity<byte[]> download(){
+	/**
+	 * ダウンロード。
+	 * @param month 年月(yyyy-mm)
+	 * @return ダウンロードリソース
+	 */
+	@RequestMapping("/download/{month}")
+	public ResponseEntity<byte[]> download(@DateValid(pattern="uuuu-MM") @NotEmpty @PathVariable String month){
+		String userId = getLoginUserId();
+		LocalDate from_date = DateUtils.getFirstDayOfMonth(month + "-01");
+		LocalDate to_date = DateUtils.getFinalDayOfMonth(month + "-01");
+		byte[] bytes = workTimeService.createCsv(userId, from_date, to_date);
+		
 		HttpHeaders headers = new HttpHeaders();
-        // headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.add("contet-type", MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE
-                + ";utf-8");
-        headers.set("Content-Disposition", "filename=\"test2.csv\"");
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.set("Content-Disposition", "filename=\""+month + ".csv\"");
 
-        
-        String userId = getLoginUserId();
-        LocalDate from_date = LocalDate.of(2017, 1, 1);
-        LocalDate to_date = LocalDate.now();
-        byte[] bytes = workTimeService.createCsv(userId, from_date, to_date);
-        return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
+		return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.OK);
 	}
 }

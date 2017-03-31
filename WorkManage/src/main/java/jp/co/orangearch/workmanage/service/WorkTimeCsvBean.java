@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.seasar.doma.Column;
 
 import com.github.mygreen.supercsv.annotation.CsvBean;
 import com.github.mygreen.supercsv.annotation.CsvColumn;
@@ -12,38 +11,38 @@ import com.github.mygreen.supercsv.validation.beanvalidation.CsvBeanValidator;
 
 @CsvBean(header=true, validators=CsvBeanValidator.class)
 public class WorkTimeCsvBean {
-    /** 日付 */
-	@CsvColumn(number=1)
+    /** ユーザーID */
+	@CsvColumn(number=1, label="ユーザーID")
 	@NotEmpty
     String userId;
 
     /** 日付 */
-	@CsvColumn(number=2)
+	@CsvColumn(number=2, label="日付")
     LocalDate workDate;
 
     /** 勤務帯 */
-	@CsvColumn(number=3)
+	@CsvColumn(number=3, label="勤務帯")
     Integer workTimeType;
 //    WorkTimeType workTimeType;
     
     /** 出社時刻 */
-	@CsvColumn(number=4)
+	@CsvColumn(number=4, label="出社時刻")
     LocalTime startTime;
 
     /** 退社時刻 */
-	@CsvColumn(number=5)
+	@CsvColumn(number=5, label="退社時刻")
     LocalTime endTime;
 
     /** 出勤コード */
-	@CsvColumn(number=6)
+	@CsvColumn(number=6, label="出勤コード")
     Integer attendanceCode;
 
     /** 備考 */
-	@CsvColumn(number=7)
+	@CsvColumn(number=7, label="備考")
     String notes;
 
     /** 休日タイプ */
-    @Column(name = "HORIDAY_TYPE")
+	@CsvColumn(number=8, label="休日タイプ")
     Integer horidayType;
 
     /** 

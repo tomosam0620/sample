@@ -9,7 +9,7 @@ import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
 
 public interface CsvComponent {
 
-	<T> List<T> toBean(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException;
+	<T> List<T> read(Class<T> clazz, InputStream stream, String charset, boolean isExistHeader) throws IOException, CsvHandleException;
 	
 	<T> ByteArrayOutputStream write(List<T> beans, Class<T> clazz, String charset) throws IOException;
 

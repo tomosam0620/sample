@@ -1,6 +1,5 @@
 package jp.co.orangearch.workmanage.service.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -120,10 +119,12 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 				WorkTimeCsvBean bean = new WorkTimeCsvBean();
 				bean.setUserId(item.getUserId());
 				bean.setWorkDate(item.getWorkDate());
+				bean.setWorkTimeType(item.getWorkTimeType());
 				bean.setStartTime(item.getStartTime());
 				bean.setEndTime(item.getEndTime());
 				bean.setAttendanceCode(item.getAttendanceCode());
 				bean.setHoridayType(item.getHoridayType());
+				bean.setNotes(item.getNotes());
 				list.add(bean);
 			}
 			ByteArrayOutputStream stream = csvComponent.write(list, WorkTimeCsvBean.class, "MS932");

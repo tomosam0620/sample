@@ -1,12 +1,12 @@
 package jp.co.orangearch.workmanage.form.workTime;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -18,10 +18,10 @@ import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
 import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
-import jp.co.orangearch.workmanage.domain.exception.BussinessException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 
 /**
@@ -74,6 +74,7 @@ public class WorkTimeForm implements Serializable{
 	private String compensatoryAttendanceDate;
 
 	/** 備考。 */
+	@Size(max=25)
 	private String note;
 
 	/** バージョン(楽観排他用)。 */
@@ -231,7 +232,7 @@ public class WorkTimeForm implements Serializable{
 			
 		} catch (Exception e) {
 			//DBに取りうる値の範囲外が入っている場合
-			throw new SystemException();
+			throw new SystemException(MessageId.S003);
 		}
 	}
 	
