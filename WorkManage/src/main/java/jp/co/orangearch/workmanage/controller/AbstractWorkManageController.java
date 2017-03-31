@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
-import jp.co.orangearch.workmanage.domain.exception.BussinessException;
+import jp.co.orangearch.workmanage.domain.exception.BusinessException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
@@ -86,10 +86,10 @@ abstract public class AbstractWorkManageController {
 	 * @param e 例外情報
 	 * @return 遷移先情報
 	 */
-	@ExceptionHandler(BussinessException.class)
+	@ExceptionHandler(BusinessException.class)
 	public ModelAndView handleBussinessException(Exception e) {
 		// 例外ハンドリングを行う
-		BussinessException exception = (BussinessException)e;
+		BusinessException exception = (BusinessException)e;
 		return handleBusinessException(exception.getMessageId(), exception.getFillChars(), exception.getMessage(), e);
 	}
 
