@@ -14,7 +14,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
-import jp.co.orangearch.workmanage.domain.exception.BussinessException;
+import jp.co.orangearch.workmanage.domain.exception.BusinessException;
 
 
 /**
@@ -49,7 +49,7 @@ public class TokenCheckInterceptor extends HandlerInterceptorAdapter {
 			String token = request.getParameter(TOKEN_NAME);
 
 			if(!isValid(token, request)){
-				throw new BussinessException(MessageId.M001, new String[]{request.getRequestURI()});
+				throw new BusinessException(MessageId.M001, new String[]{request.getRequestURI()});
 			}
 
 			if(annotation.remove()){

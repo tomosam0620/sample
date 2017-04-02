@@ -1,7 +1,7 @@
 select
   /*%expand*/*
 from
-  horiday
+  HORIDAY
 where
   DATE = /* date */'2010-01-23'
   and

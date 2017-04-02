@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.util.StringUtils;
 
@@ -18,11 +17,9 @@ import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
-import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
 import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
-import jp.co.orangearch.workmanage.domain.exception.SystemException;
 
 /**
  * 勤務時間のフォームクラスです。
@@ -227,13 +224,17 @@ public class WorkTimeForm implements Serializable{
 	 * @param entity 勤務時間エンティティ
 	 */
 	public WorkTimeForm(WorkTime entity){
-		try {
-			BeanUtils.copyProperties(entity, this);
-			
-		} catch (Exception e) {
-			//DBに取りうる値の範囲外が入っている場合
-			throw new SystemException(MessageId.S003);
-		}
+		userId = entity.getUserId();
+		workTimeType = String.valueOf(entity.getWorkTimeType());
+		workDate = DateUtils.convert(entity.getWorkDate());
+		attendanceCode = String.valueOf(entity.getAttendanceCode());
+		compensatoryAttendanceDate = DateUtils.convert(entity.getCompensatoryAttendanceDate());
+		startTime = DateUtils.convert(entity.getStartTime(), DateTimeFormat.H_M);
+		endTime = DateUtils.convert(entity.getEndTime(), DateTimeFormat.H_M);
+		startWorkCode = String.valueOf(entity.getStartWorkCode());
+		endWorkCode = String.valueOf(entity.getEndWorkCode());
+		note = entity.getNotes();
+		version = entity.getVersion();
 	}
 	
 	public WorkTime toEntity(){

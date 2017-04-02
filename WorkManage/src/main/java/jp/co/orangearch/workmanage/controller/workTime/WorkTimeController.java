@@ -31,6 +31,7 @@ import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
+import jp.co.orangearch.workmanage.form.workTime.SelectMonthForm;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
@@ -81,7 +82,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 	@GenerateToken
 	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
 	public String init(Model model) {
-		LocalDate date = DateUtils.getCurrentDate();
+		LocalDate date = calendarComponent.getSystemDate();
 		return show(DateUtils.convert(date, DateTimeFormat.UUUU_MM), model);
 	}
 
@@ -96,7 +97,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public String show(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
 
 		String userId = getLoginUserId();
-		LocalDate showMonthDate = DateUtils.getCurrentDate();
+		LocalDate showMonthDate = calendarComponent.getSystemDate();
+		
 		if(!StringUtils.isEmpty(month)){
 			showMonthDate =DateUtils.convertToLocalDate(month + "-01");
 		}
@@ -106,7 +108,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		model.addAttribute("workTimeForm", new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
 		model.addAttribute("months", workTimeService.getMonthList());
-		model.addAttribute("currentMonth", DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM));
+		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
 		return ROOT_HTML;
 	}

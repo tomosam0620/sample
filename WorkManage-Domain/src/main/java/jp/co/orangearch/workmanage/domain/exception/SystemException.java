@@ -1,6 +1,11 @@
 package jp.co.orangearch.workmanage.domain.exception;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 
 /**
  * システム例外クラスです。
@@ -10,6 +15,7 @@ import jp.co.orangearch.workmanage.domain.constant.MessageId;
  * @author t-otsuka
  *
  */
+@Component
 public class SystemException extends RuntimeException {
 
 	/** シリアルバージョン。 */
@@ -19,6 +25,14 @@ public class SystemException extends RuntimeException {
 	/** 埋め字。 */
 	private String[] fillChars;
 
+	/** メッセージ管理クラス。 */
+	private static MessageHandler messageHandler;
+	
+	@Autowired
+	public void setMessageHandler(MessageHandler messageHandler){
+		SystemException.messageHandler = messageHandler;
+	}
+	
 	/**
 	 * コンストラクタ。
 	 * @note メッセージIDを指定したコンストラクタを使用してください。
@@ -42,7 +56,7 @@ public class SystemException extends RuntimeException {
 	 * @param messageId メッセージID
 	 */
 	public SystemException(MessageId messageId){
-		super();
+		super(messageHandler.getMessage(messageId, null, null, null).getMessage());
 		this.messageId = messageId;
 	}
 
@@ -52,7 +66,7 @@ public class SystemException extends RuntimeException {
 	 * @param fillchars 埋め字
 	 */
 	public SystemException(MessageId messageId, String[] fillchars){
-		super();
+		super(messageHandler.getMessage(messageId, fillchars, null, null).getMessage());
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
@@ -64,7 +78,9 @@ public class SystemException extends RuntimeException {
 	 * @param message デフォルトメッセージ
 	 */
 	public SystemException(MessageId messageId, String[] fillchars, String message){
-		super(message);
+		super(StringUtils.isEmpty(message)
+				? messageHandler.getMessage(messageId, fillchars, message, null).getMessage()
+				: message);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
@@ -76,7 +92,7 @@ public class SystemException extends RuntimeException {
 	 * @param exception 例外情報
 	 */
 	public SystemException(MessageId messageId, Throwable exception){
-		super(exception);
+		super(messageHandler.getMessage(messageId, null, null, null).getMessage(), exception);
 		this.messageId = messageId;
 	}
 
@@ -88,7 +104,7 @@ public class SystemException extends RuntimeException {
 	 * @param exception 例外情報
 	 */
 	public SystemException(MessageId messageId, String[] fillchars, Throwable exception){
-		super(exception);
+		super(messageHandler.getMessage(messageId, fillchars, null, null).getMessage(), exception);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}
@@ -102,7 +118,10 @@ public class SystemException extends RuntimeException {
 	 * @param exception 例外情報
 	 */
 	public SystemException(MessageId messageId, String[] fillchars, String message, Throwable exception){
-		super(message, exception);
+		super(StringUtils.isEmpty(message)
+				? messageHandler.getMessage(messageId, fillchars, message, null).getMessage()
+				: message,
+				exception);
 		this.messageId = messageId;
 		this.fillChars = fillchars;
 	}

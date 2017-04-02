@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.domain.logger.WorkManagJdbcLogger;
 
 //@EnableTransactionManagement
@@ -37,5 +38,10 @@ public class JdbcConfig implements Config {
 	@Override
 	public JdbcLogger getJdbcLogger(){
 		return new WorkManagJdbcLogger();
+	}
+	
+	@Bean
+	public MessageHandler messageHandler(){
+		return new MessageHandler();
 	}
 }

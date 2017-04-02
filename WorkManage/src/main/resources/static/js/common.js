@@ -1,4 +1,13 @@
 $(function() {
+	$('.monthpicker').datepicker({
+		language: 'ja',
+		format : 'yyyy-mm',
+		minViewMode: 'months',
+		autoclose: true
+	});
+});
+
+$(function() {
 	$('.datepicker').datepicker({
 		language: 'ja',
 		format : 'yyyy-mm-dd',
@@ -9,7 +18,7 @@ $(function() {
 $(function(){
 	$('.timepicker').timepicker({
 		minuteStep: 1,
-	    template: 'false',
+		template: 'false',
 		showInputs: false,
 		showMeridian: false
 	});
@@ -20,4 +29,3 @@ $(function(){
 		window.location.href = $(this).val();
 	});
 });
-

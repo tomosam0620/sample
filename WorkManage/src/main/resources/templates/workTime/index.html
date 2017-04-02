@@ -10,27 +10,24 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <!--
 		<meta charset="UTF-8" />
  -->
-		<title>Hello Thymeleaf</title>
+		<title>勤務報告</title>
 		<div th:replace="common/common::header"></div>
 	</head>
 	<body>
 		<div th:replace="common/common::menu"></div>
 		<div class="container">
-			<h1>WORK TIME</h1>
+			<strong class="text-danger" th:text="${result}"></strong>
+		</div>
+		<div class="container">
+			<h1>稼働</h1>
 			<span sec:authentication="username"/>
 			<div class="container-fluid">
 				<div class="col-sm-12" style="background-color:orange;">
-					<div class="col-sm-4">
-						<select class="form-control selectMonth" id="month" name="month">
-							<option th:each="item : ${months}"
-									th:value="${item.value}"
-									th:text="${item.key}"
-									th:selected="${item.value} == ${currentMonth}"
-									>month</option>
-						</select>
+					<div class="col-sm-2">
+						<input type="text" class="form-control monthpicker selectMonth" th:field="${currentMonth.month}"></input>
 					</div>
-					<div class="col-sm-3">
-					<form th:action="@{/workTime/download/{month}(month=${month})}" method="get">
+					<div class="col-sm-3 pull-right">
+					<form th:action="@{/workTime/download/{month}(month=${currentMonth.month})}" method="get">
 						<button type="submit">ダウンロード</button>
 					</form>
 					</div>
@@ -38,13 +35,6 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			</div>
 		</div>
 
-		<div class="container">
-			<strong class="text-danger" th:text="${result}"></strong>
-		</div>
-
-		<div class="container">
-			<h3>稼働</h3>
-		</div>
 		<div class="container">
 			<table class="table table-striped table-bordered">
 				<thead>

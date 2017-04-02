@@ -13,7 +13,7 @@ import org.seasar.doma.Version;
  * 
  */
 @Entity(listener = HoridayListener.class)
-@Table(name = "horiday")
+@Table(name = "HORIDAY")
 public class Horiday extends TableSuffix {
 
     /** 日付 */
@@ -21,7 +21,7 @@ public class Horiday extends TableSuffix {
     @Column(name = "DATE")
     LocalDate date;
 
-    /** 休日名 */
+    /** 祝日名 */
     @Column(name = "HORIDAY_NAME")
     String horidayName;
 

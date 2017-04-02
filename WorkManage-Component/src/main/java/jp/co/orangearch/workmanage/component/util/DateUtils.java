@@ -6,12 +6,18 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.TemporalAdjusters;
 
 import org.springframework.util.StringUtils;
 
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 
+/**
+ * 日付操作のユーティリティクラスです。
+ * @author t-otsuka
+ *
+ */
 public class DateUtils {
 
 	/** 日時の書式定義ENUMです。 */
@@ -217,7 +223,7 @@ public class DateUtils {
 
 	/**
 	 * 月初日を取得します。
-	 * パラメータがnullの場合は当月の月初日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @param date 日付文字列(yyyy-MM-dd)
 	 * @return 月初日(yyyy-MM-dd)
@@ -229,7 +235,7 @@ public class DateUtils {
 
 	/**
 	 * 月初日を取得します。
-	 * パラメータがnullの場合は当月の月初日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @param date 日付文字列
 	 * @param pattern 書式
@@ -242,7 +248,7 @@ public class DateUtils {
 
 	/**
 	 * 月初日を取得します。
-	 * パラメータがnullの場合は当月の月初日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @return 月初日
 	 */
@@ -252,23 +258,22 @@ public class DateUtils {
 
 	/**
 	 * 月初日を取得します。
-	 * パラメータがnullの場合は当月の月初日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @return 月初日
 	 */
 	public static LocalDate getFirstDayOfMonth(LocalDate date){
 
-		LocalDate targetDay = getCurrentDate();
-		if(date != null){
-			targetDay = date;
+		if(date == null){
+			return null;
 		}
-		return LocalDate.of(targetDay.getYear(), targetDay.getMonth(), 1);
+		return date.with(TemporalAdjusters.firstDayOfMonth());
 	}
 
 
 	/**
 	 * 月末日を取得します。
-	 * パラメータがnullの場合は当月の月末日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @return 月末日(yyyy-MM-dd)
 	 */
@@ -279,7 +284,7 @@ public class DateUtils {
 
 	/**
 	 * 月末日を取得します。
-	 * パラメータがnullの場合は当月の月末日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @return 月末日(yyyy-MM-dd)
 	 */
@@ -289,26 +294,15 @@ public class DateUtils {
 
 	/**
 	 * 月末日を取得します。
-	 * パラメータがnullの場合は当月の月末日を返却します。
+	 * パラメータがnullの場合はnullを返却します。
 	 *
 	 * @return 当月の月末日
 	 */
 	public static LocalDate getFinalDayOfMonth(LocalDate date){
-		LocalDate targetDay = getCurrentDate();
-		if(date != null){
-			targetDay = date;
+		if(date == null){
+			return null;
 		}
-		int lastDayOfMonth = LocalDate.of(targetDay.getYear(), targetDay.getMonth(), 1).lengthOfMonth();
-		return LocalDate.of(targetDay.getYear(), targetDay.getMonth(), lastDayOfMonth);
-	}
-
-	/**
-	 * 現在日付取得
-	 *
-	 * @return 現在日付
-	 */
-	public static LocalDate getCurrentDate(){
-		return LocalDate.now();
+		return date.with(TemporalAdjusters.lastDayOfMonth());
 	}
 
 	/**
