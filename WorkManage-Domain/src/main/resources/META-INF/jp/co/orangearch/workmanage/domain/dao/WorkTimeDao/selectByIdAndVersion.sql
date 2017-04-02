@@ -1,7 +1,7 @@
 select
   /*%expand*/*
 from
-  work_time
+  WORK_TIME
 where
   USER_ID = /* userId */'a'
   and

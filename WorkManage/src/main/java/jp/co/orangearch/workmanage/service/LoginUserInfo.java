@@ -12,9 +12,7 @@ import jp.co.orangearch.workmanage.domain.entity.User;
  */
 public class LoginUserInfo extends org.springframework.security.core.userdetails.User{
 
-	/**
-	 * 
-	 */
+	/** シリアルバージョン。 */
 	private static final long serialVersionUID = 1L;
 
 	/** ロールID。 */
@@ -32,7 +30,7 @@ public class LoginUserInfo extends org.springframework.security.core.userdetails
 	 * @param user ユーザーテーブル情報
 	 */
 	public LoginUserInfo(User user){
-		super(user.getUserId(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getRoleId()));
+		super(user.getUserId(), user.getPassword(), AuthorityUtils.createAuthorityList("ROLE_" + user.getRoleId()));
 		roleId = user.getRoleId();
 		affiliation = user.getAffiliation();
 		position = user.getPosition();

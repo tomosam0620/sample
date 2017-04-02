@@ -14,7 +14,7 @@ import org.seasar.doma.Version;
  * 
  */
 @Entity(listener = WorkTimeListener.class)
-@Table(name = "work_time")
+@Table(name = "WORK_TIME")
 public class WorkTime extends TableSuffix {
 
     /** ユーザーID */

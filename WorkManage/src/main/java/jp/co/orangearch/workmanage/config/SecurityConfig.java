@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         // 認可の設定
         http.authorizeRequests()
             .antMatchers("/","/login").permitAll() // indexは全ユーザーアクセス許可
+            .antMatchers("/admin/**").access("hasRole('A01')")
             .anyRequest().authenticated();  // それ以外は全て認証無しの場合アクセス不許可
 
         // ログイン設定
