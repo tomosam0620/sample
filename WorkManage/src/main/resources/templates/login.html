@@ -10,7 +10,7 @@
 			<h1>XXXX</h1>
 			<!-- ログインが失敗した時のメッセージ -->
 			<div class="alert alert-danger" role="alert" th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']} != null">
-				<strong>ログインに失敗しました: </strong>ユーザが存在しないか、パスワードが間違っています。
+				<strong>ログインに失敗しました: </strong><p class="form-control-static text-danger" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></p>
 			</div>
 		</div>
 

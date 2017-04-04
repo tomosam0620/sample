@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *
  */
 @Controller
-public class LoginController {
+public class LoginController extends AbstractWorkManageController {
 
 	public static final String URI = "/login";
 	private static final String HTML = "login";
