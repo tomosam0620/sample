@@ -29,8 +29,10 @@ public class AuthenticationEventListener {
 	@EventListener
 	public void handleEvent(AuthenticationFailureBadCredentialsEvent event){
 		Optional<User> entity = userDao.selectById(event.getAuthentication().getName());
-		entity.get().setPasswordMissCount(entity.get().getPasswordMissCount() + 1);
-		userDao.update(entity.get());
+		if(entity.isPresent()){
+			entity.get().setPasswordMissCount(entity.get().getPasswordMissCount() + 1);
+			userDao.update(entity.get());
+		}
 	}
 
 	@EventListener

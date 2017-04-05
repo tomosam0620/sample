@@ -13,9 +13,9 @@ public enum StartWorkCode implements Values{
 	/** なし。 */
 	NOMAL(1,""),
 	/** 遅刻1(交通機関の遅れ)。 */
-	LATE1(1,"遅刻1(交通機関の遅れ)"),
+	LATE1(2,"遅刻1(交通機関の遅れ)"),
 	/** 遅刻2。 */
-	LATE2(2,"遅刻2");
+	LATE2(3,"遅刻2");
 
 
 	/** 値 */

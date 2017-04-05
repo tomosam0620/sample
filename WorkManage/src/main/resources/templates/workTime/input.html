@@ -11,7 +11,7 @@
 		<div th:replace="common/common::menu"></div>
 		<div class="container">
 			<h1>WORK TIME</h1>
-			<form class="form-horizontal" th:action="@{/workTime/handle.html}" th:object="${workTimeForm}" method="post">
+			<form class="form-horizontal" th:action="@{/workTime/handle}" th:object="${workTimeForm}" method="post">
 				<!-- TODO:admin権限のみ表示 -->
 <!-- 
 				<div sec:authorize="hasRole('A01')">
