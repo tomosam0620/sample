@@ -61,14 +61,11 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						 -->
 							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${workTime.workDate})}">更新</a>
 						</td>
-						<td th:if="${workTime.horidayType == 1}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
-						<td th:if="${workTime.horidayType == 2}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
-						<td th:if="${workTime.horidayType == 3}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).BISUNESS_DAY}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).SATURDAY}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).HORIDAY}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
 						<td class="col-sm-1" th:text="${workTime.workTimeType}">1</td>
 						<td class="col-sm-1" th:text="${workTime.attendanceCode}">1</td>
-<!--
-						<td class="col-sm-1" th:text="${#T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).getTextByValue（workTime.attendanceCode）}">1</td>
- -->
 						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.startWorkCode}">1</td>

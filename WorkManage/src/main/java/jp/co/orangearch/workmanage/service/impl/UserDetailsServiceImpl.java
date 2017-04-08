@@ -3,6 +3,7 @@ package jp.co.orangearch.workmanage.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +23,8 @@ import jp.co.orangearch.workmanage.service.LoginUserInfo;
 public class UserDetailsServiceImpl implements UserDetailsService{
 
 	/** 最大誤入力回数 */
-	private int maxPasswordMissCount = 5;
+	@Value("${password.maxMissCount}")
+	private int maxPasswordMissCount;
 	
 	@Autowired
 	private UserDao userDao;

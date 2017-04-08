@@ -18,7 +18,7 @@ import jp.co.orangearch.workmanage.domain.exception.BusinessException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
+import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
 import jp.co.orangearch.workmanage.service.LoginUserInfo;
 
 /**

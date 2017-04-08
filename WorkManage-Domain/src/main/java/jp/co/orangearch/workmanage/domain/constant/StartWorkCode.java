@@ -11,11 +11,11 @@ import org.seasar.doma.Domain;
 @Domain(valueType = Integer.class, factoryMethod = "of")
 public enum StartWorkCode implements Values{
 	/** なし。 */
-	NOMAL(1,""),
+	なし(1,""),
 	/** 遅刻1(交通機関の遅れ)。 */
-	LATE1(1,"遅刻1(交通機関の遅れ)"),
+	遅刻１(2,"遅刻1(交通機関の遅れ)"),
 	/** 遅刻2。 */
-	LATE2(2,"遅刻2");
+	遅刻2(3,"遅刻2");
 
 
 	/** 値 */

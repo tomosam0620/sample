@@ -23,7 +23,6 @@ public class WorkTimeCsvBean {
     /** 勤務帯 */
 	@CsvColumn(number=3, label="勤務帯")
     Integer workTimeType;
-//    WorkTimeType workTimeType;
     
     /** 出社時刻 */
 	@CsvColumn(number=4, label="出社時刻")
@@ -87,7 +86,6 @@ public class WorkTimeCsvBean {
      * @return the workTimeType
      */
     public Integer getWorkTimeType() {
-//    public WorkTimeType getWorkTimeType(){
         return workTimeType;
     }
 
@@ -97,7 +95,6 @@ public class WorkTimeCsvBean {
      * @param workTimeType the workTimeType
      */
     public void setWorkTimeType(Integer workTimeType) {
-//    public void setWorkTimeType(WorkTimeType workTimeType) {
         this.workTimeType = workTimeType;
     }
 

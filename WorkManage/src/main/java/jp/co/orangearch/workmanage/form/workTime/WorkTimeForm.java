@@ -225,14 +225,14 @@ public class WorkTimeForm implements Serializable{
 	 */
 	public WorkTimeForm(WorkTime entity){
 		userId = entity.getUserId();
-		workTimeType = String.valueOf(entity.getWorkTimeType());
+		workTimeType = entity.getWorkTimeType().getKey();
 		workDate = DateUtils.convert(entity.getWorkDate());
-		attendanceCode = String.valueOf(entity.getAttendanceCode());
+		attendanceCode = entity.getAttendanceCode().getKey();
 		compensatoryAttendanceDate = DateUtils.convert(entity.getCompensatoryAttendanceDate());
 		startTime = DateUtils.convert(entity.getStartTime(), DateTimeFormat.H_M);
 		endTime = DateUtils.convert(entity.getEndTime(), DateTimeFormat.H_M);
-		startWorkCode = String.valueOf(entity.getStartWorkCode());
-		endWorkCode = String.valueOf(entity.getEndWorkCode());
+		startWorkCode = entity.getStartWorkCode().getKey();
+		endWorkCode = entity.getEndWorkCode().getKey();
 		note = entity.getNotes();
 		version = entity.getVersion();
 	}
@@ -240,30 +240,16 @@ public class WorkTimeForm implements Serializable{
 	public WorkTime toEntity(){
 		WorkTime entity = new WorkTime();
 		entity.setUserId(userId);
-		entity.setWorkTimeType(Integer.valueOf(workTimeType));
+		entity.setWorkTimeType(WorkTimeType.of(Integer.valueOf(workTimeType)));
 		entity.setWorkDate(DateUtils.convertToLocalDate(workDate));
-		entity.setAttendanceCode(Integer.valueOf(attendanceCode));
+		entity.setAttendanceCode(AttendanceCode.of(Integer.valueOf(attendanceCode)));
 		entity.setCompensatoryAttendanceDate(DateUtils.convertToLocalDate(compensatoryAttendanceDate));
 		entity.setStartTime(DateUtils.convertToLocalTime(startTime, DateTimeFormat.H_M));
 		entity.setEndTime(DateUtils.convertToLocalTime(endTime, DateTimeFormat.H_M));
-		entity.setStartWorkCode(Integer.valueOf(startWorkCode));
-		entity.setEndWorkCode(Integer.valueOf(endWorkCode));
+		entity.setStartWorkCode(StartWorkCode.of(Integer.valueOf(startWorkCode)));
+		entity.setEndWorkCode(EndWorkCode.of(Integer.valueOf(endWorkCode)));
 		entity.setNotes(note);
 		entity.setVersion(version);
 		return entity;
-	}
-
-	public void convert(WorkTime workTime) {
-		setUserId(workTime.getUserId());
-		setWorkTimeType(String.valueOf(workTime.getWorkTimeType()));
-		setWorkDate(DateUtils.convert(workTime.getWorkDate()));
-		setAttendanceCode(String.valueOf(workTime.getAttendanceCode()));
-		setCompensatoryAttendanceDate(DateUtils.convert(workTime.getCompensatoryAttendanceDate()));
-		setStartTime(DateUtils.convert(workTime.getStartTime(), DateTimeFormat.H_M));
-		setEndTime(DateUtils.convert(workTime.getEndTime(), DateTimeFormat.H_M));
-		setStartWorkCode(String.valueOf(workTime.getStartWorkCode()));
-		setEndWorkCode(String.valueOf(workTime.getEndWorkCode()));
-		setNote(workTime.getNotes());
-		setVersion(workTime.getVersion());
 	}
 }

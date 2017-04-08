@@ -80,7 +80,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 //		}
 
 	@Bean //this could be provided via auto-configuration
-    MethodValidationPostProcessor methodValidationPostProcessor() {
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
         return new MethodValidationPostProcessor();
     }
 }

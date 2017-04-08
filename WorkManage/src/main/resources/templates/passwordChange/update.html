@@ -5,7 +5,7 @@
 		<title>パスワード変更</title>
 		<div th:replace="common/common::header"></div>
 	</head>
-	<body onload="document.login.password.focus();">
+	<body onload="document.form.password.focus();">
 		<div class="container">
 			<h1>パスワード変更</h1>
 		</div>
@@ -13,7 +13,7 @@
 			<strong class="text-danger" th:text="${result}"></strong>
 		</div>
 		<div class="container">
-			<form class="form-signin" action="" th:action="@{/passwordChange/handle}" method="post" th:object="${changePassowrdForm}">
+			<form class="form-signin" action="" th:action="@{/passwordChange/handle}" method="post" th:object="${changePassowrdForm}" name="form">
 				<div class="form-group">
 					<div class="col-sm-4">
 						<input type="password" class="form-control" placeholder="パスワード" th:field="*{password}" />

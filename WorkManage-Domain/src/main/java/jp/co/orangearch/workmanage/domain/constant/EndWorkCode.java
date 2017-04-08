@@ -11,9 +11,9 @@ import org.seasar.doma.Domain;
 @Domain(valueType = Integer.class, factoryMethod = "of")
 public enum EndWorkCode implements Values{
 	/** なし。 */
-	NOMAL(1,""),
+	なし(1,""),
 	/** 早退。 */
-	EARLY(2,"早退");
+	早退(2,"早退");
 
 
 	/** 値 */

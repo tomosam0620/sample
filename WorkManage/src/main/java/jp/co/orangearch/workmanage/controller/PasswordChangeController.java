@@ -3,6 +3,7 @@ package jp.co.orangearch.workmanage.controller;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.component.CalendarComponent;
+import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.form.passwordChange.ChangePassowrdForm;
 import jp.co.orangearch.workmanage.service.LoginUserInfo;
 import jp.co.orangearch.workmanage.service.PasswordChangeService;
@@ -49,9 +52,9 @@ public class PasswordChangeController extends AbstractWorkManageController {
 	/** エラー情報キー名 */
 	private static final String ERROR_OBJECT_NAME = "error";
 
-	//TODO プロパティファイルから取得
 	/** パスワード有効期間。 */
-	private static final long passwordExpiredDuration = 90;
+	@Value("${password.expiredDuration}")
+	private int passwordExpiredDuration;
 	
 	/** カレンダーコンポーネント。 */
 	@Autowired
@@ -59,6 +62,9 @@ public class PasswordChangeController extends AbstractWorkManageController {
 
 	@Autowired
 	private PasswordChangeService passwordChangeService;
+	
+	@Autowired
+	private MessageHandler messageHandler;
 	
 	
 	/**
@@ -80,8 +86,7 @@ public class PasswordChangeController extends AbstractWorkManageController {
 				LocalDate lastChangeDate = loginUserInfo.getPasswordLastChangeDate();
 				LocalDate now = calendarComponent.getSystemDate();
 				if(now.isAfter(lastChangeDate.plusDays(passwordExpiredDuration))){
-					//TODO message取得処理
-					attributes.addFlashAttribute("result", "パスワード有効期限を過ぎています。パスワードを変更してください。");
+					attributes.addFlashAttribute("result", messageHandler.getMessage(MessageId.M005, null, null, null).getMessage());
 					return REDIRECT_ACTION + FUNCTION_URI + UPDAT_URI;
 				}
 			}

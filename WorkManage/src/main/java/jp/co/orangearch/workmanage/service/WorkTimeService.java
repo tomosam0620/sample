@@ -2,7 +2,6 @@ package jp.co.orangearch.workmanage.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
@@ -41,11 +40,11 @@ public interface WorkTimeService {
 	void update(WorkTime workTimes);
 
 	/**
-	 * 勤務情報表示月のリストを取得します。
-	 *
-	 * @return 勤務情報表示月(yyyy-MM形式)のmap
+	 * CSVを作成します。
+	 * @param userId ユーザID
+	 * @param from_date 開始日
+	 * @param to_date 終了日
+	 * @return csvのbyte配列
 	 */
-	Map<String, String> getMonthList();
-
 	byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date);
 }

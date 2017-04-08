@@ -1,14 +1,19 @@
 package jp.co.orangearch.workmanage.domain.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
+
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 import org.seasar.doma.Id;
 import org.seasar.doma.Table;
-import org.seasar.doma.Version;
+
+import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
+import jp.co.orangearch.workmanage.domain.constant.HoridayType;
+import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
+import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
+import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 
 /**
  * 
@@ -29,7 +34,7 @@ public class WorkTime extends TableSuffix {
 
     /** 勤務帯 */
     @Column(name = "WORK_TIME_TYPE")
-    Integer workTimeType;
+    WorkTimeType workTimeType;
 
     /** 出社時刻 */
     @Column(name = "START_TIME")
@@ -41,11 +46,11 @@ public class WorkTime extends TableSuffix {
 
     /** 始業コード */
     @Column(name = "START_WORK_CODE")
-    Integer startWorkCode;
-
+    StartWorkCode startWorkCode;
+    
     /** 終業コード */
     @Column(name = "END_WORK_CODE")
-    Integer endWorkCode;
+    EndWorkCode endWorkCode;
 
     /** 代休出日 */
     @Column(name = "COMPENSATORY_ATTENDANCE_DATE")
@@ -53,7 +58,7 @@ public class WorkTime extends TableSuffix {
 
     /** 出勤コード */
     @Column(name = "ATTENDANCE_CODE")
-    Integer attendanceCode;
+    AttendanceCode attendanceCode;
 
     /** 備考 */
     @Column(name = "NOTES")
@@ -61,7 +66,7 @@ public class WorkTime extends TableSuffix {
 
     /** 休日種別 */
     @Column(name = "HORIDAY_TYPE")
-    Integer horidayType;
+    HoridayType horidayType;
 
     /** 
      * Returns the userId.
@@ -104,7 +109,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the workTimeType
      */
-    public Integer getWorkTimeType() {
+    public WorkTimeType getWorkTimeType() {
         return workTimeType;
     }
 
@@ -113,7 +118,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param workTimeType the workTimeType
      */
-    public void setWorkTimeType(Integer workTimeType) {
+    public void setWorkTimeType(WorkTimeType workTimeType) {
         this.workTimeType = workTimeType;
     }
 
@@ -158,8 +163,8 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the startWorkCode
      */
-    public Integer getStartWorkCode() {
-        return startWorkCode;
+    public StartWorkCode getStartWorkCode() {
+    	return startWorkCode;
     }
 
     /** 
@@ -167,7 +172,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param startWorkCode the startWorkCode
      */
-    public void setStartWorkCode(Integer startWorkCode) {
+    public void setStartWorkCode(StartWorkCode startWorkCode) {
         this.startWorkCode = startWorkCode;
     }
 
@@ -176,7 +181,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the endWorkCode
      */
-    public Integer getEndWorkCode() {
+    public EndWorkCode getEndWorkCode() {
         return endWorkCode;
     }
 
@@ -185,7 +190,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param endWorkCode the endWorkCode
      */
-    public void setEndWorkCode(Integer endWorkCode) {
+    public void setEndWorkCode(EndWorkCode endWorkCode) {
         this.endWorkCode = endWorkCode;
     }
 
@@ -212,7 +217,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the attendanceCode
      */
-    public Integer getAttendanceCode() {
+    public AttendanceCode getAttendanceCode() {
         return attendanceCode;
     }
 
@@ -221,7 +226,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param attendanceCode the attendanceCode
      */
-    public void setAttendanceCode(Integer attendanceCode) {
+    public void setAttendanceCode(AttendanceCode attendanceCode) {
         this.attendanceCode = attendanceCode;
     }
 
@@ -248,7 +253,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the horidayType
      */
-    public Integer getHoridayType() {
+    public HoridayType getHoridayType() {
         return horidayType;
     }
 
@@ -257,7 +262,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param horidayType the horidayType
      */
-    public void setHoridayType(Integer horidayType) {
+    public void setHoridayType(HoridayType horidayType) {
         this.horidayType = horidayType;
     }
 }

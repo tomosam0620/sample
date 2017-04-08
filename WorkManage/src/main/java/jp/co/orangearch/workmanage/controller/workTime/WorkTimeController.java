@@ -30,7 +30,7 @@ import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
+import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
 import jp.co.orangearch.workmanage.form.workTime.SelectMonthForm;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
@@ -107,7 +107,6 @@ public class WorkTimeController extends AbstractWorkManageController{
 		List<WorkTime> workTimes = workTimeService.selectAll(userId, showMonthDate);
 		model.addAttribute("workTimeForm", new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
-		model.addAttribute("months", workTimeService.getMonthList());
 		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
 		return ROOT_HTML;
@@ -119,7 +118,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
-			form.convert(workTime.get());
+			form = new WorkTimeForm(workTime.get());
 		}
 		form.setWorkDate(date);
 		model.addAttribute("workTimeForm", form);
@@ -153,7 +152,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		WorkTime entity = form.toEntity();
 		entity.setUserId(userId);
-		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()).getValue());
+		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()));
 
 		//更新
 		workTimeService.update(entity);

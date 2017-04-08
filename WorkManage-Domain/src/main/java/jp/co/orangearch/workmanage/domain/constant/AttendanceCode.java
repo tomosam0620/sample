@@ -11,31 +11,31 @@ import org.seasar.doma.Domain;
 @Domain(valueType = Integer.class, factoryMethod = "of")
 public enum AttendanceCode implements Values{
 	/** 出勤。 */
-	ATTENDANCE(1,""),
+	出勤(1,"出勤"),
 	/** 有給。 */
-	PAID_VACATION(2,"有給"),
+	有給(2,"有給"),
 	/** 年特。 */
-	SPECIAL_VACATION_OF_YEAR(3,"年特"),
+	年特(3,"年特"),
 	/** 特休。 */
-	SPECIAL_VACATION(4,"特休"),
+	特休(4,"特休"),
 	/** 代休。 */
-	COMPENSATORY_DAY_OFF(5,"代休"),
+	代休(5,"代休"),
 	/** 休出。 */
-	WORKING_DAY_OFF(6,"休出"),
+	休出(6,"休出"),
 	/** 欠勤。 */
-	ABSENCE(7,"欠勤"),
+	欠勤(7,"欠勤"),
 	/** 明け休み。 */
-	AFTER_NIGHT_SHIFT(8,"明休"),
+	明け休み(8,"明休"),
 	/** 傷病。 */
-	MEDICAL_LEAVE(9,"傷病"),
+	傷病(9,"傷病"),
 	/** 代出。 */
-	COMPENSATORY_ATTENDANCE(10,"代出"),
+	代出(10,"代出"),
 	/** 午前半休。 */
-	MORNING_VACATION(11,"午前休"),
+	午前半休(11,"午前休"),
 	/** 午後半休。 */
-	AFTERNOON_VACATION(12,"午後休"),
+	午後半休(12,"午後休"),
 	/** シフト。 */
-	SHIFT(13,"シフト");
+	シフト(13,"シフト");
 
 
 	/** 値 */

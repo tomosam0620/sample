@@ -4,9 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.seasar.doma.jdbc.SelectOptions;
@@ -59,7 +57,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		for(int i= 1; i <lastDate +1; i++){
 			WorkTime newItem = new WorkTime();
 			newItem.setWorkDate(LocalDate.of(date.getYear(), date.getMonth(), i));
-			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()).getValue());
+			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()));
 
 			for(WorkTime item : registedList){
 				if(item.getWorkDate().getDayOfMonth() == i){
@@ -101,38 +99,30 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	}
 
 	@Override
-	public Map<String, String> getMonthList(){
-		Map<String,String> map = new HashMap<String,String>();
-		//TODO:当日までの月のリスト取得(いつから？)
-		map.put("2017年01月", "2017-01");
-		map.put("2017年02月", "2017-02");
-		map.put("2017年03月", "2017-03");
-		return map;
-	}
-
-	@Override
 	public byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date) {
 		List<WorkTime> workTimes = workTimeDao.selectByIdAndMonth(userId, from_date, to_date);
+		
+		ByteArrayOutputStream stream = null;
 		try {
 			List<WorkTimeCsvBean> list = new ArrayList<WorkTimeCsvBean>();
 			for(WorkTime item : workTimes){
 				WorkTimeCsvBean bean = new WorkTimeCsvBean();
 				bean.setUserId(item.getUserId());
 				bean.setWorkDate(item.getWorkDate());
-				bean.setWorkTimeType(item.getWorkTimeType());
+				bean.setWorkTimeType(item.getWorkTimeType().getValue());
 				bean.setStartTime(item.getStartTime());
 				bean.setEndTime(item.getEndTime());
-				bean.setAttendanceCode(item.getAttendanceCode());
-				bean.setHoridayType(item.getHoridayType());
+				bean.setAttendanceCode(item.getAttendanceCode().getValue());
+				bean.setHoridayType(item.getHoridayType().getValue());
 				bean.setNotes(item.getNotes());
 				list.add(bean);
 			}
-			ByteArrayOutputStream stream = csvComponent.write(list, WorkTimeCsvBean.class, "MS932");
-			return stream.toByteArray();
+			stream = csvComponent.write(list, WorkTimeCsvBean.class, "MS932");
 		} catch (IOException e) {
+			throw new SystemException(MessageId.S001, new String[]{"CSV作成"});
 		}
 		
-		return null;
+		return stream.toByteArray();
 	}
 
 }
