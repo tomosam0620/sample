@@ -21,6 +21,9 @@ import jp.co.orangearch.workmanage.service.LoginUserInfo;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
 
+	/** 最大誤入力回数 */
+	private int maxPasswordMissCount = 5;
+	
 	@Autowired
 	private UserDao userDao;
 
@@ -31,8 +34,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         try {
             // 入力したユーザーIDから認証を行うユーザー情報を取得する
         	user = userDao.selectById(username);
-
-            // 処理内容は省略
         } catch (Exception e) {
             // 取得時にExceptionが発生した場合
             throw new UsernameNotFoundException("It can not be acquired User");
@@ -43,8 +44,24 @@ public class UserDetailsServiceImpl implements UserDetailsService{
             throw new UsernameNotFoundException("User not found for login id: " + username);
         }
 
+        boolean isAccountNonExpired = true;
+        boolean isAccountNonLocked = true;
+        boolean isCredentialsNonExpired = true;
+        boolean isEnabled = true;
+        
+        if(user.get().getDeleteFlag() == 1){
+        	isEnabled = false;
+        }
+        
+        if(user.get().getPasswordMissCount() > maxPasswordMissCount){
+        	isAccountNonLocked = false;
+        }
         // ユーザー情報が取得できたらSpring Securityで認証できる形で戻す
-        return new LoginUserInfo(user.get());
+        return new LoginUserInfo(user.get(), 
+        		isAccountNonExpired, 
+        		isAccountNonLocked, 
+        		isCredentialsNonExpired, 
+        		isEnabled);
 	}
 
 }

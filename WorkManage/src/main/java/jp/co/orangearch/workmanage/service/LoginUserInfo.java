@@ -1,5 +1,7 @@
 package jp.co.orangearch.workmanage.service;
 
+import java.time.LocalDate;
+
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import jp.co.orangearch.workmanage.domain.entity.User;
@@ -23,17 +25,25 @@ public class LoginUserInfo extends org.springframework.security.core.userdetails
 
 	/** 役職。 */
 	private Integer position;
+	
+	private LocalDate passwordLastChangeDate;
 
 	/**
 	 * コンストラクタ。
 	 *
 	 * @param user ユーザーテーブル情報
 	 */
-	public LoginUserInfo(User user){
-		super(user.getUserId(), user.getPassword(), AuthorityUtils.createAuthorityList("ROLE_" + user.getRoleId()));
+	public LoginUserInfo(User user, 
+						boolean isAccountNonExpired,
+						boolean isAccountNonLocked,
+						boolean isCredentialsNonExpired,
+						boolean isEnabled){
+		super(user.getUserId(), user.getPassword(), isEnabled, isAccountNonExpired, isCredentialsNonExpired,
+				isAccountNonLocked, AuthorityUtils.createAuthorityList("ROLE_" + user.getRoleId()));
 		roleId = user.getRoleId();
 		affiliation = user.getAffiliation();
 		position = user.getPosition();
+		passwordLastChangeDate = user.getPasswordlastChangeDate();
 	}
 
 
@@ -62,6 +72,14 @@ public class LoginUserInfo extends org.springframework.security.core.userdetails
 	 */
 	public Integer getPosition(){
 		return position;
+	}
+	
+	/**
+	 * パスワード最終更新日取得
+	 * @return パスワード最終更新日
+	 */
+	public LocalDate getPasswordLastChangeDate(){
+		return passwordLastChangeDate;
 	}
 
 }
