@@ -58,7 +58,13 @@ public class WorkTimeController extends AbstractWorkManageController{
 	/** 入力画面のURI */
 	private static final String INPUT_URI = "/{date}/input";
 	/** 更新処理のURI */
-	private static final String UPDATE_URI = "/handle.html";
+	private static final String UPDATE_URI = "/handle";
+
+	//modelのキー名
+	/** form名 */
+	private static final String FORM_NAME = "workTimeForm";
+	/** エラー情報キー名 */
+	private static final String ERROR_OBJECT_NAME = "error";
 
 	/** 勤務時間サービス。 */
 	@Autowired
@@ -105,7 +111,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		// 画面表示情報設定
 		List<WorkTime> workTimes = workTimeService.selectAll(userId, showMonthDate);
-		model.addAttribute("workTimeForm", new WorkTimeForm()); //入力用formを設定しておかないと落ちる
+		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
 		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
@@ -119,9 +125,22 @@ public class WorkTimeController extends AbstractWorkManageController{
 		WorkTimeForm form = new WorkTimeForm();
 		if(workTime.isPresent()){
 			form = new WorkTimeForm(workTime.get());
+
+			//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
+			if(model.containsAttribute(ERROR_OBJECT_NAME)){
+				model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, model.asMap().get(ERROR_OBJECT_NAME));
+				if(workTime.isPresent()){
+					form = WorkTimeForm.class.cast(model.asMap().get(FORM_NAME));
+					form.setVersion(workTime.get().getVersion());
+				}
+			}else{
+				if(workTime.isPresent()){
+					form = new WorkTimeForm(workTime.get());
+				}
+			}
 		}
 		form.setWorkDate(date);
-		model.addAttribute("workTimeForm", form);
+		model.addAttribute(FORM_NAME, form);
 		return INPUT_HTML;
 	}
 
@@ -135,13 +154,13 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 * @return 遷移先
 	 */
 	@CheckToken
-	@GenerateToken
 	@RequestMapping(value=UPDATE_URI, method=RequestMethod.POST)
 	public String handle(@Validated WorkTimeForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
 		//入力チェック。
 		if(bindingResult.hasErrors()){
-			model.addAttribute("workTimeForm", form);
-			return INPUT_HTML;
+			attributes.addFlashAttribute(FORM_NAME, form);
+			attributes.addFlashAttribute(ERROR_OBJECT_NAME, bindingResult);
+			return REDIRECT_ACTION + FUNCTION_URI + "/" + form.getWorkDate() + "/input";
 		}
 
 		//更新用entity作成。
