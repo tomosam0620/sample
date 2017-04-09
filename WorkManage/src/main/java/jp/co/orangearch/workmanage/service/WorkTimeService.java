@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 
 /**
@@ -23,6 +24,8 @@ public interface WorkTimeService {
 	 */
 	List<WorkTime> selectAll(String userId, LocalDate date);
 
+	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
+	
 	/**
 	 * 指定日付の勤務情報を取得します。
 	 *

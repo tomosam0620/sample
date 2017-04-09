@@ -28,6 +28,7 @@ import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
@@ -111,8 +112,10 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		// 画面表示情報設定
 		List<WorkTime> workTimes = workTimeService.selectAll(userId, showMonthDate);
+		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
 		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
+		model.addAttribute("transportInfos", transportInfos);
 		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
 		return ROOT_HTML;

@@ -16,7 +16,9 @@ import jp.co.orangearch.workmanage.component.CalendarComponent;
 import jp.co.orangearch.workmanage.component.CsvComponent;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.dao.TransportionExpenseDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
+import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.service.WorkTimeCsvBean;
@@ -34,6 +36,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
 	@Autowired
 	private WorkTimeDao workTimeDao;
+
+	@Autowired
+	private TransportionExpenseDao transportionExpenseDao;
 
 	@Autowired
 	private CalendarComponent calendarComponent;
@@ -123,6 +128,13 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		}
 		
 		return stream.toByteArray();
+	}
+
+	@Override
+	public List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date) {
+		LocalDate fistdate = DateUtils.getFirstDayOfMonth(date);
+		LocalDate lastdate = DateUtils.getFinalDayOfMonth(date);
+		return transportionExpenseDao.selectByUserIdAndDateRange(userId, fistdate, lastdate);
 	}
 
 }
