@@ -20,8 +20,10 @@
 						<span th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}">Error</span>
 						<input type="password" class="form-control" placeholder="新しいパスワード" th:field="*{newPassword}" />
 						<span th:if="${#fields.hasErrors('newPassword')}" class="text-danger" th:errors="*{newPassword}">Error</span>
+						<span th:if="${#fields.hasErrors('notSameOldAndNew')}" class="text-danger" th:errors="*{notSameOldAndNew}">Error</span>
 						<input type="password" class="form-control" placeholder="確認用パスワード" th:field="*{confirmPassword}" />
 						<span th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger" th:errors="*{confirmPassword}">Error</span>
+						<span th:if="${#fields.hasErrors('sameWordNewAndConfirm')}" class="text-danger" th:errors="*{sameWordNewAndConfirm}">Error</span>
 						<input type="hidden" th:name="version" th:value="*{version}"></input>
 						<input type="hidden" th:name="token" th:value="${token}"></input>
 						<button class="btn btn-lg btn btn-warning" type="submit">変更</button>
