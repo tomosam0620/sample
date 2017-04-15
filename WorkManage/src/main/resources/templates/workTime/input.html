@@ -35,7 +35,7 @@
 					<label for="workTimeType" class="col-sm-2 control-label">勤務帯</label>
 					<div class="col-sm-2">
 					<select class="form-control col-sm-2 " id="workTimeType" th:field="*{workTimeType}">
-						<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.WorkTimeType).values()}"
+						<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.WorkTimeTypeEnum).values()}"
 								th:value="${t.getValue()}"
 								th:text="${t.getText()}"
 								th:selected="${t.getValue()} == 3"></option>

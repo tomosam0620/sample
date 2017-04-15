@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+<html>
+ -->
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+	<head>
+<!--
+		<meta charset="UTF-8" />
+ -->
+		<title>プロジェクト一覧</title>
+		<div th:replace="common/common::header"></div>
+	</head>
+	<body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<h1>ユーザー管理</h1>
+			<div class="container">
+				<strong class="text-danger" th:text="${result}"></strong>
+			</div>
+			<div class="container">
+				<h3>ユーザー一覧</h3>
+			</div>
+			<div class="container well">
+				<form class="form-horizontal" th:action="@{/userManage/}" th:object="${searchForm}" method="get">
+					<div class="form-group">
+						<label for="roleId" class="col-sm-1 control-label">ロール</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control input-small" id="roleId" placeholder="d" th:field="*{roleId}"></input>
+							<span th:if="${#fields.hasErrors('roleId')}" class="text-danger" th:errors="*{roleId}">Error</span>
+						</div>
+						
+						<label for="affiliation" class="col-sm-1 control-label">所属</label>
+						<div class="col-sm-2">
+							<input type="text" class="form-control input-small" id="affiliation" placeholder="d" th:field="*{affiliation}"></input>
+							<span th:if="${#fields.hasErrors('affiliation')}" class="text-danger" th:errors="*{affiliation}">Error</span>
+						</div>
+						
+						<label for="position" class="col-sm-1 control-label">役職</label>
+						<div class="col-sm-1">
+							<input type="text" class="form-control input-small" id="position" placeholder="d" th:field="*{position}"></input>
+							<span th:if="${#fields.hasErrors('position')}" class="text-danger" th:errors="*{position}">Error</span>
+						</div>
+						
+						<label for="project" class="col-sm-2 control-label">プロジェクト</label>
+						<div class="col-sm-1">
+							<input type="text" class="form-control input-small" id="project" placeholder="d" th:field="*{project}"></input>
+							<span th:if="${#fields.hasErrors('project')}" class="text-danger" th:errors="*{project}">Error</span>
+						</div>
+					</div>
+					<button type="submit" class="btn btn-warning pull-right">検索</button>
+				</form>
+			</div>
+		</div>
+		<div class="container">
+			<form class="form-horizontal" th:action="@{input}" method="get">
+				<button type="submit" class="btn btn-warning pull-right">登録</button>
+			</form>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>ユーザーID</th>
+						<th>ロールID</th>
+						<th>所属</th>
+						<th>役職</th>
+						<th>プロジェクト</th>
+					</tr>
+				</thead>
+				<tbody th:remove="all-but-first" th:each="user : ${users}">
+					<tr>
+						<td class="col-sm-1" th:text="${user.userId}">1234567</td>
+						<td class="col-sm-1" th:text="${user.roleId}">U01１</td>
+						<td class="col-sm-1" th:text="${user.affiliation}">embeded</td>
+						<td class="col-sm-1" th:text="${user.position}">部長</td>
+						<td class="col-sm-1" th:text="${user.projectId}">プロジェクト1</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

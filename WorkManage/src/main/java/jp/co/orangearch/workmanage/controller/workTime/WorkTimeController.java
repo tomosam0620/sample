@@ -56,6 +56,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public static final String FUNCTION_URI = "/workTime";
 	/** 一覧表示画面のURI */
 	private static final String ROOT_URI = "/";
+	/** 一覧表示画面のURI */
+	private static final String SHOWALL_URI = "/showAll";
 	/** 入力画面のURI */
 	private static final String INPUT_URI = "/{date}/input";
 	/** 更新処理のURI */
@@ -117,6 +119,30 @@ public class WorkTimeController extends AbstractWorkManageController{
 		model.addAttribute("workTimes", workTimes);
 		model.addAttribute("transportInfos", transportInfos);
 		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
+
+		return ROOT_HTML;
+	}
+
+	/**
+	 * 指定年月の勤務時間を表示します。
+	 *
+	 * @param month 年月(yyyy-MM形式)
+	 * @param model モデル
+	 * @return 遷移先
+	 */
+	@RequestMapping(value=SHOWALL_URI + "{month}", method=RequestMethod.GET)
+	public String showAll(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
+
+//		String roleId = getLoginUserInfo().getRoleId();
+//		LocalDate showMonthDate = DateUtils.convertToLocalDate(month + "-01");
+//
+//		// 画面表示情報設定
+//		List<WorkTime> workTimes = workTimeService.selectAll(userId,showMonthDate);
+//		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
+//		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
+//		model.addAttribute("workTimes", workTimes);
+//		model.addAttribute("transportInfos", transportInfos);
+//		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
 		return ROOT_HTML;
 	}

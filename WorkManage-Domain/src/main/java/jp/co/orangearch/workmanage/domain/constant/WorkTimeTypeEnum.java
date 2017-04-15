@@ -9,7 +9,7 @@ import org.seasar.doma.Domain;
  *
  */
 @Domain(valueType = Integer.class, factoryMethod = "of")
-public enum WorkTimeType implements Values {
+public enum WorkTimeTypeEnum implements Values {
 	/** 通常1(9：00～17:30(1h))。 */
 	通常1(1,"通常1(9：00～17:30(1h))"),
 	/** 通常1(9：00～18:00(1h))。 */
@@ -28,13 +28,13 @@ public enum WorkTimeType implements Values {
 	private String text;
 
 	/** コンストラクタ。 */
-	private WorkTimeType(Integer value){
+	private WorkTimeTypeEnum(Integer value){
 		this.value = value;
 		this.text = getTextByValue(value);
 	}
 
 	/** コンストラクタ。 */
-	private WorkTimeType(Integer value, String text){
+	private WorkTimeTypeEnum(Integer value, String text){
 		this.value = value;
 		this.text = text;
 	}
@@ -57,7 +57,7 @@ public enum WorkTimeType implements Values {
 	}
 	
 	public static String getTextByValue(Integer value){
-		for(WorkTimeType item : WorkTimeType.values()){
+		for(WorkTimeTypeEnum item : WorkTimeTypeEnum.values()){
 			if(item.value.equals(value)){
 				return item.text;
 			}
@@ -71,8 +71,8 @@ public enum WorkTimeType implements Values {
 	 * @param value 値
 	 * @return AttendanceCode
 	 */
-	public static WorkTimeType of(Integer value){
-		 for(WorkTimeType item : values()) {
+	public static WorkTimeTypeEnum of(Integer value){
+		 for(WorkTimeTypeEnum item : values()) {
 			if (item.getValue().equals(value)) {
 				return item;
 			}

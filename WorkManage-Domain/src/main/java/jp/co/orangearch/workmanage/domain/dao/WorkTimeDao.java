@@ -47,7 +47,7 @@ public interface WorkTimeDao {
 	 * @param userid ユーザーID
 	 * @param date 勤務日
 	 * @param options sql option
-	 * @return 勤務情報のリスト
+	 * @return 勤務情報
 	 */
 	@Select
 	Optional<WorkTime> selectByIdAndDate(String userId, LocalDate date, SelectOptions options);

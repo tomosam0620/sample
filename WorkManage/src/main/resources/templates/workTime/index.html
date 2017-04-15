@@ -20,7 +20,6 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 		</div>
 		<div class="container">
 			<h1>稼働</h1>
-			<span sec:authentication="username"/>
 			<div class="container-fluid">
 				<div class="col-sm-12" style="background-color:orange;">
 					<div class="col-sm-2">
@@ -54,11 +53,6 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
 					<tr>
 						<td class="col-sm-1">
-						<!-- 
-							<form action="#" th:action="@{/workTime/input.html}" th:object="${workTime}" method="get">
-								<button type="submit" name="date" th:value="*{workDate}">更新</button>
-							</form>
-						 -->
 							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${workTime.workDate})}">更新</a>
 						</td>
 						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).BISUNESS_DAY}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
@@ -71,7 +65,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<td class="col-sm-1" th:text="${workTime.startWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.compensatoryAttendanceDate}">1</td>
-						<td th:text="${workTime.notes}">1</td>
+						<td class="col-sm-3" th:text="${workTime.notes}">1</td>
 					</tr>
 				</tbody>
 			</table>

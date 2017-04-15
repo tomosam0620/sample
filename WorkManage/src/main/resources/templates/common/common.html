@@ -1,5 +1,11 @@
 <!DOCTYPE html>
+<!--
 <html>
+ -->
+<html lang="en"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
    <head>
     <div style="background:darkseagreen" th:fragment="header">
 	    <meta charset="UTF-8" />
@@ -27,29 +33,44 @@
 			<nav class="navbar navbar-inverse navbar-fixed-top">
 			    <div class="container">
 			        <div class="navbar-header">
-			            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-			                <span class="sr-only">Toggle navigation</span>
-			                <span class="icon-bar"></span>
-			                <span class="icon-bar"></span>
-			                <span class="icon-bar"></span>
-			            </button>
+		                <button type="button" class="navbar-toggle"
+		                data-toggle="collapse" data-target="#navbar-menu">
+		                    <span class="icon-bar"></span>
+		                    <span class="icon-bar"></span>
+		                    <span class="icon-bar"></span>
+		                </button>
 			            <a class="navbar-brand" href="/workTime/">勤報参照</a>
 			        </div>
-			        <div id="navbar" class="collapse navbar-collapse">
+		            <div class="collapse navbar-collapse" id="navbar-menu">
 			            <ul class="nav navbar-nav">
-			                <li><a href="/admin/horidayManage/">休日一覧</a></li>
-			                <li><a href="/passwordChange/update">パスワード変更</a></li>
-			                <!-- 
-			                <li><a href="#">休日登録</a></li>
-			                 -->
+			                <li><a href="/userManage/">ユーザー一覧</a></li>
 			            </ul>
-
-			        <div class="collapse navbar-collapse navbar-right" >
-						<form th:action="@{/logout}">
-							<button type="submit" class="btn btn-default navbar-btn">ログアウト</button>
-						</form>
-			        </div>
-
+				        <ul class="nav navbar-nav">
+						    <li class="dropdown">
+						        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									管理機能<span class="caret"></span>
+						        </a>
+						        <!-- 1.メニューの配置 -->
+						        <ul class="dropdown-menu">
+					                <li><a href="/admin/horidayManage/">休日管理</a></li>
+					                <li><a href="/admin/projectManage/">プロジェクト管理</a></li>
+						        </ul>
+						    <li>
+						</ul>
+				        <ul class="nav navbar-nav navbar-right">
+							<span sec:authentication="principal.username"/>
+						    <li class="dropdown">
+						        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+									アカウント情報<span class="caret"></span>
+						        </a>
+						        <!-- 1.メニューの配置 -->
+						        <ul class="dropdown-menu">
+						            <li><a href="/passwordChange/update">パスワード変更</a></li>
+						            <li class="divider"></li>
+						            <li><a th:href="@{/logout}">ログアウト</a></li>
+						        </ul>
+						    <li>
+						</ul>
 			        </div><!--/.nav-collapse -->
 			    </div>
 			</nav>

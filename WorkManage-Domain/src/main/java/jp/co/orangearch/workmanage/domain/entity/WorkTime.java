@@ -12,7 +12,7 @@ import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
 import jp.co.orangearch.workmanage.domain.constant.HoridayType;
 import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
-import jp.co.orangearch.workmanage.domain.constant.WorkTimeType;
+import jp.co.orangearch.workmanage.domain.constant.WorkTimeTypeEnum;
 import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 
 /**
@@ -34,7 +34,7 @@ public class WorkTime extends TableSuffix {
 
     /** 勤務帯 */
     @Column(name = "WORK_TIME_TYPE")
-    WorkTimeType workTimeType;
+    WorkTimeTypeEnum workTimeType;
 
     /** 出社時刻 */
     @Column(name = "START_TIME")
@@ -109,7 +109,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @return the workTimeType
      */
-    public WorkTimeType getWorkTimeType() {
+    public WorkTimeTypeEnum getWorkTimeType() {
         return workTimeType;
     }
 
@@ -118,7 +118,7 @@ public class WorkTime extends TableSuffix {
      * 
      * @param workTimeType the workTimeType
      */
-    public void setWorkTimeType(WorkTimeType workTimeType) {
+    public void setWorkTimeType(WorkTimeTypeEnum workTimeType) {
         this.workTimeType = workTimeType;
     }
 
