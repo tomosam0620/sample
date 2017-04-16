@@ -16,6 +16,12 @@ public class OperationTime extends WorkTime{
 	private BigDecimal nightHours;
 	/** 休日稼働時間 */
 	private BigDecimal horidayHours;
+	/** 週計稼働時間 */
+	private BigDecimal operationSumOfWeek;
+	/** 週計法内残業時間 */
+	private BigDecimal overtimeWithinStatutoryWorkingHoursSumOfWeek;
+	/** 週計法外残業時間 */
+	private BigDecimal overtimeBeyondStatutoryWorkingHoursSumOfWeek;
 	
 	public OperationTime() {
 	}
@@ -73,5 +79,29 @@ public class OperationTime extends WorkTime{
 	public void setHoridayHours(BigDecimal value) {
 		horidayHours = value;
 	}
+
+	public BigDecimal getOperationSumOfWeek() {
+		return operationSumOfWeek;
+	}
+
+	public void setOperationSumOfWeek(BigDecimal value) {
+		operationSumOfWeek = value;
+	}
+
+	public BigDecimal getOvertimeWithinStatutoryWorkingHoursSumOfWeek() {
+		return overtimeWithinStatutoryWorkingHoursSumOfWeek;
+	}
+
+	public void setOvertimeWithinStatutoryWorkingHoursSumOfWeek(BigDecimal value) {
+		overtimeWithinStatutoryWorkingHoursSumOfWeek = value;
+	}
+
+	public BigDecimal getOvertimeBeyondStatutoryWorkingHoursSumOfWeek(){
+		return overtimeBeyondStatutoryWorkingHoursSumOfWeek;
+	}
 	
+	public void setOvertimeBeyondStatutoryWorkingHoursSumOfWeek(BigDecimal value){
+		overtimeBeyondStatutoryWorkingHoursSumOfWeek = value;
+	}
+		
 }
