@@ -48,6 +48,11 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>終業コード</th>
 						<th>代休出日</th>
 						<th>備考</th>
+						<th>稼働</th>
+						<th>法内残業</th>
+						<th>法外残業</th>
+						<th>深夜</th>
+						<th>休日</th>
 					</tr>
 				</thead>
 				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
@@ -58,14 +63,19 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).BISUNESS_DAY}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
 						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).SATURDAY}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
 						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).HORIDAY}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
-						<td class="col-sm-1" th:text="${workTime.workTimeType}">1</td>
+						<td class="col-sm-1" th:text="${workTime.workTimeType}!=null ? ${workTime.workTimeType.getValue()} : ''">1</td>
 						<td class="col-sm-1" th:text="${workTime.attendanceCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.startWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.compensatoryAttendanceDate}">1</td>
-						<td class="col-sm-3" th:text="${workTime.notes}">1</td>
+						<td class="col-sm-5" th:text="${workTime.notes}">1</td>
+						<td class="col-sm-1" th:text="${workTime.operationTime}">1</td>
+						<td class="col-sm-1" th:text="${workTime.overtimeWithinStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.overtimeBeyondStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.nightHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.horidayHours}">1</td>
 					</tr>
 				</tbody>
 			</table>

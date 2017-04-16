@@ -30,8 +30,10 @@ import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
+import jp.co.orangearch.workmanage.dto.OperationTime;
 import jp.co.orangearch.workmanage.form.workTime.SelectMonthForm;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
@@ -113,7 +115,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		}
 
 		// 画面表示情報設定
-		List<WorkTime> workTimes = workTimeService.selectAll(userId, showMonthDate);
+		List<OperationTime> workTimes = workTimeService.selectWorkTimeInfoInMonth(userId, showMonthDate);
 		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
 		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
@@ -169,6 +171,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 			}
 		}
 		form.setWorkDate(date);
+		List<WorkTimeType> workTimeTypes = workTimeService.getWorkTimeType();
+		model.addAttribute("workTimeTypes", workTimeTypes);
 		model.addAttribute(FORM_NAME, form);
 		return INPUT_HTML;
 	}

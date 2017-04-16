@@ -18,7 +18,7 @@ import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.domain.constant.EndWorkCode;
 import jp.co.orangearch.workmanage.domain.constant.StartWorkCode;
-import jp.co.orangearch.workmanage.domain.constant.WorkTimeTypeEnum;
+import jp.co.orangearch.workmanage.domain.domain.WorkTimeCode;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 
 /**
@@ -42,7 +42,8 @@ public class WorkTimeForm implements Serializable{
 
 	/** 勤務帯。 */
 	@NotNull
-	@EnumValue(type=WorkTimeTypeEnum.class)
+//	@EnumValue(type=WorkTimeCode.class)	TODO:DBみなきゃダメ？キャッシュからみるか。
+	@Pattern(regexp = "^$|^[0-9]+$")	//暫定で一旦数値のみ
 	private String workTimeType;
 
 	/** 出勤コード */
@@ -225,7 +226,7 @@ public class WorkTimeForm implements Serializable{
 	 */
 	public WorkTimeForm(WorkTime entity){
 		userId = entity.getUserId();
-		workTimeType = entity.getWorkTimeType().getKey();
+		workTimeType = String.valueOf(entity.getWorkTimeType().getValue());
 		workDate = DateUtils.convert(entity.getWorkDate());
 		attendanceCode = entity.getAttendanceCode().getKey();
 		compensatoryAttendanceDate = DateUtils.convert(entity.getCompensatoryAttendanceDate());
@@ -240,7 +241,7 @@ public class WorkTimeForm implements Serializable{
 	public WorkTime toEntity(){
 		WorkTime entity = new WorkTime();
 		entity.setUserId(userId);
-		entity.setWorkTimeType(WorkTimeTypeEnum.of(Integer.valueOf(workTimeType)));
+		entity.setWorkTimeType(new WorkTimeCode(Integer.valueOf(workTimeType)));
 		entity.setWorkDate(DateUtils.convertToLocalDate(workDate));
 		entity.setAttendanceCode(AttendanceCode.of(Integer.valueOf(attendanceCode)));
 		entity.setCompensatoryAttendanceDate(DateUtils.convertToLocalDate(compensatoryAttendanceDate));

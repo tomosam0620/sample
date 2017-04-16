@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
+import jp.co.orangearch.workmanage.dto.OperationTime;
 
 /**
  * 勤務時間サービスのIFクラスです。
@@ -22,7 +24,7 @@ public interface WorkTimeService {
 	 * @param date 日付
 	 * @return 勤務情報のリスト
 	 */
-	List<WorkTime> selectAll(String userId, LocalDate date);
+	List<OperationTime> selectWorkTimeInfoInMonth(String userId, LocalDate date);
 
 	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
 	
@@ -50,4 +52,6 @@ public interface WorkTimeService {
 	 * @return csvのbyte配列
 	 */
 	byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date);
+
+	List<WorkTimeType> getWorkTimeType();
 }
