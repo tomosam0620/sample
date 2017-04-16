@@ -67,8 +67,12 @@ public class LoggingInterceptor extends HandlerInterceptorAdapter {
 			if(!isFirst){
 				builder.append(", ");
 			}
-			//TODO:パスワード変更画面を作ると、パラメータにパスワードが入ってくるので、マスクが必要。
-			builder.append(name +"="+ request.getParameter(name));
+			String value = request.getParameter(name);
+			//パスワードはマスクする。
+			if(name.matches(".*[p|P]assword$")){
+				value = "********";
+			}
+			builder.append(name +"="+ value);
 			isFirst = false;
 		}
 		builder.append("]");

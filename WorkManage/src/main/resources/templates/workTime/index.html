@@ -20,7 +20,6 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 		</div>
 		<div class="container">
 			<h1>稼働</h1>
-			<span sec:authentication="username"/>
 			<div class="container-fluid">
 				<div class="col-sm-12" style="background-color:orange;">
 					<div class="col-sm-2">
@@ -49,32 +48,83 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>終業コード</th>
 						<th>代休出日</th>
 						<th>備考</th>
+						<th>稼働</th>
+						<th>法内残業</th>
+						<th>法外残業</th>
+						<th>深夜</th>
+						<th>休日</th>
 					</tr>
 				</thead>
 				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
 					<tr>
 						<td class="col-sm-1">
-						<!-- 
-							<form action="#" th:action="@{/workTime/input.html}" th:object="${workTime}" method="get">
-								<button type="submit" name="date" th:value="*{workDate}">更新</button>
-							</form>
-						 -->
 							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${workTime.workDate})}">更新</a>
 						</td>
-						<td th:if="${workTime.horidayType == 1}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
-						<td th:if="${workTime.horidayType == 2}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
-						<td th:if="${workTime.horidayType == 3}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
-						<td class="col-sm-1" th:text="${workTime.workTimeType}">1</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).BISUNESS_DAY}" class="col-sm-1" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).SATURDAY}" class="col-sm-1 bg-info" th:text="${workTime.workDate}">2017-01-01</td>
+						<td th:if="${workTime.horidayType == T(jp.co.orangearch.workmanage.domain.constant.HoridayType).HORIDAY}" class="col-sm-1 bg-danger" th:text="${workTime.workDate}">2017-01-01</td>
+						<td class="col-sm-1" th:text="${workTime.workTimeType}!=null ? ${workTime.workTimeType.getValue()} : ''">1</td>
 						<td class="col-sm-1" th:text="${workTime.attendanceCode}">1</td>
-<!--
-						<td class="col-sm-1" th:text="${#T(jp.co.orangearch.workmanage.common.constant.WorkTimeType).getTextByValue（workTime.attendanceCode）}">1</td>
- -->
 						<td class="col-sm-1" th:text="${workTime.startTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endTime}">1</td>
 						<td class="col-sm-1" th:text="${workTime.startWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.endWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.compensatoryAttendanceDate}">1</td>
-						<td th:text="${workTime.notes}">1</td>
+						<td class="col-sm-5" th:text="${workTime.notes}">1</td>
+						<td class="col-sm-1" th:text="${workTime.operationTime}">1</td>
+						<td class="col-sm-1" th:text="${workTime.overtimeWithinStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.overtimeBeyondStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.nightHours}">1</td>
+						<td class="col-sm-1" th:text="${workTime.horidayHours}">1</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		
+		
+		<div class="container">
+			<h3>交通費</h3>
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>日付</th>
+						<th>手段</th>
+						<th>片/往</th>
+						<th>乗車</th>
+						<th>下車</th>
+						<th>金額</th>
+						<th>訪問先</th>
+						<th>理由</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="transportInfo : ${transportInfos}">
+						<td class="col-sm-1">
+							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${transportInfo.workDate})}">更新</a>
+						</td>
+						<td class="col-sm-1" th:text="${transportInfo.workDate}">2017-01-01</td>
+						<td class="col-sm-1" th:text="${transportInfo.TranseportType}">1</td>
+						<td class="col-sm-1" th:text="${transportInfo.oneWayRoundType}">1</td>
+						<td class="col-sm-1" th:text="${transportInfo.rideFrom}">1</td>
+						<td class="col-sm-1" th:text="${transportInfo.rideTo}">1</td>
+						<td class="col-sm-1" th:text="${transportInfo.expense}">1</td>
+						<td class="col-sm-2" th:text="${transportInfo.destination}">1</td>
+						<td class="col-sm-3" th:text="${transportInfo.reason}">1</td>
+					</tr>
+					<tr>
+						<td class="col-sm-1">
+							<a type="button" th:href="@{/workTime/input/}">登録</a>
+						</td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-1" ></td>
+						<td class="col-sm-2" ></td>
+						<td class="col-sm-3" ></td>
 					</tr>
 				</tbody>
 			</table>

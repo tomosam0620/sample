@@ -27,7 +27,7 @@ public class ChangePassowrdForm implements Serializable{
 	 * 
 	 * @return true(等しい)／false(異なる)
 	 */
-	@AssertTrue
+	@AssertTrue(message="{V006}")
 	public boolean isSameWordNewAndConfirm(){
 		if(StringUtils.isEmpty(newPassword) || StringUtils.isEmpty(confirmPassword)){
 			return true;
@@ -42,7 +42,7 @@ public class ChangePassowrdForm implements Serializable{
 	 * 
 	 * @return true(異なる)／false(等しい)
 	 */
-	@AssertTrue
+	@AssertTrue(message="{V007}")
 	public boolean isNotSameOldAndNew(){
 		if(StringUtils.isEmpty(password) || StringUtils.isEmpty(newPassword)){
 			return true;

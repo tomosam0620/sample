@@ -1,5 +1,6 @@
 package jp.co.orangearch.workmanage.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -23,7 +24,6 @@ public class WorkTimeCsvBean {
     /** 勤務帯 */
 	@CsvColumn(number=3, label="勤務帯")
     Integer workTimeType;
-//    WorkTimeType workTimeType;
     
     /** 出社時刻 */
 	@CsvColumn(number=4, label="出社時刻")
@@ -44,6 +44,18 @@ public class WorkTimeCsvBean {
     /** 休日タイプ */
 	@CsvColumn(number=8, label="休日タイプ")
     Integer horidayType;
+
+    /** 稼働時間 */
+	@CsvColumn(number=9, label="稼働時間")
+	private BigDecimal operationTime;
+
+    /** 法内残業 */
+	@CsvColumn(number=10, label="法内残業")
+	private BigDecimal overtimeWithinStatutoryWorkingHours;
+
+    /** 法外残業 */
+	@CsvColumn(number=11, label="法外残業")
+	private BigDecimal overtimeBeyondStatutoryWorkingHours;
 
     /** 
      * Returns the userId.
@@ -87,7 +99,6 @@ public class WorkTimeCsvBean {
      * @return the workTimeType
      */
     public Integer getWorkTimeType() {
-//    public WorkTimeType getWorkTimeType(){
         return workTimeType;
     }
 
@@ -97,7 +108,6 @@ public class WorkTimeCsvBean {
      * @param workTimeType the workTimeType
      */
     public void setWorkTimeType(Integer workTimeType) {
-//    public void setWorkTimeType(WorkTimeType workTimeType) {
         this.workTimeType = workTimeType;
     }
 
@@ -190,4 +200,28 @@ public class WorkTimeCsvBean {
     public void setHoridayType(Integer horidayType) {
         this.horidayType = horidayType;
     }
+
+	public BigDecimal getOperationTime(){
+		return operationTime;
+	}
+	
+	public void setOperationTime(BigDecimal value){
+		operationTime = value;
+	}
+
+	public void setOvertimeWithinStatutoryWorkingHours(BigDecimal value) {
+		overtimeWithinStatutoryWorkingHours = value;
+	}
+
+	public BigDecimal getOvertimeWithinStatutoryWorkingHours() {
+		return overtimeWithinStatutoryWorkingHours;
+	}
+
+	public void setOvertimeBeyondStatutoryWorkingHours(BigDecimal value) {
+		overtimeBeyondStatutoryWorkingHours = value;
+	}
+	
+	public BigDecimal getOvertimeBeyondStatutoryWorkingHours() {
+		return overtimeBeyondStatutoryWorkingHours;
+	}
 }

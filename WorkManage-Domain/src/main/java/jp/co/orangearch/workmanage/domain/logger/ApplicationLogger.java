@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import jp.co.orangearch.workmanage.domain.constant.LogFileMarker;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
 
 /**
  * アプリケーションログを出力するクラスです。<br>

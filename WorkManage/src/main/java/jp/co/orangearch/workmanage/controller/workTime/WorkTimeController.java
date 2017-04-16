@@ -28,9 +28,12 @@ import jp.co.orangearch.workmanage.component.util.DateUtils;
 import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
+import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
+import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
+import jp.co.orangearch.workmanage.dto.OperationTime;
 import jp.co.orangearch.workmanage.form.workTime.SelectMonthForm;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
@@ -55,6 +58,8 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public static final String FUNCTION_URI = "/workTime";
 	/** 一覧表示画面のURI */
 	private static final String ROOT_URI = "/";
+	/** 一覧表示画面のURI */
+	private static final String SHOWALL_URI = "/showAll";
 	/** 入力画面のURI */
 	private static final String INPUT_URI = "/{date}/input";
 	/** 更新処理のURI */
@@ -110,11 +115,36 @@ public class WorkTimeController extends AbstractWorkManageController{
 		}
 
 		// 画面表示情報設定
-		List<WorkTime> workTimes = workTimeService.selectAll(userId, showMonthDate);
+		List<OperationTime> workTimes = workTimeService.selectWorkTimeInfoInMonth(userId, showMonthDate);
+		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
 		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
 		model.addAttribute("workTimes", workTimes);
-		model.addAttribute("months", workTimeService.getMonthList());
+		model.addAttribute("transportInfos", transportInfos);
 		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
+
+		return ROOT_HTML;
+	}
+
+	/**
+	 * 指定年月の勤務時間を表示します。
+	 *
+	 * @param month 年月(yyyy-MM形式)
+	 * @param model モデル
+	 * @return 遷移先
+	 */
+	@RequestMapping(value=SHOWALL_URI + "{month}", method=RequestMethod.GET)
+	public String showAll(@DateValid(pattern="uuuu-MM") @PathVariable String month, Model model) {
+
+//		String roleId = getLoginUserInfo().getRoleId();
+//		LocalDate showMonthDate = DateUtils.convertToLocalDate(month + "-01");
+//
+//		// 画面表示情報設定
+//		List<WorkTime> workTimes = workTimeService.selectAll(userId,showMonthDate);
+//		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
+//		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる
+//		model.addAttribute("workTimes", workTimes);
+//		model.addAttribute("transportInfos", transportInfos);
+//		model.addAttribute("currentMonth", new SelectMonthForm(DateUtils.convert(showMonthDate, DateTimeFormat.UUUU_MM)));
 
 		return ROOT_HTML;
 	}
@@ -124,20 +154,25 @@ public class WorkTimeController extends AbstractWorkManageController{
 	public String input(@DateValid(pattern="uuuu-MM-dd") @PathVariable String date, Model model){
 		Optional<WorkTime> workTime = workTimeService.select(getLoginUserId(), DateUtils.convertToLocalDate(date));
 		WorkTimeForm form = new WorkTimeForm();
+		if(workTime.isPresent()){
+			form = new WorkTimeForm(workTime.get());
 
-		//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
-		if(model.containsAttribute(ERROR_OBJECT_NAME)){
-			model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, model.asMap().get(ERROR_OBJECT_NAME));
-			if(workTime.isPresent()){
-				form = WorkTimeForm.class.cast(model.asMap().get(FORM_NAME));
-				form.setVersion(workTime.get().getVersion());
+			//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
+			if(model.containsAttribute(ERROR_OBJECT_NAME)){
+				model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, model.asMap().get(ERROR_OBJECT_NAME));
+				if(workTime.isPresent()){
+					form = WorkTimeForm.class.cast(model.asMap().get(FORM_NAME));
+					form.setVersion(workTime.get().getVersion());
+				}
+			}else{
+				if(workTime.isPresent()){
+					form = new WorkTimeForm(workTime.get());
+				}
 			}
-		}else{
-			if(workTime.isPresent()){
-				form.convert(workTime.get());
-			}
-			form.setWorkDate(date);
 		}
+		form.setWorkDate(date);
+		List<WorkTimeType> workTimeTypes = workTimeService.getWorkTimeType();
+		model.addAttribute("workTimeTypes", workTimeTypes);
 		model.addAttribute(FORM_NAME, form);
 		return INPUT_HTML;
 	}
@@ -169,7 +204,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 
 		WorkTime entity = form.toEntity();
 		entity.setUserId(userId);
-		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()).getValue());
+		entity.setHoridayType(calendarComponent.getHoridayType(form.getWorkDateAsLocalDate()));
 
 		//更新
 		workTimeService.update(entity);

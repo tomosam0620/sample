@@ -34,11 +34,11 @@
 				<div class="form-group">
 					<label for="workTimeType" class="col-sm-2 control-label">勤務帯</label>
 					<div class="col-sm-2">
-					<select class="form-control col-sm-2 " id="workTimeType" th:field="*{workTimeType}">
-						<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.WorkTimeType).values()}"
-								th:value="${t.getValue()}"
-								th:text="${t.getText()}"
-								th:selected="${t.getValue()} == 3"></option>
+					<select class="form-control col-sm-2 " id="workTimeType" th:name="workTimeType">
+						<option th:each="workTimeType : ${workTimeTypes}"
+								th:value="${workTimeType.workTimeCd.getValue()}"
+								th:text="${workTimeType.workTimeName}"
+								th:selected="${workTimeType.workTimeCd} == 1"></option>
 					</select>
 					</div>
 						<span th:if="${#fields.hasErrors('workTimeType')}" class="text-danger" th:errors="*{workTimeType}">Error</span>

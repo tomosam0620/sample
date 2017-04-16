@@ -1,5 +1,8 @@
 package jp.co.orangearch.workmanage.domain.constant;
 
+import org.seasar.doma.Domain;
+
+@Domain(valueType = Integer.class, factoryMethod = "of")
 public enum HoridayType implements Values{
 	/** 営業日。 */
 	BISUNESS_DAY(1),
@@ -43,6 +46,21 @@ public enum HoridayType implements Values{
 			}
 		}
 		throw new IllegalArgumentException();
+	}
+
+	/**
+	 * domain用ファクトリメソッド。
+	 * valueからインスタンスを返します。
+	 * @param value 値
+	 * @return HoridayType
+	 */
+	public static HoridayType of(Integer value){
+		 for(HoridayType item : values()) {
+			if (item.getValue().equals(value)) {
+				return item;
+			}
+		 }
+			throw new IllegalArgumentException(String.valueOf(value));
 	}
 
 }

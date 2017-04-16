@@ -19,7 +19,7 @@ import jp.co.orangearch.workmanage.domain.exception.CsvHandleException;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
 import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler.MessageInfo;
+import jp.co.orangearch.workmanage.domain.logger.MessageInfo;
 import jp.co.orangearch.workmanage.form.horidayManage.FileUploadForm;
 import jp.co.orangearch.workmanage.service.HoridayCsvBean;
 import jp.co.orangearch.workmanage.service.HoridayManageService;

@@ -2,10 +2,12 @@ package jp.co.orangearch.workmanage.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
+import jp.co.orangearch.workmanage.dto.OperationTime;
 
 /**
  * 勤務時間サービスのIFクラスです。
@@ -22,8 +24,10 @@ public interface WorkTimeService {
 	 * @param date 日付
 	 * @return 勤務情報のリスト
 	 */
-	List<WorkTime> selectAll(String userId, LocalDate date);
+	List<OperationTime> selectWorkTimeInfoInMonth(String userId, LocalDate date);
 
+	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
+	
 	/**
 	 * 指定日付の勤務情報を取得します。
 	 *
@@ -41,11 +45,13 @@ public interface WorkTimeService {
 	void update(WorkTime workTimes);
 
 	/**
-	 * 勤務情報表示月のリストを取得します。
-	 *
-	 * @return 勤務情報表示月(yyyy-MM形式)のmap
+	 * CSVを作成します。
+	 * @param userId ユーザID
+	 * @param from_date 開始日
+	 * @param to_date 終了日
+	 * @return csvのbyte配列
 	 */
-	Map<String, String> getMonthList();
-
 	byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date);
+
+	List<WorkTimeType> getWorkTimeType();
 }

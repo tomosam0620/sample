@@ -3,12 +3,13 @@ apply plugin: 'war'
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-security:1.3.3.RELEASE')
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf:1.3.3.RELEASE')
-	compile('org.springframework.boot:spring-boot-starter-web:1.3.3.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-security:2.0.0.BUILD-SNAPSHOT')
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf:2.0.0.BUILD-SNAPSHOT')
+	compile ('org.thymeleaf.extras:thymeleaf-extras-springsecurity4:3.0.2.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-web:2.0.0.BUILD-SNAPSHOT')
 	compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
 	compile project(':WorkManage-Component')
-	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:1.3.3.RELEASE")
+	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat:2.0.0.BUILD-SNAPSHOT")
 }
 
 //jar.baseName = 'WorkManage'

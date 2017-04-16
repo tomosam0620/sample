@@ -61,10 +61,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 	@Description("Spring標準のメッセージソースの定義")
 	public MessageSource messageSource() {
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-//		messageSource.addBasenames(
-//				"i18n/messages",
-//				"com.github.mygreen.supercsv.localization.SuperCsvMessages");
-		messageSource.setBasenames(
+		messageSource.addBasenames(
 				"i18n/messages",
 				"com.github.mygreen.supercsv.localization.SuperCsvMessages");
 		messageSource.setDefaultEncoding("UTF-8");
@@ -83,7 +80,7 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 //		}
 
 	@Bean //this could be provided via auto-configuration
-    MethodValidationPostProcessor methodValidationPostProcessor() {
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
         return new MethodValidationPostProcessor();
     }
 }
