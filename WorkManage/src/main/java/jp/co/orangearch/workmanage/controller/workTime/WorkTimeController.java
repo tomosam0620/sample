@@ -157,19 +157,20 @@ public class WorkTimeController extends AbstractWorkManageController{
 		if(workTime.isPresent()){
 			form = new WorkTimeForm(workTime.get());
 
-			//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
-			if(model.containsAttribute(ERROR_OBJECT_NAME)){
-				model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, model.asMap().get(ERROR_OBJECT_NAME));
-				if(workTime.isPresent()){
-					form = WorkTimeForm.class.cast(model.asMap().get(FORM_NAME));
-					form.setVersion(workTime.get().getVersion());
-				}
-			}else{
-				if(workTime.isPresent()){
-					form = new WorkTimeForm(workTime.get());
-				}
+			if(workTime.isPresent()){
+				form = new WorkTimeForm(workTime.get());
 			}
 		}
+		
+		//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
+		if(model.containsAttribute(ERROR_OBJECT_NAME)){
+			model.addAttribute(BindingResult.MODEL_KEY_PREFIX + FORM_NAME, model.asMap().get(ERROR_OBJECT_NAME));
+			form = WorkTimeForm.class.cast(model.asMap().get(FORM_NAME));
+			if(workTime.isPresent()){
+				form.setVersion(workTime.get().getVersion());
+			}
+		}
+
 		form.setWorkDate(date);
 		List<WorkTimeType> workTimeTypes = workTimeService.getWorkTimeType();
 		model.addAttribute("workTimeTypes", workTimeTypes);

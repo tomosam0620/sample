@@ -45,11 +45,6 @@ public class WebConfig extends WebMvcConfigurerAdapter{
 		 registry.addInterceptor(tokenCheckInterceptor);
 	}
 
-	@Override
-	public Validator getValidator() {
-		return validator();
-	}
-
 	@Bean
 	public LocalValidatorFactoryBean validator() {
 		LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
