@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<!--
+		<meta charset="UTF-8" />
+ -->
+		<title>稼働一覧</title>
+		<div th:replace="common/common::header"></div>
+	</head>
+	<body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<h1>稼働一覧</h1>
+			<hr style="border:0;border-top:4px solid orange;">
+			<strong class="text-danger" th:text="${result}"></strong>
+			
+				<form class="form-horizontal" th:action="@{/workTimeList/}" th:object="${searchForm}" method="post">
+				<div class="container well">
+					<div class="row">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">期間(月)</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control monthpicker" id="from_month" th:field="*{fromMonth}"></input>
+							</div>
+							<div class="col-sm-1">
+								<label class="control-label text-cente">～</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="text" class="form-control monthpicker" id="to_month" th:field="*{toMonth}"></input>
+							</div>
+							<label for="affiliation" class="col-sm-1 control-label">所属</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control input-small" id="affiliation" placeholder="d" th:field="*{affiliation}"></input>
+								<span th:if="${#fields.hasErrors('affiliation')}" class="text-danger" th:errors="*{affiliation}">Error</span>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="form-group">
+							<label for="project" class="col-sm-2 control-label">プロジェクト</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control input-small" id="project" placeholder="d" th:field="*{project}"></input>
+								<span th:if="${#fields.hasErrors('project')}" class="text-danger" th:errors="*{project}">Error</span>
+							</div>
+							<label for="userId" class="col-sm-1 control-label">ユーザー</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control input-small" id="userId" placeholder="d" th:field="*{userId}"></input>
+								<span th:if="${#fields.hasErrors('userId')}" class="text-danger" th:errors="*{userId}">Error</span>
+							</div>
+							<div class="col-sm-3"></div>
+							<div class="col-sm-2">
+								<button type="submit" class="btn btn-warning btn-lg">検索</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+			
+			<div class="table-responsive">
+					<span class="col">
+						〇〇件
+					</span>
+					<div class="col pull-right">
+						<ul class="pagination">
+							<li><a href="#">&laquo;</a></li>
+							<li><a href="#">1</a></li>
+							<li><a href="#">2</a></li>
+							<li><a href="#">3</a></li>
+							<li><a href="#">4</a></li>
+							<li><a href="#">&raquo;</a></li>
+						</ul>
+					</div>
+			<table class="table table-striped table-bordered table-headerfixed">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>月</th>
+						<th>所属</th>
+						<th>プロジェクト</th>
+						<th>ユーザー</th>
+						<th>稼働(月)</th>
+						<th>法内残業(月)</th>
+						<th>法外残業(月)</th>
+						<th>有給(月)</th>
+						<th>半休(月)</th>
+						<th>ステータス</th>
+					</tr>
+				</thead>
+				<tbody th:remove="all-but-first" th:each="item : ${list}">
+					<tr>
+						<td class="col-sm-1">
+							<a type="button" class="btn btn-warning" th:href="@{/workTime/{month}/{userId}(month=${item.month}, userId=${item.userId})}">参照</a>
+						</td>
+						<td class="col-sm-1" th:text="${item.month}">1</td>
+						<td class="col-sm-1" th:text="${item.affiliationCd}">1</td>
+						<td class="col-sm-1" th:text="${item.projectId}">1</td>
+						<td class="col-sm-1" th:text="${item.userId}">1</td>
+						<td class="col-sm-1" th:text="${item.operationHours}">1</td>
+						<td class="col-sm-1" th:text="${item.overtimeWithinStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${item.overtimeBeyondStatutoryWorkingHours}">1</td>
+						<td class="col-sm-1" th:text="${item.dayOff}">1</td>
+						<td class="col-sm-1" th:text="${item.halfDayOff}">1</td>
+						<td class="col-sm-1" th:text="${item.status}">1</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+		</div>
+		
+	</body>
+</html>

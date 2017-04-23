@@ -26,6 +26,6 @@ $(function(){
 
 $(function(){
 	$('.selectMonth').change(function(){
-		window.location.href = $(this).val();
+		window.location.href = "/workTime/" + $(this).val() + "/" + $('#userId').val();
 	});
 });

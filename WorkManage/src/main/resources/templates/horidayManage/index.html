@@ -16,18 +16,18 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 	<body>
 		<div th:replace="common/common::menu"></div>
 		<div class="container">
-			<h1>WORK TIME</h1>
-			<div class="container">
-				<strong class="text-danger" th:text="${result}"></strong>
-			</div>
 			<div class="container">
 				<h3>祝日一覧</h3>
 			</div>
-			<form class="form-horizontal" th:action="@{upload}" method="get">
-				<button type="submit" class="btn btn-warning pull-right">登録</button>
-			</form>
+			<hr style="border:0;border-top:4px solid orange;">
+			<div class="container">
+				<strong class="text-danger" th:text="${result}"></strong>
+			</div>
 		</div>
 		<div class="container">
+			<form class="form-horizontal" th:action="@{upload}" method="get">
+				<button type="submit" class="btn btn-lg btn-warning pull-right">登録</button>
+			</form>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>

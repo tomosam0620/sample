@@ -21,24 +21,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 
 import jp.co.orangearch.workmanage.component.BreakTimeComponent;
 import jp.co.orangearch.workmanage.component.CalendarComponent;
 import jp.co.orangearch.workmanage.component.CsvComponent;
 import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.component.util.DateUtils.DateTimeFormat;
 import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
+import jp.co.orangearch.workmanage.domain.constant.ClosingState;
 import jp.co.orangearch.workmanage.domain.constant.HoridayType;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
 import jp.co.orangearch.workmanage.domain.dao.TransportionExpenseDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
+import jp.co.orangearch.workmanage.domain.dao.WorkTimeStatusDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeTypeDao;
+import jp.co.orangearch.workmanage.domain.dao.join.JoinProjectUserDao;
 import jp.co.orangearch.workmanage.domain.domain.WorkTimeCode;
 import jp.co.orangearch.workmanage.domain.entity.BreakTime;
 import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeStatus;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
+import jp.co.orangearch.workmanage.domain.entity.join.JoinProjectUser;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
+import jp.co.orangearch.workmanage.dto.OperationInfoOfMonth;
 import jp.co.orangearch.workmanage.dto.OperationTime;
+import jp.co.orangearch.workmanage.dto.WorkTimesOfMonth;
 import jp.co.orangearch.workmanage.service.WorkTimeCsvBean;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
@@ -55,14 +65,14 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	/** 稼働時間のスケール(小数点以下の桁数)。 */
 	private static int OPERATION_SCALE = 2;
 	
-	/** 法定労働時間。 */
-	private static BigDecimal STATUTORY_WORKING_HOURS = BigDecimal.valueOf(8).setScale(OPERATION_SCALE);
-	
 	/** 0時間。 */
 	private static BigDecimal ZERO_HOUR = BigDecimal.ZERO.setScale(OPERATION_SCALE);
 	
 	/** 1時間。 */
 	private static BigDecimal ONE_HOUR = BigDecimal.valueOf(60).setScale(OPERATION_SCALE);
+	
+	/** 法定労働時間。 */
+	private static BigDecimal STATUTORY_WORKING_HOURS = BigDecimal.valueOf(8).setScale(OPERATION_SCALE);
 	
 	/** 深夜単価開始時刻。 */
 	private static LocalTime START_NIGHT_TIME = LocalTime.of(22, 0);
@@ -92,113 +102,64 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	@Autowired
 	private CsvComponent csvComponent;
 
+	@Autowired
+	private JoinProjectUserDao joinProjectUserDao;
+	
+	@Autowired
+	private WorkTimeStatusDao workTimeStatusDao;
+	
 	@Override
 	public Optional<WorkTime> select(String userId, LocalDate date) {
 		return workTimeDao.selectByIdAndDate(userId, date, SelectOptions.get());
 	}
 
 	@Override
-	public List<OperationTime> selectWorkTimeInfoInMonth(String userId, LocalDate date) {
+	public WorkTimesOfMonth selectWorkTimeInfoInMonth(String userId, LocalDate date) {
 		LocalDate firstdate = DateUtils.getFirstDayOfMonth(date);
 		LocalDate lastdate = DateUtils.getFinalDayOfMonth(date);
 		
 		BigDecimal operationSumOfWeek = ZERO_HOUR;
 		BigDecimal overtimeWithinSWHSumOfWeek = ZERO_HOUR;
 		BigDecimal overtimeBeyondSWHSumOfWeek = ZERO_HOUR;
+		int dayOffCount = 0;
+		int halfDayOffCount = 0;
 		//前月に入らなかった分(土曜を迎えなかった最終週日曜～)を取得。
 		DayOfWeek dayOfWeek = firstdate.getDayOfWeek();
 		if(dayOfWeek != DayOfWeek.SUNDAY){
-			WorkTimeSamary preMonthInfo = selectWorkTimeInfo(userId,
+			WorkTimesOfMonth preMonthInfo = selectWorkTimeInfo(userId,
 															firstdate.minusDays(dayOfWeek.getValue()),
 															firstdate.minusDays(1),
 															operationSumOfWeek,
 															overtimeWithinSWHSumOfWeek,
-															overtimeBeyondSWHSumOfWeek);
-			operationSumOfWeek = preMonthInfo.getOperationSumOfWeek();
-			overtimeWithinSWHSumOfWeek = preMonthInfo.overtimeWithinSWHSumOfWeek;
-			overtimeBeyondSWHSumOfWeek = preMonthInfo.overtimeBeyondSWHSumOfWeek;
+															overtimeBeyondSWHSumOfWeek,
+															dayOffCount,
+															halfDayOffCount);
+			operationSumOfWeek = preMonthInfo.getOperationHours();
+			overtimeWithinSWHSumOfWeek = preMonthInfo.getOvertimeWithinSWHours();
+			overtimeBeyondSWHSumOfWeek = preMonthInfo.getOvertimeBeyondSWHours();
+			dayOffCount = preMonthInfo.getDayOffCount();
+			halfDayOffCount = preMonthInfo.getHalfDayOffCount();
 		}
 
-		WorkTimeSamary workTimeInfo = selectWorkTimeInfo(userId, firstdate, lastdate, operationSumOfWeek, overtimeWithinSWHSumOfWeek, overtimeBeyondSWHSumOfWeek);
-		return workTimeInfo.getOperaionTimes();
-	}
-
-	/**
-	 * 勤務情報取得。
-	 * <br>
-	 * 指定期間の勤務情報を取得します。
-	 * 
-	 * @param userId ユーザーID
-	 * @param startDate 取得開始日
-	 * @param endDate 取得終了日
-	 * @param operationSumOfWeek 前期間からの繰り越し分稼働(週)
-	 * @param overtimeWithinSWHSumOfWeek 前期間からの繰り越し分法内残業時間(週)
-	 * @param overtimeBeyondSWHSumOfWeek 前期間からの繰り越し分法外残業時間(週)
-	 * @return 勤務情報のリスト
-	 */
-	private WorkTimeSamary selectWorkTimeInfo(String userId, LocalDate startDate, LocalDate endDate, BigDecimal operationSumOfWeek, BigDecimal overtimeWithinSWHSumOfWeek, BigDecimal overtimeBeyondSWHSumOfWeek) {
-		List<WorkTime> registedList = workTimeDao.selectByIdAndMonth(userId, startDate, endDate);
-
-		List<OperationTime> showList = new ArrayList<OperationTime>();
-		
-		LocalDate currentDate = startDate;
-		
-		while(!currentDate.isEqual(endDate.plusDays(1))){
-			OperationTime newItem = new OperationTime();
-			newItem.setWorkDate(currentDate);
-			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()));
-
-			for(WorkTime item : registedList){
-				if(item.getWorkDate().isEqual(currentDate)){
-					newItem =new OperationTime(item);
-					
-					//稼働時間計算
-					BigDecimal operationTime = getOperationTime(newItem);
-					BigDecimal overtimeWithinStatutoryWorkingHours = getOvertimeWithinStatutoryWorkingHours(newItem, operationTime);
-					BigDecimal overtimeBeyondStatutoryWorkingHours = getOvertimeBeyondStatutoryWorkingHours(newItem, operationTime);
-					BigDecimal nightHours = getNightWorkingHours(newItem);
-					BigDecimal horidayHours = getHoridayWorkingHours(newItem);
-					newItem.setOperationTime(operationTime);
-					newItem.setOvertimeWithinStatutoryWorkingHours(overtimeWithinStatutoryWorkingHours);
-					newItem.setOvertimeBeyondStatutoryWorkingHours(overtimeBeyondStatutoryWorkingHours);
-					newItem.setNightHours(nightHours);
-					newItem.setHoridayHours(horidayHours);
-					break;
-				}
-			}
-			
-			operationSumOfWeek = operationSumOfWeek.add(newItem.getOperationTime() != null ? newItem.getOperationTime() : ZERO_HOUR);
-			overtimeWithinSWHSumOfWeek = overtimeWithinSWHSumOfWeek.add(newItem.getOvertimeWithinStatutoryWorkingHours() != null
-																		? newItem.getOvertimeWithinStatutoryWorkingHours()
-																		: ZERO_HOUR);
-			overtimeBeyondSWHSumOfWeek = overtimeBeyondSWHSumOfWeek.add(newItem.getOvertimeBeyondStatutoryWorkingHours() != null
-																		? newItem.getOvertimeBeyondStatutoryWorkingHours()
-																		: ZERO_HOUR);
-			//土曜日絞め
-			if(newItem.getWorkDate().getDayOfWeek() == DayOfWeek.SATURDAY){
-				newItem.setOperationSumOfWeek(operationSumOfWeek);
-				//法内残業は法定労働時間(週)未満の場合破棄
-				if(operationSumOfWeek.compareTo(BigDecimal.valueOf(40)) < 0){
-					overtimeWithinSWHSumOfWeek = ZERO_HOUR;
-				}
-				newItem.setOvertimeWithinStatutoryWorkingHoursSumOfWeek(overtimeWithinSWHSumOfWeek);
-				newItem.setOvertimeBeyondStatutoryWorkingHoursSumOfWeek(overtimeBeyondSWHSumOfWeek);
-				operationSumOfWeek = ZERO_HOUR;
-				overtimeWithinSWHSumOfWeek = ZERO_HOUR;
-				overtimeBeyondSWHSumOfWeek = ZERO_HOUR;
-			}
-			showList.add(newItem);
-			currentDate = currentDate.plusDays(1);
-		}
-
-		WorkTimeSamary returnVal = new WorkTimeSamary(showList, operationSumOfWeek, overtimeWithinSWHSumOfWeek, overtimeBeyondSWHSumOfWeek);
-		return returnVal;
+		WorkTimesOfMonth workTimeInfo = selectWorkTimeInfo(userId,
+															firstdate,
+															lastdate,
+															operationSumOfWeek,
+															overtimeWithinSWHSumOfWeek,
+															overtimeBeyondSWHSumOfWeek,
+															dayOffCount,
+															halfDayOffCount);
+		return workTimeInfo;
 	}
 
 	@Transactional
 	@Override
-	public void update(WorkTime workTime) {
-
+	public void update(WorkTime workTime, BindingResult errors) {
+		checkInput(workTime, errors);
+		if(errors.hasErrors()){
+			return;
+		}
+		
 		SelectOptions options = SelectOptions.get();
 		Optional<WorkTime> entity = workTimeDao.selectByIdAndDate(workTime.getUserId(), workTime.getWorkDate(), options);
 
@@ -217,6 +178,42 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
 		if(result != 1){
 			throw new SystemException(MessageId.S001, new String[]{procName});
+		}
+	}
+	
+	public void checkInput(WorkTime workTime, BindingResult errors){
+		
+		String month = DateUtils.convert(workTime.getWorkDate(), DateTimeFormat.UUUU_MM);
+		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(workTime.getUserId(), month);
+		if(statusEntity.isPresent()){
+			if(!ClosingState.CLOSED.equals(statusEntity.get().getStatus())){
+				errors.reject(MessageId.M006.getValue());
+			}
+		}
+		
+		switch(workTime.getAttendanceCode()){
+		case 出勤:
+			break;
+		case 有給:
+		case 年特:
+		case 特休:
+		case 代休:
+		case 欠勤:
+		case 傷病:
+			if(!calendarComponent.isBusinessDay(workTime.getWorkDate())){
+				errors.rejectValue("attendanceCode", MessageId.V008.getValue());
+				return;
+			}
+			break;
+		case 休出:
+		case 代出:
+			if(calendarComponent.isBusinessDay(workTime.getWorkDate())){
+				errors.rejectValue("attendanceCode", MessageId.V009.getValue());
+				return;
+			}
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -241,7 +238,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 				bean.setAttendanceCode(item.getAttendanceCode().getValue());
 				bean.setHoridayType(item.getHoridayType().getValue());
 				bean.setNotes(item.getNotes());
-				BigDecimal operationTime = getOperationTime(item);
+				BigDecimal operationTime = getOperationHours(item);
 				bean.setOperationTime(operationTime);
 				bean.setOvertimeWithinStatutoryWorkingHours(getOvertimeWithinStatutoryWorkingHours(item, operationTime));
 				bean.setOvertimeBeyondStatutoryWorkingHours(getOvertimeBeyondStatutoryWorkingHours(item, operationTime));
@@ -262,6 +259,137 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		return transportionExpenseDao.selectByUserIdAndDateRange(userId, fistdate, lastdate);
 	}
 
+	@Override
+	public List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId) {
+		List<OperationInfoOfMonth> list = new ArrayList<OperationInfoOfMonth>();
+		LocalDate notSpecifyDateFrom = DateUtils.convertToLocalDate("1970-01-01");	//TODO：性能対策 from未指定だとループ回数が・・・
+		LocalDate notSpecifyDateTo = calendarComponent.getSystemDate();
+		
+		LocalDate from = StringUtils.isEmpty(fromMonth) ? notSpecifyDateFrom : DateUtils.getFirstDayOfMonth(fromMonth + "-01");
+		LocalDate to = StringUtils.isEmpty(toMonth) ? notSpecifyDateTo : DateUtils.getFinalDayOfMonth(toMonth + "-01");
+
+		//検索対象ユーザは、期間指定がなければ現在配下にいるユーザを検索する。期間指定がある場合は、その期間に配下にいたユーザを含む
+		LocalDate startDateForCurrentUsers = from;
+		LocalDate endDateForCurrentUsers = to;
+		if(StringUtils.isEmpty(fromMonth) && StringUtils.isEmpty(toMonth)){
+			startDateForCurrentUsers = calendarComponent.getSystemDate().withDayOfMonth(1);
+			endDateForCurrentUsers = DateUtils.getFinalDayOfMonth(startDateForCurrentUsers);
+		}
+
+		List<JoinProjectUser> users = joinProjectUserDao.selectByConditions(affiliationCd,
+																			projectId,
+																			userId,
+																			startDateForCurrentUsers,
+																			endDateForCurrentUsers,
+																			SelectOptions.get().count().limit(100));
+		for(LocalDate current = to; (current.isAfter(from) || current.equals(from)); current=current.minusMonths(1)){
+			for(JoinProjectUser user : users){
+				String month = DateUtils.convert(current, DateTimeFormat.UUUU_MM);
+				WorkTimesOfMonth operationTimes = selectWorkTimeInfoInMonth(user.getUserId(), current);
+				if(operationTimes.isExist()){
+					OperationInfoOfMonth info = new OperationInfoOfMonth();
+					info.setAffiliationCd(user.getAffiliation());
+					info.setMonth(month);
+					info.setOperationHours(operationTimes.getOperationHours());
+					info.setOvertimeWithinStatutoryWorkingHours(operationTimes.getOvertimeWithinSWHours());
+					info.setOvertimeBeyondStatutoryWorkingHours(operationTimes.getOvertimeBeyondSWHours());
+					info.setProjectId(user.getProjectId());
+					info.setDayOff(operationTimes.getDayOffCount());
+					info.setHalfDayOff(operationTimes.getHalfDayOffCount());
+					Optional<WorkTimeStatus> status = workTimeStatusDao.selectById(user.getUserId(), month);
+					info.setStatus(status.isPresent() ? status.get().getStatus() : ClosingState.OPEN);
+					info.setUserId(user.getUserId());
+					list.add(info);
+				}
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * 勤務情報取得。
+	 * <br>
+	 * 指定期間の勤務情報を取得します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param startDate 取得開始日
+	 * @param endDate 取得終了日
+	 * @param preOperationHours 前期間からの繰り越し分稼働(週)
+	 * @param preOvertimeWithinSWHours 前期間からの繰り越し分法内残業時間(週)
+	 * @param preOvertimeBeyondSWHours 前期間からの繰り越し分法外残業時間(週)
+	 * @return 勤務情報のリスト
+	 */
+	private WorkTimesOfMonth selectWorkTimeInfo(String userId, LocalDate startDate, LocalDate endDate, BigDecimal preOperationHours, BigDecimal preOvertimeWithinSWHours, BigDecimal preOvertimeBeyondSWHours, int dayOffCount, int halfDayOffCount) {
+		List<WorkTime> registedList = workTimeDao.selectByIdAndMonth(userId, startDate, endDate);
+
+		List<OperationTime> showList = new ArrayList<OperationTime>();
+		
+		LocalDate currentDate = startDate;
+		WorkTimesOfMonth returnVal = new WorkTimesOfMonth(showList, preOperationHours, preOvertimeWithinSWHours, preOvertimeBeyondSWHours);
+		
+		while(!currentDate.isEqual(endDate.plusDays(1))){
+			OperationTime newItem = new OperationTime();
+			newItem.setWorkDate(currentDate);
+			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()));
+
+			for(WorkTime item : registedList){
+				if(item.getWorkDate().isEqual(currentDate)){
+					newItem =new OperationTime(item);
+					
+					//稼働時間計算
+					BigDecimal operationTime = getOperationHours(newItem);
+					BigDecimal overtimeWithinStatutoryWorkingHours = getOvertimeWithinStatutoryWorkingHours(newItem, operationTime);
+					BigDecimal overtimeBeyondStatutoryWorkingHours = getOvertimeBeyondStatutoryWorkingHours(newItem, operationTime);
+					BigDecimal nightHours = getNightWorkingHours(newItem);
+					BigDecimal horidayHours = getHoridayWorkingHours(newItem);
+					dayOffCount = isDayOff(newItem) ? dayOffCount + 1 : dayOffCount;
+					halfDayOffCount = isHalfDayOff(newItem) ? halfDayOffCount + 1 : halfDayOffCount;
+					newItem.setOperationHours(operationTime);
+					newItem.setOvertimeWithinStatutoryWorkingHours(overtimeWithinStatutoryWorkingHours);
+					newItem.setOvertimeBeyondStatutoryWorkingHours(overtimeBeyondStatutoryWorkingHours);
+					newItem.setNightHours(nightHours);
+					newItem.setHoridayHours(horidayHours);
+					newItem.setLateHours(getLateHours(newItem));
+					newItem.setLeaveEaryHours(getLeaveEaryHours(newItem));
+					returnVal.setIsExist(true);
+					break;
+				}
+			}
+			
+			preOperationHours = preOperationHours.add(newItem.getOperationHours() != null ? newItem.getOperationHours() : ZERO_HOUR);
+			preOvertimeWithinSWHours = preOvertimeWithinSWHours.add(newItem.getOvertimeWithinStatutoryWorkingHours() != null
+																		? newItem.getOvertimeWithinStatutoryWorkingHours()
+																		: ZERO_HOUR);
+			preOvertimeBeyondSWHours = preOvertimeBeyondSWHours.add(newItem.getOvertimeBeyondStatutoryWorkingHours() != null
+																		? newItem.getOvertimeBeyondStatutoryWorkingHours()
+																		: ZERO_HOUR);
+			//土曜日絞め
+			if(newItem.getWorkDate().getDayOfWeek() == DayOfWeek.SATURDAY){
+				newItem.setOperationHoursInWeek(preOperationHours);
+				//法内残業は法定労働時間(週)未満の場合破棄
+				if(preOperationHours.compareTo(BigDecimal.valueOf(40)) < 0){
+					preOvertimeWithinSWHours = ZERO_HOUR;
+				}
+				newItem.setOvertimeWithinStatutoryWorkingHoursInWeek(preOvertimeWithinSWHours);
+				newItem.setOvertimeBeyondStatutoryWorkingHoursInWeek(preOvertimeBeyondSWHours);
+				returnVal.setOperationHours(returnVal.getOperationHours().add(preOperationHours));
+				returnVal.setOvertimeWithinSWHours(returnVal.getOvertimeWithinSWHours().add(preOvertimeWithinSWHours));
+				returnVal.setOvertimeBeyondSWHours(returnVal.getOvertimeBeyondSWHours().add(preOvertimeBeyondSWHours));
+				preOperationHours = ZERO_HOUR;
+				preOvertimeWithinSWHours = ZERO_HOUR;
+				preOvertimeBeyondSWHours = ZERO_HOUR;
+			}
+			showList.add(newItem);
+			currentDate = currentDate.plusDays(1);
+		}
+		returnVal.setOperationHours(returnVal.getOperationHours().add(preOperationHours));
+		returnVal.setOvertimeWithinSWHours(returnVal.getOvertimeWithinSWHours().add(preOvertimeWithinSWHours));
+		returnVal.setOvertimeBeyondSWHours(returnVal.getOvertimeBeyondSWHours().add(preOvertimeBeyondSWHours));
+		returnVal.setDayOffCount(dayOffCount);
+		returnVal.setHalfDayOffCount(halfDayOffCount);
+		return returnVal;
+	}
+
 	/**
 	 * 稼働時間取得
 	 * <br>
@@ -274,7 +402,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @param workTimeInfo 勤務情報
 	 * @return 稼働時間
 	 */
-	private BigDecimal getOperationTime(WorkTime workTimeInfo) {
+	private BigDecimal getOperationHours(WorkTime workTimeInfo) {
 		BigDecimal scheduledWorkingHours = getScheduledWorkingHours(workTimeInfo.getWorkTimeType());
 		switch(workTimeInfo.getAttendanceCode()){
 		case 有給:
@@ -303,7 +431,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			if(endTime.isBefore(startTime)){
 				endTime = endTime.plusDays(1);
 			}
-			operationTime = calcurateOperationTime(workTimeInfo.getWorkTimeType(), workTimeInfo.getWorkDate(), startTime, endTime);
+			operationTime = calcurateOperationHours(workTimeInfo.getWorkTimeType(), workTimeInfo.getWorkDate(), startTime, endTime);
 		}
 		
 
@@ -327,7 +455,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @param endTime 終了時刻
 	 * @return 稼働時間(H)
 	 */
-	private BigDecimal calcurateOperationTime(WorkTimeCode worcTimeCd, LocalDate workDate, LocalDateTime startTime, LocalDateTime endTime){
+	private BigDecimal calcurateOperationHours(WorkTimeCode worcTimeCd, LocalDate workDate, LocalDateTime startTime, LocalDateTime endTime){
 		LocalDateTime workStartTime = LocalDateTime.of(workDate, getWorkStartTime(worcTimeCd));
 
 		LocalDateTime calcurateStartTime = startTime;
@@ -398,6 +526,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return 稼働時間(H)
 	 */
 	private BigDecimal getNightWorkingHours(WorkTime operation){
+		if(ObjectUtils.isEmpty(operation.getWorkDate()) || ObjectUtils.isEmpty(operation.getStartTime())){
+			return ZERO_HOUR;
+		}
 		LocalDateTime startTime = LocalDateTime.of(operation.getWorkDate(), operation.getStartTime());
 		LocalDateTime endTime = LocalDateTime.of(operation.getWorkDate(), operation.getEndTime());
 		if(operation.getStartTime().isAfter(operation.getEndTime())){
@@ -417,7 +548,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 				endTime = nightEndTime;
 			}
 			
-			nightOperation = calcurateOperationTime(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime);
+			nightOperation = calcurateOperationHours(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime);
 		}
 		
 		return nightOperation;
@@ -431,6 +562,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return 休日の稼働時間(H)
 	 */
 	private BigDecimal getHoridayWorkingHours(WorkTime operation){
+		if(ObjectUtils.isEmpty(operation.getWorkDate()) || ObjectUtils.isEmpty(operation.getStartTime())){
+			return ZERO_HOUR;
+		}
 		LocalDateTime startTime = LocalDateTime.of(operation.getWorkDate(), operation.getStartTime());
 		LocalDateTime endTime = LocalDateTime.of(operation.getWorkDate(), operation.getEndTime());
 		BigDecimal horidayWorkinfHours = ZERO_HOUR;
@@ -441,17 +575,77 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 				endTime = LocalDateTime.of(operation.getWorkDate().plusDays(1), LocalTime.of(0, 0));
 			}
 			
-			horidayWorkinfHours = calcurateOperationTime(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime);
+			horidayWorkinfHours = calcurateOperationHours(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime);
 		}
 		
 		if(calendarComponent.getHoridayType(operation.getWorkDate().plusDays(1)) == HoridayType.HORIDAY){
 			if(operation.getEndTime().isBefore(getWorkStartTime(operation.getWorkTimeType()))){
 				startTime = LocalDateTime.of(operation.getWorkDate().plusDays(1), LocalTime.of(0, 0));
 				endTime = endTime.plusDays(1);
-				horidayWorkinfHours = horidayWorkinfHours.add(calcurateOperationTime(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime));
+				horidayWorkinfHours = horidayWorkinfHours.add(calcurateOperationHours(operation.getWorkTimeType(), operation.getWorkDate(), startTime, endTime));
 			}
 		}
 		return horidayWorkinfHours;
+	}
+	
+	/**
+	 * 遅刻時間を取得します。
+	 * 
+	 * @param operation
+	 * @return
+	 */
+	private BigDecimal getLateHours(WorkTime operation){
+		//TODO
+		return ZERO_HOUR;
+	}
+	
+	/**
+	 * 早退時間を取得します。
+	 * 
+	 * @param operation
+	 * @return
+	 */
+	private BigDecimal getLeaveEaryHours(WorkTime operation){
+		//TODO
+		return ZERO_HOUR;
+	}
+	
+	/**
+	 * 有給か判定します。
+	 * 
+	 * @param operation 勤務情報
+	 * @return true：有給／false：有給でない
+	 */
+	private boolean isDayOff(WorkTime operation){
+		boolean isDayOff = false;
+		switch(operation.getAttendanceCode()){
+		case 有給:
+		case 年特:
+			isDayOff = true;
+			break;
+		default:
+			break;
+		}
+		return isDayOff;
+	}
+	
+	/**
+	 * 半休か判定します。
+	 * 
+	 * @param operation 勤務情報
+	 * @return true：半休／false：半休でない
+	 */
+	private boolean isHalfDayOff(WorkTime operation){
+		boolean isHalfDayOff = false;
+		switch(operation.getAttendanceCode()){
+		case 午前半休:
+		case 午後半休:
+			isHalfDayOff = true;
+			break;
+		default:
+			break;
+		}
+		return isHalfDayOff;
 	}
 	
 	/**
@@ -514,54 +708,25 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		}
 	}
 
-	class WorkTimeSamary{
-		private List<OperationTime> operaionTimes;
-		private BigDecimal operationSumOfWeek;
-		private BigDecimal overtimeWithinSWHSumOfWeek;
-		private BigDecimal overtimeBeyondSWHSumOfWeek;
-		
-		public WorkTimeSamary(List<OperationTime> operaionTimes, BigDecimal operationSumOfWeek,
-				BigDecimal overtimeWithinSWHSumOfWeek, BigDecimal overtimeBeyondSWHSumOfWeek) {
-			this.operaionTimes = operaionTimes;
-			this.operationSumOfWeek = operationSumOfWeek;
-			this.overtimeWithinSWHSumOfWeek = overtimeWithinSWHSumOfWeek;
-			this.overtimeBeyondSWHSumOfWeek = overtimeBeyondSWHSumOfWeek;
+	@Override
+	public void updateStatus(String userId, String month, ClosingState status, Integer version, BindingResult errors) {
+		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(userId, month);
+		if(statusEntity.isPresent()){
+			WorkTimeStatus entity = statusEntity.get();
+			entity.setStatus(status);
+			entity.setVersion(version);
+			workTimeStatusDao.update(entity);
+		}else{
+			WorkTimeStatus entity = new WorkTimeStatus();
+			entity.setWorkMonth(month);
+			entity.setUserId(userId);
+			entity.setStatus(status);
+			workTimeStatusDao.insert(entity);
 		}
+	}
 
-		public WorkTimeSamary() {
-		}
-
-		public List<OperationTime> getOperaionTimes(){
-			return operaionTimes;
-		}
-		
-		public void setOperaionTimes(List<OperationTime> value){
-			operaionTimes = value;
-		}
-		
-		public BigDecimal getOperationSumOfWeek(){
-			return operationSumOfWeek;
-		}
-		
-		public void setOperationSumOfWeek(BigDecimal value){
-			operationSumOfWeek = value;
-		}
-		
-		public BigDecimal getOvertimeWithinSWHSumOfWeek(){
-			return overtimeWithinSWHSumOfWeek;
-		}
-		
-		public void setOvertimeWithinSWHSumOfWeek(BigDecimal value){
-			overtimeWithinSWHSumOfWeek = value;
-		}
-		
-		public BigDecimal getOvertimeBeyondSWHSumOfWeek(){
-			return overtimeBeyondSWHSumOfWeek;
-		}
-		
-		public void setOvertimeBeyondSWHSumOfWeek(BigDecimal value){
-			overtimeBeyondSWHSumOfWeek = value;
-		}
-
+	@Override
+	public Optional<WorkTimeStatus> selectStatusVersion(String userId, String month) {
+		return workTimeStatusDao.selectById(userId, month);
 	}
 }

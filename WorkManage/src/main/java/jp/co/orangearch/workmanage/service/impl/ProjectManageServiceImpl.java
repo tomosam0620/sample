@@ -1,6 +1,7 @@
 package jp.co.orangearch.workmanage.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,11 @@ public class ProjectManageServiceImpl implements ProjectManageService {
 	@Override
 	public List<Customer> selectCustomers() {
 		return customerDao.selectAll();
+	}
+
+	@Override
+	public Optional<Project> select(Integer projectId) {
+		return projectDao.selectById(projectId);
 	}
 
 	@Transactional

@@ -48,6 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
         boolean isAccountNonExpired = true;
         boolean isAccountNonLocked = true;
+        //TODO:パスワード期限切れチェックはやっぱり認証時にもってくる。
         boolean isCredentialsNonExpired = true;
         boolean isEnabled = true;
         

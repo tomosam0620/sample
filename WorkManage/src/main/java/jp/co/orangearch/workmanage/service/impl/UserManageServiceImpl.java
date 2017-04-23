@@ -43,4 +43,17 @@ public class UserManageServiceImpl implements UserManageService {
 		return joinProjectUserDao.selectById(userId);
 	}
 
+	@Override
+	public Optional<JoinProjectUser> select(Integer affiliationCd, Integer projectId, String userId,
+			LocalDate fromDate, LocalDate toDate){
+		
+		List<JoinProjectUser> userInfo =  joinProjectUserDao.selectByConditions(affiliationCd, projectId, userId,
+				fromDate, toDate, SelectOptions.get().limit(1));
+		if(userInfo.isEmpty()){
+			return Optional.empty();
+		}
+		return Optional.of(userInfo.get(0));
+		
+	}
+
 }
