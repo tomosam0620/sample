@@ -57,10 +57,9 @@
 			</form>
 			
 			<div class="table-responsive">
-					<span class="col">
-						〇〇件
-					</span>
-					<div class="col pull-right">
+				<div class="row">
+					<div class="col-sm-2" th:text="${count} + '件'">0件</div>
+					<div class="col-sm-3 pull-right">
 						<ul class="pagination">
 							<li><a href="#">&laquo;</a></li>
 							<li><a href="#">1</a></li>
@@ -70,6 +69,7 @@
 							<li><a href="#">&raquo;</a></li>
 						</ul>
 					</div>
+				</div>
 			<table class="table table-striped table-bordered table-headerfixed">
 				<thead>
 					<tr>

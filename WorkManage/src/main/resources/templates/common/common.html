@@ -42,7 +42,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<ul class="nav navbar-nav">
 							<li><a href="/userManage/">ユーザー一覧</a></li>
 						</ul>
-						<div sec:authorize="hasRole('ROLE_A01')">
+						<div sec:authorize="hasAnyRole('ROLE_A01','ROLE_A02','ROLE_A03')">
 						<ul class="nav navbar-nav">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">

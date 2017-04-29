@@ -37,24 +37,25 @@ import jp.co.orangearch.workmanage.domain.dao.TransportionExpenseDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeStatusDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeTypeDao;
-import jp.co.orangearch.workmanage.domain.dao.join.JoinProjectUserDao;
+import jp.co.orangearch.workmanage.domain.dao.join.JoinProjectWorkTimeStatusUserDao;
 import jp.co.orangearch.workmanage.domain.domain.WorkTimeCode;
 import jp.co.orangearch.workmanage.domain.entity.BreakTime;
 import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeStatus;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
-import jp.co.orangearch.workmanage.domain.entity.join.JoinProjectUser;
+import jp.co.orangearch.workmanage.domain.entity.join.JoinProjectWorkTimeStatusUser;
 import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.dto.OperationInfoOfMonth;
 import jp.co.orangearch.workmanage.dto.OperationTime;
 import jp.co.orangearch.workmanage.dto.WorkTimesOfMonth;
 import jp.co.orangearch.workmanage.service.WorkTimeCsvBean;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
+import sun.nio.cs.ext.MS932;
 
 
 /**
- * 勤務時間サービスの実相クラスです。
+ * 勤務時間サービスの実装クラスです。
  *
  * @author t-otsuka
  *
@@ -73,6 +74,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	
 	/** 法定労働時間。 */
 	private static BigDecimal STATUTORY_WORKING_HOURS = BigDecimal.valueOf(8).setScale(OPERATION_SCALE);
+
+	/** 週間法定労働時間。 */
+	private static BigDecimal STATUTORY_WORKING_HOURS_OF_WEEK = BigDecimal.valueOf(40);
 	
 	/** 深夜単価開始時刻。 */
 	private static LocalTime START_NIGHT_TIME = LocalTime.of(22, 0);
@@ -103,11 +107,11 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	private CsvComponent csvComponent;
 
 	@Autowired
-	private JoinProjectUserDao joinProjectUserDao;
-	
-	@Autowired
 	private WorkTimeStatusDao workTimeStatusDao;
 	
+	@Autowired
+	private JoinProjectWorkTimeStatusUserDao workTimeStatusUserDao;
+
 	@Override
 	public Optional<WorkTime> select(String userId, LocalDate date) {
 		return workTimeDao.selectByIdAndDate(userId, date, SelectOptions.get());
@@ -183,6 +187,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	
 	public void checkInput(WorkTime workTime, BindingResult errors){
 		
+		// ステータスチェック
 		String month = DateUtils.convert(workTime.getWorkDate(), DateTimeFormat.UUUU_MM);
 		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(workTime.getUserId(), month);
 		if(statusEntity.isPresent()){
@@ -191,6 +196,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			}
 		}
 		
+		//出勤コードチェック
 		switch(workTime.getAttendanceCode()){
 		case 出勤:
 			break;
@@ -200,15 +206,16 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		case 代休:
 		case 欠勤:
 		case 傷病:
+		case 明け休み:
 			if(!calendarComponent.isBusinessDay(workTime.getWorkDate())){
-				errors.rejectValue("attendanceCode", MessageId.V008.getValue());
+				errors.reject(MessageId.M012.getValue(), workTime.getAttendanceCode().getText());
 				return;
 			}
 			break;
 		case 休出:
 		case 代出:
 			if(calendarComponent.isBusinessDay(workTime.getWorkDate())){
-				errors.rejectValue("attendanceCode", MessageId.V009.getValue());
+				errors.reject(MessageId.M011.getValue(), workTime.getAttendanceCode().getText());
 				return;
 			}
 			break;
@@ -260,50 +267,127 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	}
 
 	@Override
-	public List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId) {
+	public List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId, SelectOptions options) {
 		List<OperationInfoOfMonth> list = new ArrayList<OperationInfoOfMonth>();
-		LocalDate notSpecifyDateFrom = DateUtils.convertToLocalDate("1970-01-01");	//TODO：性能対策 from未指定だとループ回数が・・・
-		LocalDate notSpecifyDateTo = calendarComponent.getSystemDate();
 		
-		LocalDate from = StringUtils.isEmpty(fromMonth) ? notSpecifyDateFrom : DateUtils.getFirstDayOfMonth(fromMonth + "-01");
-		LocalDate to = StringUtils.isEmpty(toMonth) ? notSpecifyDateTo : DateUtils.getFinalDayOfMonth(toMonth + "-01");
+		LocalDate from = StringUtils.isEmpty(fromMonth) ? null : DateUtils.getFirstDayOfMonth(fromMonth + "-01");
+		LocalDate to = StringUtils.isEmpty(toMonth) ? null : DateUtils.getFinalDayOfMonth(toMonth + "-01");
 
-		//検索対象ユーザは、期間指定がなければ現在配下にいるユーザを検索する。期間指定がある場合は、その期間に配下にいたユーザを含む
-		LocalDate startDateForCurrentUsers = from;
-		LocalDate endDateForCurrentUsers = to;
-		if(StringUtils.isEmpty(fromMonth) && StringUtils.isEmpty(toMonth)){
-			startDateForCurrentUsers = calendarComponent.getSystemDate().withDayOfMonth(1);
-			endDateForCurrentUsers = DateUtils.getFinalDayOfMonth(startDateForCurrentUsers);
+		List<JoinProjectWorkTimeStatusUser> statuses = workTimeStatusUserDao.selectByCondition(affiliationCd, projectId, userId, from, to, options);
+		for(JoinProjectWorkTimeStatusUser status : statuses){
+			WorkTimesOfMonth operationTimes = selectWorkTimeInfoInMonth(status.getUserId(), DateUtils.convertToLocalDate(status.getWorkMonth() + "-01"));
+			OperationInfoOfMonth info = new OperationInfoOfMonth();
+			info.setAffiliationCd(status.getAffiliation());
+			info.setMonth(status.getWorkMonth());
+			info.setOperationHours(operationTimes.getOperationHours());
+			info.setOvertimeWithinStatutoryWorkingHours(operationTimes.getOvertimeWithinSWHours());
+			info.setOvertimeBeyondStatutoryWorkingHours(operationTimes.getOvertimeBeyondSWHours());
+			info.setProjectId(status.getProjectId());
+			info.setDayOff(operationTimes.getDayOffCount());
+			info.setHalfDayOff(operationTimes.getHalfDayOffCount());
+			info.setStatus(status.getStatus());
+			info.setUserId(status.getUserId());
+			list.add(info);
 		}
-
-		List<JoinProjectUser> users = joinProjectUserDao.selectByConditions(affiliationCd,
-																			projectId,
-																			userId,
-																			startDateForCurrentUsers,
-																			endDateForCurrentUsers,
-																			SelectOptions.get().count().limit(100));
-		for(LocalDate current = to; (current.isAfter(from) || current.equals(from)); current=current.minusMonths(1)){
-			for(JoinProjectUser user : users){
-				String month = DateUtils.convert(current, DateTimeFormat.UUUU_MM);
-				WorkTimesOfMonth operationTimes = selectWorkTimeInfoInMonth(user.getUserId(), current);
-				if(operationTimes.isExist()){
-					OperationInfoOfMonth info = new OperationInfoOfMonth();
-					info.setAffiliationCd(user.getAffiliation());
-					info.setMonth(month);
-					info.setOperationHours(operationTimes.getOperationHours());
-					info.setOvertimeWithinStatutoryWorkingHours(operationTimes.getOvertimeWithinSWHours());
-					info.setOvertimeBeyondStatutoryWorkingHours(operationTimes.getOvertimeBeyondSWHours());
-					info.setProjectId(user.getProjectId());
-					info.setDayOff(operationTimes.getDayOffCount());
-					info.setHalfDayOff(operationTimes.getHalfDayOffCount());
-					Optional<WorkTimeStatus> status = workTimeStatusDao.selectById(user.getUserId(), month);
-					info.setStatus(status.isPresent() ? status.get().getStatus() : ClosingState.OPEN);
-					info.setUserId(user.getUserId());
-					list.add(info);
+		
+		return list;
+	}
+	
+	@Override
+	public void updateStatus(String userId, String month, ClosingState status, Integer version, BindingResult errors) {
+		LocalDate from = DateUtils.convertToLocalDate(month + "-01", DateTimeFormat.UUUU_M_D);
+		LocalDate to = DateUtils.getFinalDayOfMonth(from);
+		List<WorkTime> operations = workTimeDao.selectByIdAndMonth(userId, from, to);
+		
+		//営業日で何も入力されていない日があればエラー
+		for(LocalDate current = from; (current.isBefore(to) || current.equals(to)); current = current.plusDays(1)){
+			if(calendarComponent.isBusinessDay(current)){
+				
+				boolean isExist = false;
+				for(WorkTime operation : operations){
+					if(operation.getWorkDate().equals(current)){
+						isExist = true;
+						break;
+					}
 				}
+				
+				if(!isExist){
+					errors.reject(MessageId.M007.getValue());
+					break;
+				}
+				
 			}
 		}
-		return list;
+		
+		//始業時間と終業時間入力チェック
+		for(WorkTime operation : operations){
+			switch(operation.getAttendanceCode()){
+			//休みの出勤コードの場合入力不可
+			case 代休:
+				if(operation.getCompensatoryAttendanceDate() == null){
+					errors.reject(MessageId.M010.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "代出日"}, null);
+				}
+				if(operation.getStartTime() != null || operation.getEndTime() != null){
+					errors.reject(MessageId.M009.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "始業時間と終業時間"}, null);
+				}
+				break;
+			case 有給:
+			case 年特:
+			case 特休:
+			case 欠勤:
+			case 傷病:
+				if(operation.getCompensatoryAttendanceDate() != null){
+					errors.reject(MessageId.M011.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "代出日"}, null);
+				}
+				if(operation.getStartTime() != null || operation.getEndTime() != null){
+					errors.reject(MessageId.M009.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "始業時間と終業時間"}, null);
+				}
+				break;
+			//代出の場合、代休日の入力必須
+			case 代出:
+				if(operation.getCompensatoryAttendanceDate() == null){
+					errors.reject(MessageId.M010.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "代休日"}, null);
+				}
+				if(operation.getStartTime() == null || operation.getEndTime() == null){
+					errors.reject(MessageId.M010.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "始業時間と終業時間"}, null);
+				}
+				break;
+			//出勤している場合は始業時間と終業時間の両方入力必須
+			default:
+				if(operation.getCompensatoryAttendanceDate() != null){
+					errors.reject(MessageId.M009.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "代休出日"}, null);
+				}
+				if(operation.getStartTime() == null || operation.getEndTime() == null){
+					errors.reject(MessageId.M010.getValue(), new Object[]{operation.getWorkDate(), operation.getAttendanceCode(), "始業時間と終業時間"}, null);
+				}
+				break;
+			}
+		}
+		
+		//TODO：交通費入力チェック
+		if(errors.hasErrors()){
+			return;
+		}
+		
+		//ステータス更新
+		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(userId, month);
+		if(statusEntity.isPresent()){
+			WorkTimeStatus entity = statusEntity.get();
+			entity.setStatus(status);
+			entity.setVersion(version);
+			workTimeStatusDao.update(entity);
+		}else{
+			WorkTimeStatus entity = new WorkTimeStatus();
+			entity.setWorkMonth(month);
+			entity.setUserId(userId);
+			entity.setStatus(status);
+			workTimeStatusDao.insert(entity);
+		}
+	}
+
+	@Override
+	public Optional<WorkTimeStatus> selectStatusVersion(String userId, String month) {
+		return workTimeStatusDao.selectById(userId, month);
 	}
 	
 	/**
@@ -367,7 +451,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			if(newItem.getWorkDate().getDayOfWeek() == DayOfWeek.SATURDAY){
 				newItem.setOperationHoursInWeek(preOperationHours);
 				//法内残業は法定労働時間(週)未満の場合破棄
-				if(preOperationHours.compareTo(BigDecimal.valueOf(40)) < 0){
+				if(preOperationHours.compareTo(STATUTORY_WORKING_HOURS_OF_WEEK) < 0){
 					preOvertimeWithinSWHours = ZERO_HOUR;
 				}
 				newItem.setOvertimeWithinStatutoryWorkingHoursInWeek(preOvertimeWithinSWHours);
@@ -526,7 +610,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return 稼働時間(H)
 	 */
 	private BigDecimal getNightWorkingHours(WorkTime operation){
-		if(ObjectUtils.isEmpty(operation.getWorkDate()) || ObjectUtils.isEmpty(operation.getStartTime())){
+		if(ObjectUtils.isEmpty(operation.getWorkDate())
+				|| ObjectUtils.isEmpty(operation.getStartTime())
+				|| ObjectUtils.isEmpty(operation.getEndTime())){
 			return ZERO_HOUR;
 		}
 		LocalDateTime startTime = LocalDateTime.of(operation.getWorkDate(), operation.getStartTime());
@@ -562,7 +648,9 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return 休日の稼働時間(H)
 	 */
 	private BigDecimal getHoridayWorkingHours(WorkTime operation){
-		if(ObjectUtils.isEmpty(operation.getWorkDate()) || ObjectUtils.isEmpty(operation.getStartTime())){
+		if(ObjectUtils.isEmpty(operation.getWorkDate())
+				|| ObjectUtils.isEmpty(operation.getStartTime())
+				|| ObjectUtils.isEmpty(operation.getEndTime())){
 			return ZERO_HOUR;
 		}
 		LocalDateTime startTime = LocalDateTime.of(operation.getWorkDate(), operation.getStartTime());
@@ -706,27 +794,5 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		for(WorkTimeType workTimeType : workTimeTypes){
 			workTimeTypeCache.put(workTimeType.getWorkTimeCd().getValue(), workTimeType);
 		}
-	}
-
-	@Override
-	public void updateStatus(String userId, String month, ClosingState status, Integer version, BindingResult errors) {
-		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(userId, month);
-		if(statusEntity.isPresent()){
-			WorkTimeStatus entity = statusEntity.get();
-			entity.setStatus(status);
-			entity.setVersion(version);
-			workTimeStatusDao.update(entity);
-		}else{
-			WorkTimeStatus entity = new WorkTimeStatus();
-			entity.setWorkMonth(month);
-			entity.setUserId(userId);
-			entity.setStatus(status);
-			workTimeStatusDao.insert(entity);
-		}
-	}
-
-	@Override
-	public Optional<WorkTimeStatus> selectStatusVersion(String userId, String month) {
-		return workTimeStatusDao.selectById(userId, month);
 	}
 }

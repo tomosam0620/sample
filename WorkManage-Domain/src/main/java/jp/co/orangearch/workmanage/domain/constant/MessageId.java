@@ -7,6 +7,7 @@ package jp.co.orangearch.workmanage.domain.constant;
  *
  */
 public enum MessageId implements Values{
+	// バリデーションエラーメッセージ
 	/** yyyy-MM-ddで入力してください。 */
 	V001("V001"),
 	/** HH:mmで入力してください。 */
@@ -21,10 +22,8 @@ public enum MessageId implements Values{
 	V006("V006"),
 	/** パスワードと新しいパスワードは違う値にしてください。 */
 	V007("V007"),
-	/** 休日に{1}は選択できません。 */
-	V008("V008"),
-	/** 営業日に{1}は選択できません。 */
-	V009("V009"),
+	
+	// 業務エラーメッセージ
 	/** ERROR|不正な操作です。 */
 	M001("M001"),
 	/** WORN|既に更新されています。 */
@@ -37,6 +36,20 @@ public enum MessageId implements Values{
 	M005("M005"),
 	/** WORN|確定済みのため更新できません。 */
 	M006("M006"),
+	/** WORN|営業日はすべて入力してください。 */
+	M007("M007"),
+//	/** WORN|{0}：出勤コードが{1}の場合、始業時間と終業時間は両方入力してください。 */
+//	M008("M008"),
+	/** WORN|{0}：出勤コードが{1}の場合、{2}は入力出来ません。 */
+	M009("M009"),
+	/** WORN|{0}：出勤コードが{1}の場合、{2}を入力してください。 */
+	M010("M010"),
+	/** WORN|営業日に{0}は選択できません。 */
+	M011("M011"),
+	/** WORN|休日に{0}は選択できません。 */
+	M012("M012"),
+	
+	// システムエラーメッセージ
 	/** ERROR|{0}が失敗しました。 */
 	S001("S001"),
 	/** ERROR|{0}を{1}に変換できませんでした。 */
@@ -67,4 +80,20 @@ public enum MessageId implements Values{
 	public String getText() {
 		return value;
 	}
+	
+	/**
+	 * domain用ファクトリメソッド。
+	 * valueからインスタンスを返します。
+	 * @param value 値
+	 * @return MessageId
+	 */
+	public static MessageId of(String value){
+		 for(MessageId item : values()) {
+			if (item.getValue().equals(value)) {
+				return item;
+			}
+		 }
+		 return null;
+	}
+
 }

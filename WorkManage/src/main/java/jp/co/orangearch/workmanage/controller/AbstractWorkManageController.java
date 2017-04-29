@@ -48,6 +48,24 @@ abstract public class AbstractWorkManageController {
 	/** redirect */
 	protected static final String REDIRECT_ACTION = "redirect:";
 	
+	/** ロール(役員) */
+	private static final String ROLE_OFFICER = "A01";
+	
+	/** ロール(部長) */
+	private static final String ROLE_GENERAL_MANAGER = "A02";
+	
+	/** ロール(課長) */
+	private static final String ROLE_MANAGER = "A03";
+	
+	/** ロール(PL) */
+	private static final String ROLE_LEADER = "U01";
+	
+	/** ロール(一般) */
+	private static final String ROLE_GENERAL = "U02";
+	
+	/** ロール(経理) */
+	private static final String ROLE_ACCOUNTANT = "U03";
+	
 	/** ロガー。 */
 	@Autowired
 	private ApplicationLogger applicationLogger;
@@ -231,82 +249,118 @@ abstract public class AbstractWorkManageController {
 		LoginUserInfo userInfo = getLoginUserInfo();
 		String roleId = userInfo.getRoleId();
 		
-		affiliationCd = StringUtils.isEmpty(affiliationCd) ? null : affiliationCd;
-		projectId = StringUtils.isEmpty(projectId) ? null : projectId;
+		affiliationCd = affiliationCd == null ? null : affiliationCd;
+		projectId = projectId == null ? null : projectId;
 		userId = StringUtils.isEmpty(userId) ? null : userId;
-		LocalDate today = calendarComponent.getSystemDate();
+		
 		AccessScope scope = new AccessScope();
-		if("A01".equals(roleId)){
+		switch(roleId){
+		case ROLE_OFFICER:
+		case ROLE_ACCOUNTANT:
 			scope.setAffiliationCd(affiliationCd);
 			scope.setProjectId(projectId);
 			scope.setUserId(userId);
-		}else if("A02".equals(roleId)){//部長
-			//所属配下のみアクセス可。
-			if(!StringUtils.isEmpty(affiliationCd) && !userInfo.getAffiliation().equals(affiliationCd)){
-				return null;
-			}
-			//プロジェクトが所属配下。
-			Optional<Project> projectInfo = Optional.empty();
-			if(!StringUtils.isEmpty(projectId)){
-				projectInfo = projectManageService.select(projectId);
-				//TODO:プロジェクトテーブルに所属を追加
-//				if(!projectInfo.isPresent() || !projectInfo.get().getAffiliationCd().equals(affiliationCd)){
-//					return null;
-//				}
-			}
-			//所属配下。
-//			Optional<JoinProjectUser> user = userManageService.select(userInfo.getAffiliation(), projectInfo.get().getProjectId(), userId,
-//					DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today));
-//			if(!StringUtils.isEmpty(userId) && !userId.equals(user.get().getUserId())){
-//				return null;
-//			}
-			scope.setAffiliationCd(userInfo.getAffiliation());
-			scope.setProjectId(projectId);
-			scope.setUserId(userId);
-		}else if("U01".equals(roleId)){
-			if(!StringUtils.isEmpty(affiliationCd) && !userInfo.getAffiliation().equals(affiliationCd)){
-				return null;
-			}
-			Integer myPriject = userManageService.select(null, null, getLoginUserId(),
-					DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today)).get().getProjectId();
-			if(projectId != null && !projectId.equals(myPriject)){
-				return null;
-			}
-			Optional<JoinProjectUser> user = userManageService.select(affiliationCd, myPriject, userId,
-					DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today));
-			//ユーザーが同一プロジェクトでなければNG
-			if(!user.isPresent() || (projectId !=null && !user.get().getProjectId().equals(myPriject))){
-				return null;
-			}
-			scope.setAffiliationCd(affiliationCd);
-			scope.setProjectId(user.get().getProjectId());
-			scope.setUserId(userId);
-		}else{
-			//一般の場合、自分の属性(所属、プロジェクト、ユーザーID)と違う場合NG
-			//所属
-			if(!StringUtils.isEmpty(affiliationCd) && !userInfo.getAffiliation().equals(affiliationCd)){
-				return null;
-			}
-			//プロジェクトID
-			LocalDate now = LocalDate.now();
-			Integer myPriject = userManageService.select(null, null, getLoginUserId(),
-					DateUtils.getFirstDayOfMonth(now), DateUtils.getFinalDayOfMonth(now)).get().getProjectId();
-			if(!StringUtils.isEmpty(projectId) && !projectId.equals(myPriject)){
-				return null;
-			}
-			//ユーザーID
-			if(!StringUtils.isEmpty(userId)){
-				if(!StringUtils.isEmpty(userId) && !userInfo.getUsername().equals(userId)){
-					return null;
-				}
-			}
-			scope.setAffiliationCd(affiliationCd);
-			scope.setProjectId(projectId);
-			scope.setUserId(userInfo.getUsername());
+			break;
+		case ROLE_GENERAL_MANAGER://部長
+			scope = getGeneralManagerAccessScope(affiliationCd, projectId, userId);
+			break;
+		case ROLE_MANAGER:
+			scope = getLeaderAccessScope(affiliationCd, projectId, userId);
+			break;
+		case ROLE_LEADER:
+			scope = getLeaderAccessScope(affiliationCd, projectId, userId);
+			break;
+		default:
+			scope = getGeneralAccessScope(affiliationCd, projectId, userId);
+			break;
 		}
 		return scope;
 	}
 
+	
+	private AccessScope getGeneralManagerAccessScope(Integer affiliationCd, Integer projectId, String userId){
+		LocalDate today = calendarComponent.getSystemDate();
+		LoginUserInfo userInfo = getLoginUserInfo();
+		AccessScope scope = new AccessScope();
+		
+		//所属配下のみアクセス可。
+		if(affiliationCd != null && !userInfo.getAffiliation().equals(affiliationCd)){
+			return null;
+		}
+		//プロジェクトが所属配下。
+		Optional<Project> projectInfo = Optional.empty();
+		if(projectId != null){
+			projectInfo = projectManageService.select(projectId);
+			if(!projectInfo.isPresent() || !projectInfo.get().getAffiliation().equals(affiliationCd)){
+				return null;
+			}
+		}
+		//所属配下。
+		Optional<JoinProjectUser> user = userManageService.select(userInfo.getAffiliation(), projectId, userId,
+				DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today));
+		if(!StringUtils.isEmpty(userId) && !userId.equals(user.get().getUserId())){
+			return null;
+		}
+		scope.setAffiliationCd(userInfo.getAffiliation());
+		scope.setProjectId(projectId);
+		scope.setUserId(userId);
+		return scope;
+	}
+	
+	private AccessScope getLeaderAccessScope(Integer affiliationCd, Integer projectId, String userId){
+		LocalDate today = calendarComponent.getSystemDate();
+		LoginUserInfo userInfo = getLoginUserInfo();
+		AccessScope scope = new AccessScope();
+		
+		if(affiliationCd != null && !userInfo.getAffiliation().equals(affiliationCd)){
+			return null;
+		}
+		Integer myPriject = userManageService.select(null, null, getLoginUserId(),
+				DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today)).get().getProjectId();
+		if(projectId != null && !projectId.equals(myPriject)){
+			return null;
+		}
+		Optional<JoinProjectUser> user = userManageService.select(affiliationCd, myPriject, userId,
+				DateUtils.getFirstDayOfMonth(today), DateUtils.getFinalDayOfMonth(today));
+		//ユーザーが同一プロジェクトでなければNG
+		if(!user.isPresent() || (projectId !=null && !user.get().getProjectId().equals(myPriject))){
+			return null;
+		}
+		scope.setAffiliationCd(affiliationCd);
+		scope.setProjectId(StringUtils.isEmpty(userId) ? myPriject : projectId);
+		scope.setUserId(userId);
+		return scope;
+	}
+
+	private AccessScope getGeneralAccessScope(Integer affiliationCd, Integer projectId, String userId){
+		LoginUserInfo userInfo = getLoginUserInfo();
+		AccessScope scope = new AccessScope();
+		
+		//一般の場合、自分の属性(所属、プロジェクト、ユーザーID)と違う場合NG
+		//所属
+		if(!StringUtils.isEmpty(affiliationCd) && !userInfo.getAffiliation().equals(affiliationCd)){
+			return null;
+		}
+		//プロジェクトID
+		LocalDate now = LocalDate.now();
+		Integer myPriject = userManageService.select(null, null, getLoginUserId(),
+				DateUtils.getFirstDayOfMonth(now), DateUtils.getFinalDayOfMonth(now)).get().getProjectId();
+		if(!StringUtils.isEmpty(projectId) && !projectId.equals(myPriject)){
+			return null;
+		}
+		//ユーザーID
+		if(!StringUtils.isEmpty(userId)){
+			if(!StringUtils.isEmpty(userId) && !userInfo.getUsername().equals(userId)){
+				return null;
+			}
+		}
+		scope.setAffiliationCd(affiliationCd);
+		scope.setProjectId(projectId);
+		scope.setUserId(userInfo.getUsername());
+		
+		return scope;
+	}
+	
 	protected class AccessScope {
 		private Integer affiliationCd;
 		private Integer projectId;

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,7 +95,6 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 * @param model モデル
 	 * @return 遷移先
 	 */
-	@GenerateToken
 	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
 	public String init(Model model) {
 		LocalDate date = calendarComponent.getSystemDate();
@@ -109,6 +109,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 	 * @param model モデル
 	 * @return 遷移先
 	 */
+	@GenerateToken
 	@RequestMapping(value=ROOT_URI + "{month}/{userId}", method=RequestMethod.GET)
 	public String show(@DateValid(pattern="uuuu-MM") @NotEmpty @PathVariable String month, @PathVariable @Length(min=7, max=7) String userId, Model model) {
 
@@ -210,6 +211,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI + param + ROOT_URI + userId;
 	}
 	
+	@CheckToken
 	@RequestMapping(value="/updateStatus", method=RequestMethod.POST)
 	public String updateStatus(@Validated StatusUpdateForm form, BindingResult errors, RedirectAttributes attributes){
 		if(errors.hasErrors()){
@@ -219,10 +221,19 @@ public class WorkTimeController extends AbstractWorkManageController{
 			throw new BusinessException(MessageId.M001, null);
 		}
 		//更新
+		//TODO:message複数の場合に複数行返す。
+		String message = messagehandler.getMessage(MessageId.M004, null, null, null).getMessage();
 		workTimeService.updateStatus(form.getUserId(), form.getMonth(), form.getStatusAsEnum(), form.getVersion(), errors);
-		
-		MessageInfo messageInfo = messagehandler.getMessage(MessageId.M004, null, null, null);
-		attributes.addFlashAttribute("result", messageInfo.getMessage());
+		if(errors.hasErrors()){
+			message = "";
+			for(ObjectError error : errors.getAllErrors()){
+				if(!StringUtils.isEmpty(message)){
+					message = message + "\\n";
+				}
+				message = message + messagehandler.getMessage(MessageId.of(error.getCode()), error.getArguments(), error.getDefaultMessage(), null).getMessage();
+			}
+		}
+		attributes.addFlashAttribute("result", message);
 		return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI + form.getMonth() + ROOT_URI + form.getUserId();
 	}
 	

@@ -27,6 +27,7 @@
 							<input type="hidden" th:field="*{userId}"></input>
 							<input type="hidden" th:field="*{month}"></input>
 							<input type="hidden" th:field="*{version}"></input>
+							<input type="hidden" th:name="token" th:value="${token}"></input>
 							<div th:if="*{status == T(jp.co.orangearch.workmanage.domain.constant.ClosingState).OPEN.getKey()}">
 								<input type="hidden" th:name="status" th:id="status" th:value="${T(jp.co.orangearch.workmanage.domain.constant.ClosingState).CLOSING.getKey()}"></input>
 								<button type="submit" class="btn btn-lg btn-warning">入力確定</button>
@@ -84,7 +85,7 @@
 					<tr>
 						<td class="col-sm-1">
 							<div th:if="${userId}==${#authentication.name}">
-								<div th:if="*{status != T(jp.co.orangearch.workmanage.domain.constant.ClosingState).CLOSED.getKey()}">
+								<div th:if="${StatusUpdateForm.status != T(jp.co.orangearch.workmanage.domain.constant.ClosingState).CLOSED.getKey()}">
 									<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${workTime.workDate})}">更新</a>
 								</div>
 							</div>

@@ -14,15 +14,22 @@
 			<form class="form-horizontal" th:action="@{/admin/projectManage/handle}" th:object="${projectManageForm}" method="post">
 				<div class="form-group">
 					<label for="projectName" class="col-sm-2 control-label">プロジェクト名</label>
-					<div class="col-sm-2">
-						<input type="text" class="form-control" id="workDate" placeholder="プロジェクト名" th:field="*{projectName}"></input>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="projectName" placeholder="プロジェクト名" th:field="*{projectName}"></input>
 						<span th:if="${#fields.hasErrors('projectName')}" class="text-danger" th:errors="*{projectName}">Error</span>
 					</div>
 				</div>
 				<div class="form-group">
+					<label for="affiliation" class="col-sm-2 control-label">部署</label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="affiliation" placeholder="所属部署" th:field="*{affiliation}"></input>
+						<span th:if="${#fields.hasErrors('affiliation')}" class="text-danger" th:errors="*{affiliation}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
 					<label for="customerId" class="col-sm-2 control-label">顧客</label>
-					<div class="col-sm-2">
-					<select class="form-control col-sm-2 " id="customerId" th:name="customerId">
+					<div class="col-sm-4">
+					<select class="form-control col-sm-4 " id="customerId" th:name="customerId">
 						<option th:each="t : ${customers}"
 								th:value="${t.customerId}"
 								th:text="${t.customerName}"
@@ -33,14 +40,14 @@
 				</div>
 				<div class="form-group">
 					<label for="startDate" class="col-sm-2 control-label">開始日</label>
-					<div class="col-sm-2">
+					<div class="col-sm-4">
 						<input type="text" class="form-control datepicker input-small" id="startDate" placeholder="yyyy-MM-dd" th:field="*{startDate}"></input>
 						<span th:if="${#fields.hasErrors('startDate')}" class="text-danger" th:errors="*{startDate}">Error</span>
 					</div>
 				</div>
 				<div class="form-group">
 					<label for="endDate" class="col-sm-2 control-label">終了日</label>
-					<div class="col-sm-2">
+					<div class="col-sm-4">
 						<input type="text" class="form-control datepicker input-small" id="endDate" placeholder="yyyy-MM-dd" th:field="*{endDate}"></input>
 						<span th:if="${#fields.hasErrors('endDate')}" class="text-danger" th:errors="*{endDate}">Error</span>
 					</div>

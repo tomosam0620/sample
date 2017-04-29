@@ -63,20 +63,6 @@ public class userManageController extends AbstractWorkManageController{
 	@Autowired
 	private ProjectManageService projectManageService;
 	
-//	/**
-//	 * ｉｎｄｅｘページ表示処理
-//	 * <br>
-//	 * 登録されているプロジェクト情報を取得し、表示します。
-//	 * @param model モデル
-//	 * @return 遷移先ページのHTMLファイルパス
-//	 */
-//	@RequestMapping(value=INDEX_URI, method=RequestMethod.GET)
-//	public String index(Model model) {
-//		List<JoinProjectUser> users = userManageService.selectAll();
-//		model.addAttribute("users", users);
-//		return SHOW_HTML;
-//	}
-
 	/**
 	 * ｉｎｄｅｘページ表示処理
 	 * <br>

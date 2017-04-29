@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.seasar.doma.jdbc.SelectOptions;
 import org.springframework.validation.BindingResult;
 
 import jp.co.orangearch.workmanage.domain.constant.ClosingState;
@@ -31,6 +32,13 @@ public interface WorkTimeService {
 	 */
 	WorkTimesOfMonth selectWorkTimeInfoInMonth(String userId, LocalDate date);
 
+	/**
+	 * 交通費情報を取得します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param date 日付
+	 * @return 交通費情報のリスト
+	 */
 	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
 	
 	/**
@@ -58,9 +66,25 @@ public interface WorkTimeService {
 	 */
 	byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date);
 
+	/**
+	 * 勤務帯情報を取得します。
+	 * 
+	 * @return 勤務帯情報のリスト
+	 */
 	List<WorkTimeType> getWorkTimeType();
 
-	List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId);
+	/**
+	 * 勤務一覧情報を取得します。
+	 * 
+	 * @param fromMonth 開始月
+	 * @param toMonth 終業月
+	 * @param affiliationCd 所属
+	 * @param projectId プロジェクトID
+	 * @param userId ユーザーID
+	 * @param options 検索オプション情報
+	 * @return 勤務一覧情報
+	 */
+	List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId, SelectOptions options);
 
 	/**
 	 * ステータスを更新します。
