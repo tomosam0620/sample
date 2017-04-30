@@ -3,7 +3,7 @@ package jp.co.orangearch.workmanage.domain.domain;
 import org.seasar.doma.Domain;
 
 /**
- * 勤務帯を定義するENUMクラスです。
+ * 勤務帯を保持するクラスです。
  *
  * @author t-otsuka
  *

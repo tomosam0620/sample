@@ -12,7 +12,6 @@ import jp.co.orangearch.workmanage.domain.entity.User;
  * 
  */
 @Entity(listener = JoinProjectUserListener.class)
-//@Table(name = "CUSTOMER")
 public class JoinProjectUser extends User {
 
 //    /** ユーザーID */

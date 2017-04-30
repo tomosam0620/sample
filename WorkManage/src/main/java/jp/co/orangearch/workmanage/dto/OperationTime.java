@@ -4,10 +4,16 @@ import java.math.BigDecimal;
 
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 
+/**
+ * 1日の稼働情報を保持するクラスです。
+ * 週計の時間は週終わり(土曜日)のみ値を設定します。
+ * @author t-otsika
+ *
+ */
 public class OperationTime extends WorkTime{
 	
 	/** 稼働時間 */
-	private BigDecimal operationTime;
+	private BigDecimal operationHours;
 	/** 法内残業時間 */
 	private BigDecimal overtimeWithinStatutoryWorkingHours;
 	/** 法外残業時間 */
@@ -16,6 +22,16 @@ public class OperationTime extends WorkTime{
 	private BigDecimal nightHours;
 	/** 休日稼働時間 */
 	private BigDecimal horidayHours;
+	/** 遅刻時間 */
+	private BigDecimal lateHours;
+	/** 早退時間 */
+	private BigDecimal leaveEaryHours;
+	/** 週計稼働時間 */
+	private BigDecimal operationHoursInWeek;
+	/** 週計法内残業時間 */
+	private BigDecimal overtimeWithinStatutoryWorkingHoursInWeek;
+	/** 週計法外残業時間 */
+	private BigDecimal overtimeBeyondStatutoryWorkingHoursInWeek;
 	
 	public OperationTime() {
 	}
@@ -34,12 +50,12 @@ public class OperationTime extends WorkTime{
 	    super.setHoridayType(item.getHoridayType());
 	}
 
-	public BigDecimal getOperationTime(){
-		return operationTime;
+	public BigDecimal getOperationHours(){
+		return operationHours;
 	}
 	
-	public void setOperationTime(BigDecimal value){
-		operationTime = value;
+	public void setOperationHours(BigDecimal value){
+		operationHours = value;
 	}
 
 	public void setOvertimeWithinStatutoryWorkingHours(BigDecimal value) {
@@ -72,6 +88,46 @@ public class OperationTime extends WorkTime{
 
 	public void setHoridayHours(BigDecimal value) {
 		horidayHours = value;
+	}
+
+	public BigDecimal getOperationHoursInWeek() {
+		return operationHoursInWeek;
+	}
+
+	public void setOperationHoursInWeek(BigDecimal value) {
+		operationHoursInWeek = value;
+	}
+
+	public BigDecimal getOvertimeWithinStatutoryWorkingHoursInWeek() {
+		return overtimeWithinStatutoryWorkingHoursInWeek;
+	}
+
+	public void setOvertimeWithinStatutoryWorkingHoursInWeek(BigDecimal value) {
+		overtimeWithinStatutoryWorkingHoursInWeek = value;
+	}
+
+	public BigDecimal getOvertimeBeyondStatutoryWorkingHoursInWeek(){
+		return overtimeBeyondStatutoryWorkingHoursInWeek;
+	}
+	
+	public void setOvertimeBeyondStatutoryWorkingHoursInWeek(BigDecimal value){
+		overtimeBeyondStatutoryWorkingHoursInWeek = value;
+	}
+
+	public BigDecimal getLateHours() {
+		return lateHours;
+	}
+
+	public void setLateHours(BigDecimal value) {
+		lateHours = value;
+	}
+
+	public BigDecimal getLeaveEaryHours() {
+		return leaveEaryHours;
+	}
+	
+	public void setLeaveEaryHours(BigDecimal value) {
+		leaveEaryHours = value;
 	}
 	
 }

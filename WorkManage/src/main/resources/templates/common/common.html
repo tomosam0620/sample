@@ -36,13 +36,13 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a class="navbar-brand" href="/workTime/">勤報参照</a>
+						<a class="navbar-brand" href="/workTimeList/">稼働一覧</a>
 					</div>
 					<div class="collapse navbar-collapse" id="navbar-menu">
 						<ul class="nav navbar-nav">
 							<li><a href="/userManage/">ユーザー一覧</a></li>
 						</ul>
-						<div sec:authorize="hasRole('ROLE_A01')">
+						<div sec:authorize="hasAnyRole('ROLE_A01','ROLE_A02','ROLE_A03')">
 						<ul class="nav navbar-nav">
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -59,14 +59,9 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<!-- 
 						 -->
 						<ul class="nav navbar-nav navbar-right">
-							<li class="nav navbar-nav">
-								<p>
-									<span class="navbar-text" sec:authentication="principal.username"/>
-								</p>
-							</li>
 							<li class="dropdown">
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-										アカウント情報<span class="caret"></span>
+										<span sec:authentication="principal.username"></span><span class="caret"></span>
 									</a>
 								<!-- 1.メニューの配置 -->
 								<ul class="dropdown-menu">

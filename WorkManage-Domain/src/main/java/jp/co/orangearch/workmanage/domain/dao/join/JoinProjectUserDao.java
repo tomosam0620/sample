@@ -34,4 +34,8 @@ public interface JoinProjectUserDao {
     @Select
 	Optional<JoinProjectUser> selectById(String userId);
 
+    @Select
+    List<JoinProjectUser> selectByConditions(Integer affiliationCd, Integer projectId, String userId,
+			LocalDate fromDate, LocalDate toDate, SelectOptions options);
+
 }

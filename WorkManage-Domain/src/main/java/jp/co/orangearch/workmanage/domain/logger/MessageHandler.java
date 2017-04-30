@@ -28,7 +28,7 @@ public class MessageHandler {
 	 * @return メッセージ
 	 * @exception SystemException メッセージプロパティから該当メッセージが取得できない場合。または、取得したメッセージにログレベルの項目が存在していない場合。
 	 */
-	public MessageInfo getMessage(MessageId messageId, String[] fillchar, String defaultMessage, Exception e){
+	public MessageInfo getMessage(MessageId messageId, Object[] fillchar, String defaultMessage, Exception e){
 		String msg = defaultMessage;
 		String level = "ERROR";
 		if(StringUtils.isEmpty(defaultMessage)){

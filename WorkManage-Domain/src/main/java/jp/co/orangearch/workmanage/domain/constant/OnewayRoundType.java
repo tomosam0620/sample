@@ -49,7 +49,7 @@ public enum OnewayRoundType implements Values{
 	 * domain用ファクトリメソッド。
 	 * valueからインスタンスを返します。
 	 * @param value 値
-	 * @return AttendanceCode
+	 * @return OnewayRoundType
 	 */
 	public static OnewayRoundType of(Integer value){
 		 for(OnewayRoundType item : values()) {

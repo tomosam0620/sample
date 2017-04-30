@@ -28,6 +28,10 @@ public class Project extends TableSuffix {
     @Column(name = "PROJECT_NAME")
     String projectName;
 
+    /** 所属 */
+    @Column(name = "AFFILIATION")
+    Integer affiliation;
+
     /** 顧客ID */
     @Column(name = "CUSTOMER_ID")
     Integer customerId;
@@ -74,6 +78,24 @@ public class Project extends TableSuffix {
      */
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    /** 
+     * Returns the affiliation.
+     * 
+     * @return the affiliation
+     */
+    public Integer getAffiliation() {
+        return affiliation;
+    }
+
+    /** 
+     * Sets the affiliation.
+     * 
+     * @param affiliation the affiliation
+     */
+    public void setAffiliation(Integer affiliation) {
+        this.affiliation = affiliation;
     }
 
     /** 

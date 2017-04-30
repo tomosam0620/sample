@@ -4,10 +4,16 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.seasar.doma.jdbc.SelectOptions;
+import org.springframework.validation.BindingResult;
+
+import jp.co.orangearch.workmanage.domain.constant.ClosingState;
 import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
+import jp.co.orangearch.workmanage.domain.entity.WorkTimeStatus;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
-import jp.co.orangearch.workmanage.dto.OperationTime;
+import jp.co.orangearch.workmanage.dto.OperationInfoOfMonth;
+import jp.co.orangearch.workmanage.dto.WorkTimesOfMonth;
 
 /**
  * 勤務時間サービスのIFクラスです。
@@ -24,8 +30,15 @@ public interface WorkTimeService {
 	 * @param date 日付
 	 * @return 勤務情報のリスト
 	 */
-	List<OperationTime> selectWorkTimeInfoInMonth(String userId, LocalDate date);
+	WorkTimesOfMonth selectWorkTimeInfoInMonth(String userId, LocalDate date);
 
+	/**
+	 * 交通費情報を取得します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param date 日付
+	 * @return 交通費情報のリスト
+	 */
 	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
 	
 	/**
@@ -42,7 +55,7 @@ public interface WorkTimeService {
 	 *
 	 * @param workTimes 勤務情報
 	 */
-	void update(WorkTime workTimes);
+	void update(WorkTime workTimes, BindingResult errors);
 
 	/**
 	 * CSVを作成します。
@@ -53,5 +66,43 @@ public interface WorkTimeService {
 	 */
 	byte[] createCsv(String userId, LocalDate from_date, LocalDate to_date);
 
+	/**
+	 * 勤務帯情報を取得します。
+	 * 
+	 * @return 勤務帯情報のリスト
+	 */
 	List<WorkTimeType> getWorkTimeType();
+
+	/**
+	 * 勤務一覧情報を取得します。
+	 * 
+	 * @param fromMonth 開始月
+	 * @param toMonth 終業月
+	 * @param affiliationCd 所属
+	 * @param projectId プロジェクトID
+	 * @param userId ユーザーID
+	 * @param options 検索オプション情報
+	 * @return 勤務一覧情報
+	 */
+	List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId, SelectOptions options);
+
+	/**
+	 * ステータスを更新します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param month 月
+	 * @param status ステータス 
+	 * @param version バージョン
+	 * @param errors エラー情報
+	 */
+	void updateStatus(String userId, String month, ClosingState statusAsEnum, Integer version, BindingResult errors);
+
+	/**
+	 * ステータスを取得します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param month 月
+	 * @return ステータス情報
+	 */
+	Optional<WorkTimeStatus> selectStatusVersion(String userId, String showMonthDate);
 }

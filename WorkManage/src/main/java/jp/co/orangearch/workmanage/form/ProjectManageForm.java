@@ -15,6 +15,8 @@ public class ProjectManageForm {
 	private String projectName;
 	@NotEmpty
 	private String customerId;
+	@NotEmpty
+	private String affiliation;
 	@DateValid
 	private String startDate;
 	@DateValid
@@ -37,6 +39,13 @@ public class ProjectManageForm {
 		projectName = value;
 	}
 	
+	public String getAffiliation(){
+		return affiliation;
+	}
+	public void setAffiliation(String value){
+		affiliation = value;
+	}
+
 	public String getCustomerId(){
 		return customerId;
 	}
@@ -67,7 +76,7 @@ public class ProjectManageForm {
 
 	public Project toEntity() {
 		Project entity = new Project();
-//		entity.setProjectId(Integer.valueOf(projectId));
+		entity.setAffiliation(Integer.valueOf(affiliation));
 		entity.setProjectName(projectName);
 		entity.setCustomerId(Integer.valueOf(customerId));
 		entity.setStartDate(DateUtils.convertToLocalDate(startDate));

@@ -16,13 +16,12 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 	<body>
 		<div th:replace="common/common::menu"></div>
 		<div class="container">
-			<h1>稼働管理</h1>
-			<div class="container">
-				<strong class="text-danger" th:text="${result}"></strong>
-			</div>
 			<div class="container">
 				<h3>プロジェクト一覧</h3>
 			</div>
+			<hr style="border:0;border-top:4px solid orange;">
+			<strong class="text-danger" th:text="${result}"></strong>
+				
 			<form class="form-horizontal" th:action="@{input}" method="get">
 				<button type="submit" class="btn btn-warning pull-right">登録</button>
 			</form>
@@ -33,6 +32,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 					<tr>
 						<th>プロジェクトID</th>
 						<th>プロジェクト名</th>
+						<th>部署</th>
 						<th>顧客</th>
 						<th>開始日</th>
 						<th>終了日</th>
@@ -42,6 +42,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 					<tr>
 						<td class="col-sm-1" th:text="${project.projectId}">1</td>
 						<td class="col-sm-1" th:text="${project.projectName}">プロジェクト１</td>
+						<td class="col-sm-1" th:text="${project.affiliation}">R&D</td>
 						<td class="col-sm-1" th:text="${project.customerId}">顧客</td>
 						<td class="col-sm-1" th:text="${project.startDate}">2017-01-01</td>
 						<td class="col-sm-1" th:text="${project.endDate}">2017-12-31</td>
