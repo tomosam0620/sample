@@ -1,18 +1,17 @@
 package jp.co.orangearch.workmanage.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
-import org.springframework.validation.Validator;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.github.mygreen.supercsv.localization.SpringMessageResolver;
 
@@ -28,8 +27,7 @@ import jp.co.orangearch.workmanage.interceptor.TokenCheckInterceptor;
 @Configuration
 @ComponentScan(basePackages = {"jp.co.orangearch.workmanage"}, excludeFilters={
 		  @ComponentScan.Filter(type=FilterType.REGEX, pattern=".*Test")})
-public class WebConfig extends WebMvcConfigurerAdapter{
-
+public class WebConfig implements WebMvcConfigurer{
 	@Autowired
 	MessageSource messageSource;
 

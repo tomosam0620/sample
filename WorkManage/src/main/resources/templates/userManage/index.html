@@ -21,7 +21,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			</div>
 			<hr style="border:0;border-top:4px solid orange;">
 			<strong class="text-danger" th:text="${result}"></strong>
-			<div class="container well">
+			<div class="well">
 				<form class="form-horizontal" th:action="@{/userManage/}" th:object="${searchForm}" method="get">
 					<div class="form-group">
 						<label for="roleId" class="col-sm-1 control-label">ロール</label>
@@ -48,7 +48,9 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 							<span th:if="${#fields.hasErrors('project')}" class="text-danger" th:errors="*{project}">Error</span>
 						</div>
 					</div>
-					<button type="submit" class="btn btn-warning pull-right">検索</button>
+					<div class="form-group">
+					<button type="submit" class="btn btn-lg btn-warning pull-right">検索</button>
+					</div>
 				</form>
 			</div>
 		</div>

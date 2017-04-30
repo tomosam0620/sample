@@ -191,7 +191,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 		String month = DateUtils.convert(workTime.getWorkDate(), DateTimeFormat.UUUU_MM);
 		Optional<WorkTimeStatus> statusEntity = workTimeStatusDao.selectById(workTime.getUserId(), month);
 		if(statusEntity.isPresent()){
-			if(!ClosingState.CLOSED.equals(statusEntity.get().getStatus())){
+			if(ClosingState.CLOSED.equals(statusEntity.get().getStatus())){
 				errors.reject(MessageId.M006.getValue());
 			}
 		}
@@ -683,8 +683,36 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return
 	 */
 	private BigDecimal getLateHours(WorkTime operation){
-		//TODO
-		return ZERO_HOUR;
+		//開始時刻未入力は計算しない。
+		if(ObjectUtils.isEmpty(operation.getWorkDate())
+				|| ObjectUtils.isEmpty(operation.getStartTime())){
+			return ZERO_HOUR;
+		}
+		
+		BigDecimal lateHoures = ZERO_HOUR;
+		LocalTime workStartTime;
+		//平日出勤のみ計算。
+		switch(operation.getAttendanceCode()){
+		case 出勤:
+		case 午後半休:
+			workStartTime = getWorkStartTime(operation.getWorkTimeType());
+			break;
+		case 午前半休:
+			workStartTime = getHalfDayOffLimitTime(operation.getWorkTimeType());
+			break;
+		default:
+			return lateHoures;
+		}
+		
+		LocalDateTime workStartDateTime = LocalDateTime.of(operation.getWorkDate(), workStartTime);
+		
+		LocalDateTime startTime = LocalDateTime.of(operation.getWorkDate(), operation.getStartTime());
+		if(operation.getStartTime().isBefore(workStartTime)){
+			startTime = LocalDateTime.of(operation.getWorkDate(), workStartTime);
+		}
+
+		lateHoures = calcurateOperationHours(operation.getWorkTimeType(), operation.getWorkDate(), workStartDateTime, startTime);
+		return lateHoures;
 	}
 	
 	/**
@@ -694,8 +722,39 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	 * @return
 	 */
 	private BigDecimal getLeaveEaryHours(WorkTime operation){
-		//TODO
-		return ZERO_HOUR;
+		//終了時刻未入力は計算しない。
+		if(ObjectUtils.isEmpty(operation.getWorkDate())
+				|| ObjectUtils.isEmpty(operation.getStartTime())){
+			return ZERO_HOUR;
+		}
+
+		LocalTime workEndTime;
+		//代出の場合は開始時刻が未入力の場合計算しない。
+		switch(operation.getAttendanceCode()){
+		case 出勤:
+		case 午後半休:
+		case 午前半休:
+		case 代出:
+			workEndTime = getWorkEndTime(operation.getWorkTimeType());
+			break;
+		default:
+			return ZERO_HOUR;
+		}
+		
+		LocalDateTime workEndDateTime = LocalDateTime.of(operation.getWorkDate(), workEndTime);
+		LocalDateTime workStartTime = LocalDateTime.of(operation.getWorkDate(), getWorkStartTime(operation.getWorkTimeType()));
+		
+		LocalDateTime endTime = LocalDateTime.of(operation.getWorkDate(), operation.getEndTime());
+		//日が変わっていたら+1日する
+		if(endTime.isBefore(workStartTime)){
+			endTime = endTime.plusDays(1);
+		}
+		//所定終業時間より終了時刻が遅ければ0
+		if(endTime.isAfter(workEndDateTime)){
+			return ZERO_HOUR;
+		}
+
+		return calcurateOperationHours(operation.getWorkTimeType(), operation.getWorkDate(), endTime, workEndDateTime);
 	}
 	
 	/**
@@ -781,6 +840,21 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			throw new IllegalArgumentException("not exist in cache workTimeCd:" + workTimeCd.getValue());
 		}
 		return workTimeType.getEndTime();
+	}
+	
+	/**
+	 * 勤務帯の半休境界時間を取得します
+	 * 。
+	 * @param workTimeCd 勤務帯コード
+	 * @return 半休境界時間
+	 * @throws IllegalArgumentException 勤務帯未指定
+	 */
+	private LocalTime getHalfDayOffLimitTime(WorkTimeCode workTimeCd){
+		WorkTimeType workTimeType = workTimeTypeCache.get(workTimeCd.getValue());
+		if(workTimeType == null){
+			throw new IllegalArgumentException("not exist in cache workTimeCd:" + workTimeCd.getValue());
+		}
+		return workTimeType.getHalfDayOffLimitTime();
 	}
 	
 	/**
