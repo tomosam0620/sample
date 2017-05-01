@@ -14,6 +14,9 @@ import jp.co.orangearch.workmanage.domain.constant.HoridayType;
  */
 public interface CalendarComponent {
 
+	/** 日付未指定 */
+	public static LocalDate NOT_SPECIFIED_DATE = LocalDate.of(9999, 12, 31);
+	
 	/**
 	 * 休日種別を取得します。
 	 *

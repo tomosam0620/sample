@@ -724,7 +724,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	private BigDecimal getLeaveEaryHours(WorkTime operation){
 		//終了時刻未入力は計算しない。
 		if(ObjectUtils.isEmpty(operation.getWorkDate())
-				|| ObjectUtils.isEmpty(operation.getStartTime())){
+				|| ObjectUtils.isEmpty(operation.getEndTime())){
 			return ZERO_HOUR;
 		}
 

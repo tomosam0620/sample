@@ -28,4 +28,14 @@ public interface PasswordChangeService {
 	 * @param bindingResult 入力エラー情報
 	 */
 	void update(String userId, String password, String newPassword, Integer version, BindingResult bindingResult);
+
+	/**
+	 * パスワードを暗号化します。
+	 * 
+	 * @param userId ユーザーID
+	 * @param password パスワード
+	 * @return 暗号化されたパスワード
+	 */
+	String encrypt(String userId, String password);
+
 }

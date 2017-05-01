@@ -58,8 +58,7 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 			return;
 		}
 		
-		String encodedNewPassword = passwordEncorder.encodePassword(newPassword, userId);
-		entity.setPassword(encodedNewPassword);
+		entity.setPassword(encrypt(userId, newPassword));
 		entity.setPasswordlastChangeDate(calendarComponent.getSystemDate());
 		entity.setPasswordMissCount(0);
 		entity.setPasswordInitialFlag(0);
@@ -67,4 +66,8 @@ public class PasswordChangeServiceImpl implements PasswordChangeService {
 		userDao.update(entity);
 	}
 
+	@Override
+	public String encrypt(String userId, String password){
+		return passwordEncorder.encodePassword(password, userId);
+	}
 }

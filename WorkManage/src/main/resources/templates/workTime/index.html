@@ -81,8 +81,8 @@
 						<th>法外残業(週計)</th>
 					</tr>
 				</thead>
-				<tbody th:remove="all-but-first" th:each="workTime : ${workTimes}">
-					<tr>
+				<tbody th:remove="all-but-first">
+					<tr th:each="workTime : ${workTimes}">
 						<td class="col-sm-1">
 							<div th:if="${userId}==${#authentication.name}">
 								<div th:if="${StatusUpdateForm.status != T(jp.co.orangearch.workmanage.domain.constant.ClosingState).CLOSED.getKey()}">

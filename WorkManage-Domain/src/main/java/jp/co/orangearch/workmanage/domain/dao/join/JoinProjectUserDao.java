@@ -32,7 +32,7 @@ public interface JoinProjectUserDao {
 			LocalDate targetDate, SelectOptions option);
 
     @Select
-	Optional<JoinProjectUser> selectById(String userId);
+	List<JoinProjectUser> selectById(String userId);
 
     @Select
     List<JoinProjectUser> selectByConditions(Integer affiliationCd, Integer projectId, String userId,

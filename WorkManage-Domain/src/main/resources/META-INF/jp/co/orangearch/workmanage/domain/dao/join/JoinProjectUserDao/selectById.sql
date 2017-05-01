@@ -3,11 +3,17 @@ select
 	U.ROLE_ID,
 	U.AFFILIATION,
 	U.POSITION,
-	U.USER_ID,
-	J.PROJECT_ID
+	U.DELETE_FLAG,
+	U.VERSION as U_VERSION,
+	J.PROJECT_ID,
+	J.START_DATE,
+	J.END_DATE,
+	J.VERSION as J_VERSION
 from user U
 left outer join JOIN_PROJECT J on
 	U.USER_ID = J.USER_ID
 where
 	U.USER_ID = /* userId */1234567
+order by
+	J.START_DATE desc
 

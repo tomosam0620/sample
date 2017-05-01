@@ -1,37 +1,70 @@
 package jp.co.orangearch.workmanage.form.userManage;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.util.StringUtils;
+
+import jp.co.orangearch.workmanage.common.validator.DateValid;
+import jp.co.orangearch.workmanage.component.CalendarComponent;
+import jp.co.orangearch.workmanage.component.util.DateUtils;
+import jp.co.orangearch.workmanage.domain.constant.CheckBoxStatus;
+import jp.co.orangearch.workmanage.domain.constant.Flag;
+import jp.co.orangearch.workmanage.domain.entity.JoinProject;
+import jp.co.orangearch.workmanage.domain.entity.User;
 import jp.co.orangearch.workmanage.domain.entity.join.JoinProjectUser;
 
 public class UserManageForm {
 
+	@NotEmpty
+	@Length(max=7)
 	private String userId;
+	@NotEmpty
 	private String roleId;
-	private Integer affiliation;
-	private Integer position;
-	private Integer deleteFlag;
-	private Integer projectId;
-	private LocalDate startDate;
-	private LocalDate endDate;
-	private Integer version;
+	@NotEmpty
+	private String affiliation;
+	@NotEmpty
+	private String position;
 
+	@Pattern(regexp = "on")
+	private String isPasswordInitialize;
+
+	@Pattern(regexp = "on")
+	private String isDeleted;
+
+	private Integer uVersion;
+
+	//project
+	@NotEmpty
+	private String projectId;
+	
+	@NotEmpty
+	@DateValid(pattern="uuuu-M-d")
+	private String fromDate;
+
+	@DateValid(pattern="uuuu-M-d")
+	private String toDate;
+
+	private Integer jVersion;
+	
 	public UserManageForm() {
 	}
 	
-	public UserManageForm(Optional<JoinProjectUser> user) {
-		if(user.isPresent()){
-			userId = user.get().getUserId();
-			roleId = user.get().getRoleId();
-			affiliation = user.get().getAffiliation();
-			position = user.get().getPosition();
-			deleteFlag = user.get().getDeleteFlag();
-			projectId = user.get().getProjectId();
-			startDate = user.get().getStartDate();
-			endDate = user.get().getEndDate();
-			version = user.get().getVersion();
-		}
+	public UserManageForm(JoinProjectUser user) {
+		userId = user.getUserId();
+		roleId = user.getRoleId();
+		affiliation = user.getAffiliation().toString();
+		position = user.getPosition().toString();
+		isDeleted = user.getDeleteFlag() == 0 ? "off" : "on";
+		uVersion = user.getUVersion();
+		
+		projectId = user.getProjectId() == null ? null : user.getProjectId().toString();
+		fromDate = user.getStartDate() == null ? null : user.getStartDate().toString();
+		toDate = user.getEndDate() == LocalDate.MAX ? null : user.getEndDate().toString();
+		jVersion = user.getJVersion();
 	}
 
 	/** 
@@ -75,7 +108,7 @@ public class UserManageForm {
 	 * 
 	 * @return the affiliation
 	 */
-	public Integer getAffiliation() {
+	public String getAffiliation() {
 	    return affiliation;
 	}
 
@@ -84,7 +117,7 @@ public class UserManageForm {
 	 * 
 	 * @param affiliation the affiliation
 	 */
-	public void setAffiliation(Integer affiliation) {
+	public void setAffiliation(String affiliation) {
 	    this.affiliation = affiliation;
 	}
 
@@ -93,7 +126,7 @@ public class UserManageForm {
 	 * 
 	 * @return the position
 	 */
-	public Integer getPosition() {
+	public String getPosition() {
 	    return position;
 	}
 
@@ -102,26 +135,61 @@ public class UserManageForm {
 	 * 
 	 * @param position the position
 	 */
-	public void setPosition(Integer position) {
+	public void setPosition(String position) {
 	    this.position = position;
 	}
-
+	
 	/** 
-	 * Returns the deleteFlag.
+	 * Returns the isPasswordInitialize.
 	 * 
-	 * @return the deleteFlag
+	 * @return the isPasswordInitialize
 	 */
-	public Integer getDeleteFlag() {
-	    return deleteFlag;
+	public String getIsPasswordInitialize() {
+	    return isPasswordInitialize;
+	}
+
+	/**
+	 * パスワード初期化フラグ取得
+	 * 
+	 * @return パスワード初期化フラグ
+	 */
+	public boolean isPasswordInitialize(){
+		return StringUtils.isEmpty(isPasswordInitialize) ? false : isPasswordInitialize.equals("on");
+	}
+	
+	/** 
+	 * Sets the isPasswordInitialize.
+	 * 
+	 * @param isPasswordInitialize the isPasswordInitialize
+	 */
+	public void setIsPasswordInitialize(String isPasswordInitialize) {
+	    this.isPasswordInitialize = isPasswordInitialize;
 	}
 
 	/** 
-	 * Sets the deleteFlag.
+	 * Returns the isDeleted.
 	 * 
-	 * @param deleteFlag the deleteFlag
+	 * @return the isDeleted
 	 */
-	public void setDeleteFlag(Integer deleteFlag) {
-	    this.deleteFlag = deleteFlag;
+	public String getIsDeleted() {
+	    return isDeleted;
+	}
+
+	/** 
+	 * Sets the isDeleted.
+	 * 
+	 * @param isDeleted the isDeleted
+	 */
+	public void setIsDeleted(String isDeleted) {
+	    this.isDeleted = isDeleted;
+	}
+
+	public Integer getUVersion(){
+		return uVersion;
+	}
+	
+	public void setUVersion(Integer value){
+		uVersion = value;
 	}
 
 	/** 
@@ -129,60 +197,82 @@ public class UserManageForm {
 	 * 
 	 * @return the projectId
 	 */
-	public Integer getProjectId() {
-		return projectId;
+	public String getProjectId() {
+	    return projectId;
 	}
-	
+
 	/** 
 	 * Sets the projectId.
 	 * 
 	 * @param projectId the projectId
 	 */
-	public void setProjectId(Integer projectId) {
-		this.projectId = projectId;
-	}
-	
-	/** 
-	 * Returns the startDate.
-	 * 
-	 * @return the startDate
-	 */
-	public LocalDate getStartDate() {
-	    return startDate;
+	public void setProjectId(String projectId) {
+	    this.projectId = projectId;
 	}
 
 	/** 
-	 * Sets the startDate.
+	 * Returns the fromDate.
 	 * 
-	 * @param startDate the startDate
+	 * @return the fromDate
 	 */
-	public void setStartDate(LocalDate startDate) {
-	    this.startDate = startDate;
+	public String getFromDate() {
+	    return fromDate;
 	}
 
 	/** 
-	 * Returns the endDate.
+	 * Sets the fromDate.
 	 * 
-	 * @return the endDate
+	 * @param fromDate the fromDate
 	 */
-	public LocalDate getEndDate() {
-	    return endDate;
+	public void setFromDate(String fromDate) {
+	    this.fromDate = fromDate;
 	}
 
 	/** 
-	 * Sets the endDate.
+	 * Returns the toDate.
 	 * 
-	 * @param endDate the endDate
+	 * @return the toDate
 	 */
-	public void setEndDate(LocalDate endDate) {
-	    this.endDate = endDate;
+	public String getToDate() {
+	    return toDate;
+	}
+
+	/** 
+	 * Sets the toDate.
+	 * 
+	 * @param toDate the toDate
+	 */
+	public void setToDate(String toDate) {
+	    this.toDate = toDate;
+	}
+
+
+	public Integer getJVersion(){
+		return jVersion;
 	}
 	
-	public Integer getVersion(){
-		return version;
+	public void setJVersion(Integer value){
+		jVersion = value;
 	}
-	
-	public void setVersion(Integer value){
-		version = value;
+
+	public User toUserEntity() {
+		User entity = new User();
+		entity.setAffiliation(Integer.valueOf(affiliation));
+		entity.setDeleteFlag(CheckBoxStatus.TRUE.getValue().equals(isDeleted) ? Flag.TRUE : Flag.FALSE);
+		entity.setPosition(Integer.valueOf(position));
+		entity.setRoleId(roleId);
+		entity.setUserId(userId);
+		entity.setVersion(uVersion);
+		return entity;
+	}
+
+	public JoinProject toJoinProjectEntity() {
+		JoinProject entity = new JoinProject();
+		entity.setUserId(userId);
+		entity.setProjectId(Integer.valueOf(projectId));
+		entity.setStartDate(DateUtils.convertToLocalDate(fromDate));
+		entity.setEndDate(StringUtils.isEmpty(toDate) ? CalendarComponent.NOT_SPECIFIED_DATE : DateUtils.convertToLocalDate(toDate));
+		entity.setVersion(jVersion);
+		return entity;
 	}
 }

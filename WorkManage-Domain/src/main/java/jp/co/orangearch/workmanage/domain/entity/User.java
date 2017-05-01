@@ -1,13 +1,14 @@
 package jp.co.orangearch.workmanage.domain.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
+
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
 import org.seasar.doma.Id;
 import org.seasar.doma.Table;
-import org.seasar.doma.Version;
+
+import jp.co.orangearch.workmanage.domain.constant.Flag;
+import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 
 /**
  * 
@@ -51,7 +52,7 @@ public class User extends TableSuffix {
 
     /** 削除フラグ */
     @Column(name = "DELETE_FLAG")
-    Integer deleteFlag;
+    Flag deleteFlag;
 
     /** 
      * Returns the userId.
@@ -202,7 +203,7 @@ public class User extends TableSuffix {
      * 
      * @return the deleteFlag
      */
-    public Integer getDeleteFlag() {
+    public Flag getDeleteFlag() {
         return deleteFlag;
     }
 
@@ -211,7 +212,7 @@ public class User extends TableSuffix {
      * 
      * @param deleteFlag the deleteFlag
      */
-    public void setDeleteFlag(Integer deleteFlag) {
+    public void setDeleteFlag(Flag deleteFlag) {
         this.deleteFlag = deleteFlag;
     }
 }

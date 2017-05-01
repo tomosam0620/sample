@@ -38,8 +38,8 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>終了日</th>
 					</tr>
 				</thead>
-				<tbody th:remove="all-but-first" th:each="project : ${projects}">
-					<tr>
+				<tbody th:remove="all-but-first">
+					<tr th:each="project : ${projects}">
 						<td class="col-sm-1" th:text="${project.projectId}">1</td>
 						<td class="col-sm-1" th:text="${project.projectName}">プロジェクト１</td>
 						<td class="col-sm-1" th:text="${project.affiliation}">R&D</td>

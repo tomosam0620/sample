@@ -61,6 +61,7 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
+						<th>#</th>
 						<th>ユーザーID</th>
 						<th>ロールID</th>
 						<th>所属</th>
@@ -68,8 +69,11 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>プロジェクト</th>
 					</tr>
 				</thead>
-				<tbody th:remove="all-but-first" th:each="user : ${users}">
-					<tr>
+				<tbody th:remove="all-but-first">
+					<tr th:each="user : ${users}">
+						<td class="col-sm-1">
+							<a type="button" th:href="@{/userManage/{userId}/input(userId=${user.userId})}">参照</a>
+						 </td>
 						<td class="col-sm-1" th:text="${user.userId}">1234567</td>
 						<td class="col-sm-1" th:text="${user.roleId}">U01１</td>
 						<td class="col-sm-1" th:text="${user.affiliation}">embeded</td>

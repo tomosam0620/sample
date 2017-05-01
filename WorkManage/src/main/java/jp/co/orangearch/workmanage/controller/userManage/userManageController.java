@@ -1,7 +1,7 @@
 package jp.co.orangearch.workmanage.controller.userManage;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.entity.Project;
@@ -84,33 +86,37 @@ public class userManageController extends AbstractWorkManageController{
 		model.addAttribute(FORM_NAME, form);
 		List<Project> projects = projectManageService.selectAll();
 		model.addAttribute("projects", projects);
+		model.addAttribute("userProjects", new ArrayList<JoinProjectUser>());
 		return INPUT_HTML;
 	}
 
 	@GenerateToken
 	@RequestMapping(value="/{userId}" +INPUT_URI, method=RequestMethod.GET)
 	public String update(@PathVariable @Validated @Length(max=7) @NotEmpty String userId, Model model) {
-		Optional<JoinProjectUser> user = userManageService.select(userId);
-		UserManageForm form = new UserManageForm(user);
+		List<JoinProjectUser> userProjects = userManageService.select(userId);
+		UserManageForm form = new UserManageForm(userProjects.get(0));
 		model.addAttribute(FORM_NAME, form);
 		List<Project> projects = projectManageService.selectAll();
 		model.addAttribute("projects", projects);
+		model.addAttribute("userProjects", userProjects);
+		model.addAttribute("currentProject", userProjects.get(0).getProjectId());
 		return INPUT_HTML;
 	}
 
-//	@CheckToken
-//	@RequestMapping(value=HANDLE_URI, method=RequestMethod.POST)
-//	public String handle(@Validated ProjectManageForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
-//		if(bindingResult.hasErrors()){
-//			attributes.addFlashAttribute(FORM_NAME, form);
-//			attributes.addFlashAttribute(ERROR_OBJECT_NAME, bindingResult);
-//			return REDIRECT_ACTION + FUNCTION_URI + INPUT_HTML;
-//		}
-//		
-//		Project entity = form.toEntity();
-//		projectManageService.create(entity);
-//		return REDIRECT_ACTION + FUNCTION_URI + INDEX_URI;
-//	}
-//
+	@CheckToken
+	@RequestMapping(value=HANDLE_URI, method=RequestMethod.POST)
+	public String handle(@ModelAttribute(FORM_NAME) @Validated UserManageForm form, BindingResult bindingResult, Model model, RedirectAttributes attributes) {
+		if(bindingResult.hasErrors()){
+			attributes.addFlashAttribute(ERROR_OBJECT_NAME, bindingResult);
+			return REDIRECT_ACTION + FUNCTION_URI + INPUT_HTML;
+		}
+		
+		userManageService.update(form.toUserEntity(), form.toJoinProjectEntity(), form.isPasswordInitialize());
+		String currentProject = form.getProjectId();
+		model.addAttribute("currentProject", currentProject);
+
+		return REDIRECT_ACTION + FUNCTION_URI + INDEX_URI;
+	}
+
 
 }

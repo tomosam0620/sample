@@ -86,8 +86,8 @@
 						<th>ステータス</th>
 					</tr>
 				</thead>
-				<tbody th:remove="all-but-first" th:each="item : ${list}">
-					<tr>
+				<tbody th:remove="all-but-first">
+					<tr th:each="item : ${list}">
 						<td class="col-sm-1">
 							<a type="button" class="btn btn-warning" th:href="@{/workTime/{month}/{userId}(month=${item.month}, userId=${item.userId})}">参照</a>
 						</td>

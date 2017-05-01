@@ -35,8 +35,8 @@ xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 						<th>説明</th>
 					</tr>
 				</thead>
-				<tbody th:remove="all-but-first" th:each="horiday : ${horidays}">
-					<tr>
+				<tbody th:remove="all-but-first">
+					<tr th:each="horiday : ${horidays}">
 						<td class="col-sm-1" th:text="${horiday.date}">2017-01-01</td>
 						<td class="col-sm-1" th:text="${horiday.horidayName}">元旦</td>
 					</tr>

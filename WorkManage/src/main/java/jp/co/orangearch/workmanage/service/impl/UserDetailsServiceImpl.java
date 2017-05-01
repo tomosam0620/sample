@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import jp.co.orangearch.workmanage.domain.constant.Flag;
 import jp.co.orangearch.workmanage.domain.dao.UserDao;
 import jp.co.orangearch.workmanage.domain.entity.User;
 import jp.co.orangearch.workmanage.service.LoginUserInfo;
@@ -52,7 +53,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         boolean isCredentialsNonExpired = true;
         boolean isEnabled = true;
         
-        if(user.get().getDeleteFlag() == 1){
+        if(Flag.TRUE.equals(user.get().getDeleteFlag())){
         	isEnabled = false;
         }
         
