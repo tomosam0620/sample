@@ -12,6 +12,8 @@ import jp.co.orangearch.workmanage.domain.entity.WorkTime;
  */
 public class OperationTime extends WorkTime{
 	
+	/** 交通費 */
+	private BigDecimal transportExpense;
 	/** 稼働時間 */
 	private BigDecimal operationHours;
 	/** 法内残業時間 */
@@ -48,6 +50,14 @@ public class OperationTime extends WorkTime{
 	    super.setAttendanceCode(item.getAttendanceCode());
 	    super.setNotes(item.getNotes());
 	    super.setHoridayType(item.getHoridayType());
+	}
+	
+	public BigDecimal getTransportExpense(){
+		return transportExpense;
+	}
+	
+	public void setTransportExpense(BigDecimal value){
+		transportExpense = value;
 	}
 
 	public BigDecimal getOperationHours(){

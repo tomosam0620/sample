@@ -109,11 +109,19 @@ public class UserManageServiceImpl implements UserManageService {
 		}
 		
 		//プロジェクトテーブル更新
-		//参画中のプロジェクトを登録する新規プロジェクトの開始日の前日に終了日を設定して更新
+		boolean isExistNewProject = true;
 		List<JoinProject> joinProject = joinProjectDao.selectByUserIdAndDate(joinProjectEntity.getUserId(), joinProjectEntity.getStartDate());
 		if(joinProject.size() > 0){
 			JoinProject registedEntity = joinProject.get(0);
-			LocalDate endDate = joinProjectEntity.getStartDate().minusDays(1);
+			LocalDate endDate = joinProjectEntity.getEndDate();
+			if(registedEntity.getProjectId().equals(joinProjectEntity.getProjectId())
+					&& registedEntity.getStartDate().equals(joinProjectEntity.getStartDate())){
+				//参画中のプロジェクトに変更がない、or 終了日のみ変更の場合、単純に更新のみ
+				isExistNewProject = false;
+			}else{
+				//参画中のプロジェクトを登録する新規プロジェクトの開始日の前日に終了日を設定して更新
+				endDate = joinProjectEntity.getStartDate().minusDays(1);
+			}
 			registedEntity.setEndDate(endDate);
 			registedEntity.setRegistUser(registedEntity.getRegistUser());
 			registedEntity.setRegistDate(registedEntity.getRegistDate());
@@ -121,6 +129,8 @@ public class UserManageServiceImpl implements UserManageService {
 		}
 
 		//新規参画プロジェクト登録
-		joinProjectDao.insert(joinProjectEntity);
+		if(isExistNewProject){
+			joinProjectDao.insert(joinProjectEntity);
+		}
 	}
 }

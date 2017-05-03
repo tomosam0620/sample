@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.seasar.doma.Column;
 import org.seasar.doma.Entity;
+import org.seasar.doma.Id;
 import org.seasar.doma.Table;
 
 import jp.co.orangearch.workmanage.domain.constant.OnewayRoundType;
@@ -18,12 +19,19 @@ import jp.co.orangearch.workmanage.domain.entity.common.TableSuffix;
 public class TransportionExpense extends TableSuffix {
 
     /** ユーザーID */
+    @Id
     @Column(name = "USER_ID")
     String userId;
 
     /** 日付 */
+    @Id
     @Column(name = "WORK_DATE")
     LocalDate workDate;
+
+    /** 交通費通番 */
+    @Id
+    @Column(name = "TRANSPORT_NUMBER")
+    Integer transportNumber;
 
     /** 交通手段 */
     @Column(name = "TRANSEPORT_TYPE")
@@ -87,6 +95,24 @@ public class TransportionExpense extends TableSuffix {
      */
     public void setWorkDate(LocalDate workDate) {
         this.workDate = workDate;
+    }
+
+    /** 
+     * Returns the transportNumber.
+     * 
+     * @return the transportNumber
+     */
+    public Integer getTransportNumber() {
+        return transportNumber;
+    }
+
+    /** 
+     * Sets the transportNumber.
+     * 
+     * @param transportNumber the transportNumber
+     */
+    public void setTransportNumber(Integer transportNumber) {
+        this.transportNumber = transportNumber;
     }
 
     /** 

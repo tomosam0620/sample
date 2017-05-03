@@ -101,7 +101,7 @@
 						<td class="col-sm-1" th:text="${workTime.endWorkCode}">1</td>
 						<td class="col-sm-1" th:text="${workTime.compensatoryAttendanceDate}">1</td>
 						<td class="col-sm-5" th:text="${workTime.notes}">1</td>
-						<td class="col-sm-1" th:text="${xxx}">1</td>
+						<td class="col-sm-1" th:text="${workTime.transportExpense}">1</td>
 						<td class="col-sm-1" th:text="${workTime.operationHours}">1</td>
 						<td class="col-sm-1" th:text="${workTime.overtimeWithinStatutoryWorkingHours}">1</td>
 						<td class="col-sm-1" th:text="${workTime.overtimeBeyondStatutoryWorkingHours}">1</td>
@@ -139,7 +139,7 @@
 				<tbody>
 					<tr th:each="transportInfo : ${transportInfos}">
 						<td class="col-sm-1">
-							<a type="button" th:href="@{/workTime/{workDate}/input(workDate=${transportInfo.workDate})}">更新</a>
+							<a type="button" th:href="@{/transportExpense/{workDate}/{number}/update(workDate=${transportInfo.workDate},number=${transportInfo.transportNumber})}">更新</a>
 						</td>
 						<td class="col-sm-1" th:text="${transportInfo.workDate}">2017-01-01</td>
 						<td class="col-sm-1" th:text="${transportInfo.TranseportType}">1</td>
@@ -152,7 +152,7 @@
 					</tr>
 					<tr>
 						<td class="col-sm-1">
-							<a type="button" th:href="@{/workTime/input/}">登録</a>
+							<a type="button" th:href="@{/transportExpense/input}">登録</a>
 						</td>
 						<td class="col-sm-1" ></td>
 						<td class="col-sm-1" ></td>

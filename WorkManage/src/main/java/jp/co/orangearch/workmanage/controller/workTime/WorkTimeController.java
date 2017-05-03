@@ -43,6 +43,7 @@ import jp.co.orangearch.workmanage.dto.WorkTimesOfMonth;
 import jp.co.orangearch.workmanage.form.workTime.SelectMonthForm;
 import jp.co.orangearch.workmanage.form.workTime.StatusUpdateForm;
 import jp.co.orangearch.workmanage.form.workTime.WorkTimeForm;
+import jp.co.orangearch.workmanage.service.TransportExpenseService;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
 
 
@@ -80,6 +81,10 @@ public class WorkTimeController extends AbstractWorkManageController{
 	@Autowired
 	private WorkTimeService workTimeService;
 
+	/** 交通費サービス。 */
+	@Autowired
+	private TransportExpenseService transportExpenseService;
+	
 	/** カレンダーコンポーネント。 */
 	@Autowired
 	private CalendarComponent calendarComponent;
@@ -122,7 +127,7 @@ public class WorkTimeController extends AbstractWorkManageController{
 		
 		// 画面表示情報設定
 		WorkTimesOfMonth workTimes = workTimeService.selectWorkTimeInfoInMonth(userId, showMonthDate);
-		List<TransportionExpense> transportInfos = workTimeService.selectTransportionInfo(userId, showMonthDate);
+		List<TransportionExpense> transportInfos = transportExpenseService.selectTransportionInfo(userId, showMonthDate);
 		Optional<WorkTimeStatus> status = workTimeService.selectStatusVersion(userId, month);
 		model.addAttribute("userId", userId);
 		model.addAttribute(FORM_NAME, new WorkTimeForm()); //入力用formを設定しておかないと落ちる

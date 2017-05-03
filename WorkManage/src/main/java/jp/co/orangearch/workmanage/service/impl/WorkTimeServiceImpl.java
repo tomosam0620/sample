@@ -33,14 +33,12 @@ import jp.co.orangearch.workmanage.domain.constant.AttendanceCode;
 import jp.co.orangearch.workmanage.domain.constant.ClosingState;
 import jp.co.orangearch.workmanage.domain.constant.HoridayType;
 import jp.co.orangearch.workmanage.domain.constant.MessageId;
-import jp.co.orangearch.workmanage.domain.dao.TransportionExpenseDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeStatusDao;
 import jp.co.orangearch.workmanage.domain.dao.WorkTimeTypeDao;
 import jp.co.orangearch.workmanage.domain.dao.join.JoinProjectWorkTimeStatusUserDao;
 import jp.co.orangearch.workmanage.domain.domain.WorkTimeCode;
 import jp.co.orangearch.workmanage.domain.entity.BreakTime;
-import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeStatus;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;
@@ -49,9 +47,9 @@ import jp.co.orangearch.workmanage.domain.exception.SystemException;
 import jp.co.orangearch.workmanage.dto.OperationInfoOfMonth;
 import jp.co.orangearch.workmanage.dto.OperationTime;
 import jp.co.orangearch.workmanage.dto.WorkTimesOfMonth;
+import jp.co.orangearch.workmanage.service.TransportExpenseService;
 import jp.co.orangearch.workmanage.service.WorkTimeCsvBean;
 import jp.co.orangearch.workmanage.service.WorkTimeService;
-import sun.nio.cs.ext.MS932;
 
 
 /**
@@ -91,7 +89,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	private WorkTimeDao workTimeDao;
 
 	@Autowired
-	private TransportionExpenseDao transportionExpenseDao;
+	private TransportExpenseService transportExpenseService;
 
 	/** 勤務帯テーブルDao。 */
 	@Autowired
@@ -260,13 +258,6 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 	}
 
 	@Override
-	public List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date) {
-		LocalDate fistdate = DateUtils.getFirstDayOfMonth(date);
-		LocalDate lastdate = DateUtils.getFinalDayOfMonth(date);
-		return transportionExpenseDao.selectByUserIdAndDateRange(userId, fistdate, lastdate);
-	}
-
-	@Override
 	public List<OperationInfoOfMonth> selectSummary(String fromMonth, String toMonth, Integer affiliationCd, Integer projectId, String userId, SelectOptions options) {
 		List<OperationInfoOfMonth> list = new ArrayList<OperationInfoOfMonth>();
 		
@@ -415,7 +406,6 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 			OperationTime newItem = new OperationTime();
 			newItem.setWorkDate(currentDate);
 			newItem.setHoridayType(calendarComponent.getHoridayType(newItem.getWorkDate()));
-
 			for(WorkTime item : registedList){
 				if(item.getWorkDate().isEqual(currentDate)){
 					newItem =new OperationTime(item);
@@ -436,6 +426,7 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 					newItem.setLateHours(getLateHours(newItem));
 					newItem.setLeaveEaryHours(getLeaveEaryHours(newItem));
 					returnVal.setIsExist(true);
+					newItem.setTransportExpense(transportExpenseService.select(userId, currentDate));
 					break;
 				}
 			}

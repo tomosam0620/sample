@@ -33,15 +33,6 @@ public interface WorkTimeService {
 	WorkTimesOfMonth selectWorkTimeInfoInMonth(String userId, LocalDate date);
 
 	/**
-	 * 交通費情報を取得します。
-	 * 
-	 * @param userId ユーザーID
-	 * @param date 日付
-	 * @return 交通費情報のリスト
-	 */
-	List<TransportionExpense> selectTransportionInfo(String userId, LocalDate date);
-	
-	/**
 	 * 指定日付の勤務情報を取得します。
 	 *
 	 * @param userId ユーザーID

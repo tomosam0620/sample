@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+<!--
+		<meta charset="UTF-8" />
+ -->
+		<title>交通費入力</title>
+		<div th:replace="common/common::header"></div>
+	</head>
+	<body>
+		<div th:replace="common/common::menu"></div>
+		<div class="container">
+			<div class="container">
+				<h3>交通費入力</h3>
+			</div>
+			<hr style="border:0;border-top:4px solid orange;">
+			<form class="form-horizontal" th:action="@{/transportExpense/handle}" th:object="${transportExpenseForm}" method="post">
+				<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+					<p th:each="err : ${#fields.globalErrors()}" th:text="${err}">共通エラーメッセージ表示エリア</p>
+				</div>
+				<div class="form-group">
+					<label for="workDate" class="col-sm-2 control-label">日付</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control datepicker" id="workDate" placeholder="yyyy-MM-dd" th:field="*{workDate}"></input>
+						<span th:if="${#fields.hasErrors('workDate')}" class="text-danger" th:errors="*{workDate}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="userId" class="col-sm-2 control-label">ユーザーID</label>
+					<div class="col-sm-2">
+						<input type="text" readonly="true" class="form-control" id="userId"  th:field="*{userId}"></input>
+						<span th:if="${#fields.hasErrors('userId')}" class="text-danger" th:errors="*{userId}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="transportType" class="col-sm-2 control-label">交通手段</label>
+					<div class="col-sm-2">
+						<select class="form-control col-sm-2 " id="transportType" th:field="*{transportType}">
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.TransportionType).values()}"
+									th:value="${t.getValue()}"
+									th:text="${t.getText()}"
+									th:selected="${t.getValue()} == ${registedTransportType}"></option>
+						</select>
+						<span th:if="${#fields.hasErrors('transportType')}" class="text-danger" th:errors="*{transportType}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="onewayRoundType" class="col-sm-2 control-label">片道往復</label>
+					<div class="col-sm-2">
+						<select class="form-control col-sm-2 " id="onewayRoundType" th:field="*{onewayRoundType}">
+							<option th:each="t : ${T(jp.co.orangearch.workmanage.domain.constant.OnewayRoundType).values()}"
+									th:value="${t.getValue()}"
+									th:text="${t.getText()}"
+									th:selected="${t.getValue()} == ${registedOnewayRoundType}"></option>
+						</select>
+						<span th:if="${#fields.hasErrors('onewayRoundType')}" class="text-danger" th:errors="*{onewayRoundType}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="rideFrom" class="col-sm-2 control-label">乗車</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="rideFrom" th:field="*{rideFrom}"></input>
+						<span th:if="${#fields.hasErrors('rideFrom')}" class="text-danger" th:errors="*{rideFrom}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="rideTo" class="col-sm-2 control-label">下車</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="rideTo" th:field="*{rideTo}"></input>
+						<span th:if="${#fields.hasErrors('rideTo')}" class="text-danger" th:errors="*{rideTo}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="expense" class="col-sm-2 control-label">金額</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="expense" th:field="*{expense}"></input>
+						<span th:if="${#fields.hasErrors('expense')}" class="text-danger" th:errors="*{expense}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="destination" class="col-sm-2 control-label">目的地</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="destination" th:field="*{destination}"></input>
+						<span th:if="${#fields.hasErrors('destination')}" class="text-danger" th:errors="*{destination}">Error</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="reason" class="col-sm-2 control-label">理由</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="reason" th:field="*{reason}"></input>
+						<span th:if="${#fields.hasErrors('reason')}" class="text-danger" th:errors="*{reason}">Error</span>
+					</div>
+				</div>
+				<input type="hidden" th:name="transportNumber" th:value="*{transportNumber}"></input>
+				<input type="hidden" th:name="version" th:value="*{version}"></input>
+				<input type="hidden" th:name="token" th:value="${token}"></input>
+				<button type="submit" class="btn btn-warning">更新</button>
+			</form>
+		</div>
+	</body>
+</html>
