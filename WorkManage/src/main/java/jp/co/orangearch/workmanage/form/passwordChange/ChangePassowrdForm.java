@@ -13,6 +13,8 @@ public class ChangePassowrdForm implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@NotEmpty
+	private String userId;
+	@NotEmpty
 	private String password;
 	@NotEmpty
 	private String newPassword;
@@ -50,6 +52,14 @@ public class ChangePassowrdForm implements Serializable{
 		return !password.equals(newPassword);
 	}
 	
+	public String getUserId(){
+		return userId;
+	}
+
+	public void setUserId(String value){
+		userId = value;
+	}
+
 	public String getPassword(){
 		return password;
 	}

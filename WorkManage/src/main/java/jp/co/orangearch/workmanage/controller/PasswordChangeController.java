@@ -1,11 +1,6 @@
 package jp.co.orangearch.workmanage.controller;
 
-import java.time.LocalDate;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,14 +9,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.util.StringUtils;
 
 import jp.co.orangearch.workmanage.common.validator.CheckToken;
 import jp.co.orangearch.workmanage.common.validator.GenerateToken;
-import jp.co.orangearch.workmanage.component.CalendarComponent;
-import jp.co.orangearch.workmanage.domain.constant.MessageId;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.form.passwordChange.ChangePassowrdForm;
-import jp.co.orangearch.workmanage.service.LoginUserInfo;
 import jp.co.orangearch.workmanage.service.PasswordChangeService;
 
 /**
@@ -39,8 +31,6 @@ public class PasswordChangeController extends AbstractWorkManageController {
 	private static final String UPDATE_HTML = "/update";
 	/** 一覧表示画面のURI */
 	private static final String ROOT_URI = "/";
-	/** 更新画面のURI */
-	private static final String UPDAT_URI = "/update";
 	/** 更新処理のURI */
 	private static final String HANDLE_URI = "/handle";
 	/** top画面のURI */
@@ -52,48 +42,10 @@ public class PasswordChangeController extends AbstractWorkManageController {
 	/** エラー情報キー名 */
 	private static final String ERROR_OBJECT_NAME = "error";
 
-	/** パスワード有効期間。 */
-	@Value("${password.expiredDuration}")
-	private int passwordExpiredDuration;
-	
-	/** カレンダーコンポーネント。 */
-	@Autowired
-	private CalendarComponent calendarComponent;
-
 	@Autowired
 	private PasswordChangeService passwordChangeService;
 	
-	@Autowired
-	private MessageHandler messageHandler;
 	
-	
-	/**
-	 * 遷移先の振り分けを行います。
-	 * <br>
-	 * パスワード有効期限が切れている場合はエラー情報を遷移先に引き継いでパスワード変更画面表示処理にリダイレクトする。<br>
-	 * その他の場合はトップページへ遷移します。
-	 * @param model モデル
-	 * @param attributes リダイレクト先に引き継ぐ情報
-	 * @return 遷移先
-	 */
-	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
-	public String dispatch(Model model, RedirectAttributes attributes){
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if(auth != null && auth.getPrincipal() != null){
-			Object principal = auth.getPrincipal();
-			if(principal instanceof LoginUserInfo){
-				LoginUserInfo loginUserInfo = LoginUserInfo.class.cast(principal);
-				LocalDate lastChangeDate = loginUserInfo.getPasswordLastChangeDate();
-				LocalDate now = calendarComponent.getSystemDate();
-				if(now.isAfter(lastChangeDate.plusDays(passwordExpiredDuration))){
-					attributes.addFlashAttribute("result", messageHandler.getMessage(MessageId.M005, null, null, null).getMessage());
-					return REDIRECT_ACTION + FUNCTION_URI + UPDAT_URI;
-				}
-			}
-		}
-		return REDIRECT_ACTION + TOP_URI;
-	}
-
 	/**
 	 * パスワード変更画面表示処理
 	 * <br>
@@ -104,9 +56,14 @@ public class PasswordChangeController extends AbstractWorkManageController {
 	 * @return 遷移先
 	 */
 	@GenerateToken
-	@RequestMapping(value=UPDAT_URI, method=RequestMethod.GET)
+	@RequestMapping(value=ROOT_URI, method=RequestMethod.GET)
 	public String update(@ModelAttribute(FORM_NAME) ChangePassowrdForm form, Model model){
-		Integer version = passwordChangeService.selectUserVersion(getLoginUserId());
+		String userId = form.getUserId();
+		if(StringUtils.isEmpty(userId)){
+			userId = getLoginUserId();
+			form.setUserId(userId);
+		}
+		Integer version = passwordChangeService.selectUserVersion(userId);
 		form.setVersion(version);
 		
 		//モデルにエラー情報が存在していれば、フォームの入力エラー情報としてモデルに登録
@@ -133,14 +90,16 @@ public class PasswordChangeController extends AbstractWorkManageController {
 		//入力エラー(単体チェック)があればエラー情報をリダイレクト先に引き継いでパスワード変更画面にリダイレクト
 		if(bindingResult.hasErrors()){
 			attributes.addFlashAttribute(ERROR_OBJECT_NAME, bindingResult);
-			return REDIRECT_ACTION + FUNCTION_URI + UPDAT_URI;
+			attributes.addFlashAttribute(FORM_NAME, form);
+			return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI;
 		}
 		
-		passwordChangeService.update(getLoginUserId(), form.getPassword(), form.getNewPassword(), form.getVersion(), bindingResult);
+		passwordChangeService.update(form.getUserId(), form.getPassword(), form.getNewPassword(), form.getVersion(), bindingResult);
 		//入力エラー(パスワード突合結果)があればエラー情報をリダイレクト先に引き継いでパスワード変更画面にリダイレクト
 		if(bindingResult.hasErrors()){
 			attributes.addFlashAttribute(ERROR_OBJECT_NAME, bindingResult);
-			return REDIRECT_ACTION + FUNCTION_URI + UPDAT_URI;
+			attributes.addFlashAttribute(FORM_NAME, form);
+			return REDIRECT_ACTION + FUNCTION_URI + ROOT_URI;
 		}
 		return REDIRECT_ACTION + TOP_URI;
 	}

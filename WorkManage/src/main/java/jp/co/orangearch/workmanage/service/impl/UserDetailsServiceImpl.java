@@ -1,5 +1,6 @@
 package jp.co.orangearch.workmanage.service.impl;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import jp.co.orangearch.workmanage.component.CalendarComponent;
 import jp.co.orangearch.workmanage.domain.constant.Flag;
 import jp.co.orangearch.workmanage.domain.dao.UserDao;
 import jp.co.orangearch.workmanage.domain.entity.User;
@@ -27,6 +29,14 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	@Value("${password.maxMissCount}")
 	private int maxPasswordMissCount;
 	
+	/** パスワード有効期間。 */
+	@Value("${password.expiredDuration}")
+	private int passwordExpiredDuration;
+	
+	/** カレンダーコンポーネント。 */
+	@Autowired
+	private CalendarComponent calendarComponent;
+
 	@Autowired
 	private UserDao userDao;
 
@@ -49,10 +59,14 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 
         boolean isAccountNonExpired = true;
         boolean isAccountNonLocked = true;
-        //TODO:パスワード期限切れチェックはやっぱり認証時にもってくる。
+
         boolean isCredentialsNonExpired = true;
+		LocalDate now = calendarComponent.getSystemDate();
+		LocalDate lastChangeDate = user.get().getPasswordlastChangeDate();
+		if(now.isAfter(lastChangeDate.plusDays(passwordExpiredDuration))){
+			isCredentialsNonExpired = false;
+		}
         boolean isEnabled = true;
-        
         if(Flag.TRUE.equals(user.get().getDeleteFlag())){
         	isEnabled = false;
         }

@@ -16,8 +16,6 @@ import jp.co.orangearch.workmanage.common.validator.GenerateToken;
 import jp.co.orangearch.workmanage.controller.AbstractWorkManageController;
 import jp.co.orangearch.workmanage.domain.entity.Customer;
 import jp.co.orangearch.workmanage.domain.entity.Project;
-import jp.co.orangearch.workmanage.domain.logger.ApplicationLogger;
-import jp.co.orangearch.workmanage.domain.logger.MessageHandler;
 import jp.co.orangearch.workmanage.form.ProjectManageForm;
 import jp.co.orangearch.workmanage.service.ProjectManageService;
 
@@ -50,18 +48,10 @@ public class ProjectManageController extends AbstractWorkManageController{
 	/** エラー情報キー名 */
 	private static final String ERROR_OBJECT_NAME = "error";
 
-	/** ロガー。 */
-	@Autowired
-	private ApplicationLogger applicationLogger;
-
 	/** 休日管理サービス。 */
 	@Autowired
 	private ProjectManageService projectManageService;
 
-	/** メッセージ管理 */
-	@Autowired
-	private MessageHandler messagehandler;
-	
 	/**
 	 * ｉｎｄｅｘページ表示処理
 	 * <br>

@@ -8,7 +8,6 @@ import org.seasar.doma.jdbc.SelectOptions;
 import org.springframework.validation.BindingResult;
 
 import jp.co.orangearch.workmanage.domain.constant.ClosingState;
-import jp.co.orangearch.workmanage.domain.entity.TransportionExpense;
 import jp.co.orangearch.workmanage.domain.entity.WorkTime;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeStatus;
 import jp.co.orangearch.workmanage.domain.entity.WorkTimeType;

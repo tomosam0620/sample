@@ -2,7 +2,6 @@ package jp.co.orangearch.workmanage.domain.dao.join;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import org.seasar.doma.Dao;
 import org.seasar.doma.Select;

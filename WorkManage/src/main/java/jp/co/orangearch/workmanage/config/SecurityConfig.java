@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import jp.co.orangearch.workmanage.authentication.WorkManageAuthenticationFailureHandler;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
@@ -36,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         // 認可の設定
         http.authorizeRequests()
-            .antMatchers("/","/login").permitAll() // indexは全ユーザーアクセス許可
+            .antMatchers("/","/login","/passwordChange/**").permitAll() // indexは全ユーザーアクセス許可
             .antMatchers("/admin/**").access("hasAnyRole('A01','A02','A03')")
             .anyRequest().authenticated();  // それ以外は全て認証無しの場合アクセス不許可
 
@@ -44,10 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.formLogin()
 //            .loginProcessingUrl("/login")   // 認証処理のパス
             .loginPage("/login")            // ログインフォームのパス
-            .defaultSuccessUrl("/passwordChange/", true) // 認証成功時の遷移先
+            .defaultSuccessUrl("/workTime/", true) // 認証成功時の遷移先
             .usernameParameter("username")
             .passwordParameter("password")  // ユーザー名、パスワードのパラメータ名
-            .permitAll();
+            .permitAll()
+            .failureHandler(new WorkManageAuthenticationFailureHandler());
 
         // ログアウト設定
         http.logout()

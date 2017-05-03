@@ -19,6 +19,8 @@
 			<form class="form-signin" action="" th:action="@{/passwordChange/handle}" method="post" th:object="${changePassowrdForm}" name="form">
 				<div class="form-group">
 					<div class="col-sm-4">
+						<input type="text" class="form-control" readonly="readonly" placeholder="ユーザー" th:value="*{userId}" th:field="*{userId}" />
+						<span th:if="${#fields.hasErrors('userId')}" class="text-danger" th:errors="*{userId}">Error</span>
 						<input type="password" class="form-control" placeholder="パスワード" th:field="*{password}" />
 						<span th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}">Error</span>
 						<input type="password" class="form-control" placeholder="新しいパスワード" th:field="*{newPassword}" />
